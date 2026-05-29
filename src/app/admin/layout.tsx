@@ -13,14 +13,14 @@ export default async function AdminLayout({
 }) {
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     redirect("/login");
   }
 
-  const adminEmail = session.user.email;
+  const adminEmail = user.email;
   const [adminMember] = adminEmail
     ? await db
         .select()
