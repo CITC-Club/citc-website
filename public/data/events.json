@@ -1,0 +1,62 @@
+{
+  "events": [
+    {
+      "id": "003",
+      "title": "IoT Workshop: IoT Hardware Forge",
+      "date": "2026-02-02",
+      "time": "6 Days (2 Hours Daily)",
+      "location": "NCIT Room:125",
+      "description": "## Introduction\n\nThe **Computer Engineering Innovation and Tech Club (CITC)**, in collaboration with the Department of Computer Engineering, NCIT, presents **\"IoT Hardware Workshop\"**, an intensive 6-day workshop designed to bridge the gap between theoretical knowledge and practical hardware implementation.\n\nFrom understanding basic sensors to deploying complex wireless systems, this workshop provides a hands-on roadmap for students interested in embedded systems and the Internet of Things.\n\n---\n\n## Workshop Highlights\n\n- **Hands-on with Hardware:** Work with Arduino, ESP32, and various sensors.\n- **Sensor Fundamentals:** Learn to interface digital and analog sensors.\n- **Wireless Communication:** Explore Wi-Fi and Bluetooth connectivity for IoT projects.\n- **IoT Expo:** Showcase your final integrated projects in a mini exhibition.\n\n---\n\n## Schedule Overview\n\n- **Day 1:** Kickoff & Sensor Fundamentals\n- **Day 2:** Output Systems & First Integration\n- **Day 3:** Wireless Communication (ESP32 Deep Dive)\n- **Day 4:** Integration Sprint (Project Building)\n- **Day 5:** Refinement & Rehearsal\n- **Day 6:** **IoT Expo** (Final Presentation)\n\n---\n\n## Eligibility & Registration\n\n- Open to all NCIT students.\n- **Project-based selection:** Participants must submit a project concept via the official form 3 days prior to the start.",
+      "image": "/event/003/IoTExpo2082.png",
+      "status": "past",
+      "tags": [
+        "IoT",
+        "Embedded Systems",
+        "Hardware",
+        "Workshop"
+      ]
+    },
+    {
+  "id": "002",
+  "title": "Prompt to Image – AI Creativity Competition",
+  "date": "2026-01-29",
+  "time": "1 Week (Online) + Physical battle",
+  "location": "Online",
+  "description": "## Introduction\n\nArtificial Intelligence is reshaping creative expression, with **prompt engineering** emerging as a crucial skill that connects human intent with AI-generated outcomes. Designing effective prompts is now an essential competency for students engaging with modern AI tools.\n\nThe **Computer Engineering Innovation and Tech Club (CITC), NCIT** presents **\"Prompt to Image\"**, an AI-based creativity competition that challenges participants to transform structured textual prompts into compelling visual outputs. The event emphasizes creativity, storytelling, and ethical AI usage over technical complexity.\n\n---\n\n## Event Overview\n\nParticipants are provided with a standardized **prompt framework** containing predefined blank spaces. By creatively completing the framework, participants generate a meaningful paragraph that serves as the final prompt for AI-based image generation.\n\nThis format ensures:\n- Equal creative opportunity for all participants  \n- Strong focus on prompt engineering and storytelling  \n- Emphasis on originality and human intent\n\nEach participant submits:\n- A completed prompt paragraph  \n- One AI-generated image  \n- A brief concept explanation\n\n---\n\n## Eligibility\n\n- Open to all students of **Nepal College of Information Technology (NCIT)**  \n- **Individual participation only**\n\n---\n\n## Competition Structure\n\nThe competition is conducted in **two phases**:\n\n**Phase-I (Online Round):**\nParticipants submit their completed prompt and AI-generated image online. Entries are evaluated by judges along with public engagement. The **Top 10 participants** qualify for the final round.\n\n**Phase-II (Physical Final Round):**\nFinalists compete physically at **NCIT**, where a new prompt framework is provided on the spot. Participants generate AI images live, followed by judge-based evaluation.\n\n---\n\n## Evaluation Overview\n\nEvaluation focuses on creativity, prompt quality, visual coherence, concept clarity, and ethical AI use. Phase-I includes both judges’ evaluation and public engagement, while Phase-II is primarily judge-based.\n\n*Detailed rules and evaluation criteria are available in the official Rule Book.*\n\n---\n\n## Important Dates\n\n- **Phase-I Submission Period:** 18th January – 25th January, 00:00 NPT  \n- **Phase-II Schedule:** To be announced via CITC platforms\n\n---\n\n## Prizes & Recognition\n\n- 🏆 **Winner:** NPR 3,000 + Certificate & Medal  \n- 🥈 **Runner-Up:** NPR 2,000 + Certificate & Medal  \n- 🥉 **Second Runner-Up:** NPR 1,000 + Certificate & Medal  \n\nDigital certificates will be provided to all participants.\n\n---\n\n## Rule Book\n\nAll participants must read and follow the **Participants Rule Book**, which contains detailed guidelines, submission rules, ethical policies, and evaluation criteria.\n\n---\n\n## Contact & Support\n\nFor queries or clarifications:\n📧 **citc@ncit.edu.np**  \nor reach out through **CITC official social media platforms**",
+    "image": "/event/002/top_image.jpg",
+    "status": "past",
+    "registration_link": "https://citc.ncit.edu.np/register/ai",
+    "tags": [
+      "AI",
+      "Competition",
+      "Prompt Engineering",
+      "Creativity"
+    ],
+    "gallery": [
+      "/event/002/top_image.jpg",
+      "/event/002/1c135d51-1936-4f56-9630-9ff17e23b0b4.jpg",
+      "/event/002/6da29576-c123-446c-b096-82d613ffa521.jpg"
+    ]
+    },
+    {
+      "id": "001",
+      "title": "Kickstart Your Tech Journey: Explore • Learn • Build",
+      "date": "2024-12-08",
+      "time": "11:00 AM - 1:00 PM",
+      "location": "NCIT Hall",
+      "description": "**Theme:** \"Explore • Learn • Build — Your Journey as a Computer Engineer\"\n\n## EVENT OBJECTIVES\n\n- Introduce CITC — purpose, vision, activities\n- Familiarize students with major domains of Computer Engineering\n- Give short & practical roadmaps for each domain\n- Introduce essential tools, software, and platforms useful for daily CE life\n- Show benefits & opportunities — GitHub Student Pack, learning platforms, hackathons\n- Build excitement, confidence, and curiosity among participants\n- Recruit engaged members for future events\n\n## STRUCTURE OF THE SESSION (1.5–2 hours)\n\n### Starting-part\n\n**1. Opening (5–7 mins)**\n\n*Who speaks:* someone\n\nInclude:\n- What is CITC?\n- Why it was started?\n- What problems it will solve for CE students?\n- What activities/events to expect this semester?\n\n**Introducing CITC Activities (2-3 mins)**\n\nExplain what CITC will do:\n- Workshops\n- Project building groups\n- Hackathons\n- Weekly coding sessions\n- Robotics arm project\n- Web development bootcamp\n- AI learning circles\n- Open-source contributions\n- Doubt-solving or peer mentorship\n\n**2. Warm-up Interaction (3–5 mins)**\n\nQuick questions about interests in AI, Web dev, Cybersecurity, etc.\n\n### Major part\n\n**3. The Core Part — Major Domains in CE (25–30 mins)**\n\n**A) SOFTWARE**\n- Web Development (Frontend, Backend, MERN)\n- AI / Machine Learning\n- UI/UX\n- Mobile App Development\n- Cybersecurity\n- DevOps & Cloud\n- Data Science\n- Game Development\n\n**B) HARDWARE**\n- AR/VR\n- Embedded Systems / IoT\n- Robotics\n\n**5. Essential Tools & Software for CE Students (10–12 mins)**\n- Daily tools: VS Code, Git & GitHub, Docker, Postman\n- OS: Linux\n- Productivity: Notion, Obsidian, Trello\n- Design: Canva, Figma\n- Cloud: GitHub Pages, Netlify, Vercel\n\n**6. Opportunities & Perks for CE Students**\n- GitHub Student Developer Pack\n- Hackathons\n- Internships\n- Online certificates\n\n### Demo/Entertainment Session\n\n**7. Mini Demo Session (10 mins)**\n\n### Closing part\n\n**9. Q&A + Feedback (5–7 mins)**\n\n**10. Closing (2–3 mins)**",
+      "image": "/event/001/WhatsApp Image 2025-12-08 at 19.28.39.jpeg",
+      "status": "past",
+      "tags": [
+        "Orientation",
+        "Tech Journey",
+        "Introductory"
+      ],
+      "gallery": [
+        "/event/001/WhatsApp Image 2025-12-08 at 19.28.39.jpeg",
+        "/event/001/WhatsApp Image 2025-12-08 at 19.28.41 (1).jpeg",
+        "/event/001/WhatsApp Image 2025-12-08 at 19.28.41.jpeg"
+      ]
+    }
+  ]
+}
