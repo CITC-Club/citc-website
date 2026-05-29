@@ -34,8 +34,8 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-32 px-3 sm:px-4 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3 animate-pulse delay-1000" />
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3" />
 
       <div className="container relative z-10 mx-auto px-3 sm:px-4">
         <motion.div
@@ -49,7 +49,7 @@ export default function Hero() {
             whileHover={{ scale: 1.05 }}
             className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-cyan-100/50 dark:bg-cyan-950/30 border border-cyan-500/20 text-cyan-700 dark:text-cyan-400 text-xs sm:text-sm font-medium backdrop-blur-sm shadow-sm flex-wrap justify-center cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-cyan-600 dark:text-cyan-400 animate-spin" style={{ animationDuration: "3s" }} />
+            <Sparkles className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
             <span className="font-semibold">Innovate. Connect. Transform.</span>
           </motion.div>
 

@@ -21,6 +21,8 @@ export interface Member {
   department?: string | null;
   email: string;
   photo?: string | null;
+  photoThumb?: string | null;
+  photoVersion?: number;
   memberYear: number;
   teamId: string;
   socials?: Socials | null;

@@ -1,11 +1,11 @@
-import { db } from "@/db";
-import { members } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { members } from "@/db/schema";
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -20,6 +20,8 @@ export async function PUT(
         department: body.department,
         email: body.email,
         photo: body.photo,
+        photoThumb: body.photoThumb,
+        photoVersion: body.photoVersion ?? 0,
         memberYear: body.memberYear,
         teamId: body.teamId,
         collegeYear: body.collegeYear,
@@ -39,7 +41,7 @@ export async function PUT(
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const [member] = await db

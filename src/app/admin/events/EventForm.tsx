@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft, Upload, X } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import type { Event } from "@/types";
+import { createClient } from "@/utils/supabase/client";
 
 interface Props {
   event?: Event;
@@ -24,11 +24,17 @@ export default function EventForm({ event }: Props) {
   const [location, setLocation] = useState(event?.location || "");
   const [description, setDescription] = useState(event?.description || "");
   const [image, setImage] = useState(event?.image || "");
-  const [status, setStatus] = useState<Event["status"]>(event?.status || "upcoming");
-  const [registrationLink, setRegistrationLink] = useState(event?.registrationLink || "");
+  const [status, setStatus] = useState<Event["status"]>(
+    event?.status || "upcoming",
+  );
+  const [registrationLink, setRegistrationLink] = useState(
+    event?.registrationLink || "",
+  );
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>(event?.tags || []);
-  const [academicYear, setAcademicYear] = useState(event?.academicYear || new Date().getFullYear());
+  const [academicYear, setAcademicYear] = useState(
+    event?.academicYear || new Date().getFullYear(),
+  );
 
   const addTag = () => {
     const t = tagInput.trim();
@@ -48,10 +54,13 @@ export default function EventForm({ event }: Props) {
 
     try {
       const { compressImageToAvif } = await import("@/utils/imageCompressor");
-      const { blob, fileName: compressedName } = await compressImageToAvif(file, {
-        maxWidth: 1200,
-        quality: 75,
-      });
+      const { blob, fileName: compressedName } = await compressImageToAvif(
+        file,
+        {
+          maxWidth: 1200,
+          quality: 75,
+        },
+      );
 
       const uploadPath = `events/${Date.now()}-${compressedName}`;
       const { error: uploadError } = await supabase.storage
@@ -66,7 +75,9 @@ export default function EventForm({ event }: Props) {
         return;
       }
 
-      const { data: urlData } = supabase.storage.from("media").getPublicUrl(uploadPath);
+      const { data: urlData } = supabase.storage
+        .from("media")
+        .getPublicUrl(uploadPath);
       setImage(urlData.publicUrl);
     } catch (err: any) {
       setError(err.message || "Failed to compress or upload image");
@@ -138,43 +149,91 @@ export default function EventForm({ event }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Title *</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Title *
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Date *</label>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Date *
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Time *</label>
-              <input type="text" value={time} onChange={(e) => setTime(e.target.value)} required placeholder="e.g., 11:00 AM - 1:00 PM"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Time *
+              </label>
+              <input
+                type="text"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                required
+                placeholder="e.g., 11:00 AM - 1:00 PM"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Location *</label>
-              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Location *
+              </label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Status *</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value as Event["status"])}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Status *
+              </label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as Event["status"])}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              >
                 <option value="upcoming">Upcoming</option>
                 <option value="running">Running</option>
                 <option value="past">Past</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Registration Link</label>
-              <input type="url" value={registrationLink} onChange={(e) => setRegistrationLink(e.target.value)} placeholder="https://..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Registration Link
+              </label>
+              <input
+                type="url"
+                value={registrationLink}
+                onChange={(e) => setRegistrationLink(e.target.value)}
+                placeholder="https://..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Academic Year *</label>
-              <input type="number" value={academicYear} onChange={(e) => setAcademicYear(Number(e.target.value))} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Academic Year *
+              </label>
+              <input
+                type="number"
+                value={academicYear}
+                onChange={(e) => setAcademicYear(Number(e.target.value))}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
           </div>
         </div>
@@ -187,7 +246,11 @@ export default function EventForm({ event }: Props) {
           <div className="flex items-start gap-6">
             <div className="w-40 h-28 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
               {image ? (
-                <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={image}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-400">
                   <Upload className="w-8 h-8" />
@@ -198,9 +261,17 @@ export default function EventForm({ event }: Props) {
               <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
                 <Upload className="w-4 h-4" />
                 {uploading ? "Uploading..." : "Upload Image"}
-                <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} className="hidden" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
               </label>
-              <p className="text-xs text-slate-400 mt-1.5">Recommended: 1200x630px, .jpg or .png</p>
+              <p className="text-xs text-slate-400 mt-1.5">
+                Recommended: 1200x630px, .jpg or .png
+              </p>
             </div>
           </div>
         </div>
@@ -212,10 +283,14 @@ export default function EventForm({ event }: Props) {
 
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Content *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Content *
+              </label>
               <div className="relative">
                 <div className="absolute top-3 left-3 flex gap-1">
-                  <span className="px-2 py-0.5 text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500 rounded">Markdown</span>
+                  <span className="px-2 py-0.5 text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500 rounded">
+                    Markdown
+                  </span>
                 </div>
                 <textarea
                   value={description}
@@ -228,7 +303,9 @@ export default function EventForm({ event }: Props) {
             </div>
             {description && (
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Preview</p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  Preview
+                </p>
                 <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap line-clamp-6">
                   {description.slice(0, 500)}
                   {description.length > 500 && "..."}
@@ -248,12 +325,17 @@ export default function EventForm({ event }: Props) {
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+              onKeyDown={(e) =>
+                e.key === "Enter" && (e.preventDefault(), addTag())
+              }
               placeholder="Type a tag and press Enter"
               className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
-            <button type="button" onClick={addTag}
-              className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <button
+              type="button"
+              onClick={addTag}
+              className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
               Add
             </button>
           </div>
@@ -261,9 +343,16 @@ export default function EventForm({ event }: Props) {
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-900/10 text-cyan-700 dark:text-cyan-400 text-sm font-medium">
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-900/10 text-cyan-700 dark:text-cyan-400 text-sm font-medium"
+                >
                   {tag}
-                  <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-500 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="hover:text-red-500 transition-colors"
+                  >
                     <X className="w-3 h-3" />
                   </button>
                 </span>

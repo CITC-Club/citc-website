@@ -1,6 +1,6 @@
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { members } from "@/db/schema";
-import { revalidatePath } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +14,8 @@ export async function POST(request: Request) {
         department: body.department,
         email: body.email,
         photo: body.photo,
+        photoThumb: body.photoThumb,
+        photoVersion: body.photoVersion ?? 0,
         memberYear: body.memberYear,
         teamId: body.teamId,
         collegeYear: body.collegeYear,

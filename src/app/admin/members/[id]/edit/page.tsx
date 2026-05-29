@@ -1,7 +1,7 @@
-import { db } from "@/db";
-import { members, teams } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { db } from "@/db";
+import { members, teams } from "@/db/schema";
 import MemberForm from "../../MemberForm";
 
 export const dynamic = "force-dynamic";

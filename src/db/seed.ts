@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { eq } from "drizzle-orm";
 import { db } from "./index";
 import { teams, members, events } from "./schema";
 
@@ -18,26 +19,40 @@ async function seed() {
   }
   console.log("✅ Teams seeded");
 
+  // Clear existing members so seed is idempotent
+  await db.delete(members);
+  console.log("🗑️  Existing members cleared");
+
   // Members
   const memberData = [
-    { name: "Er. Amit Shrivastava", type: "Patron", title: "Patron", department: "HOD, Department of Computer Engineering", email: "hod.computer@ncit.edu.np", photo: "/media/2025/members/faculty_advisor_amit.avif", memberYear: 2025, teamId: "t_patron" },
-    { name: "Manash Dev Bhatta", type: "Executive", email: "manash.221224@ncit.edu.np", photo: "/media/2025/members/manash_dev_bhatta.avif", memberYear: 2025, teamId: "t_mentors_2025", collegeYear: 4, socials: { github: "https://github.com/dsxmanash", instagram: "https://www.instagram.com/sunfloweraholic01" } },
-    { name: "Niraj Bhusal", type: "Executive", email: "niraj.221315@ncit.edu.np", photo: "/media/2025/members/niraj_bhusal.avif", memberYear: 2025, teamId: "t_mentors_2025", collegeYear: 4, socials: { github: "https://github.com/niraj5511", linkedin: "https://www.linkedin.com/in/niraj-bhusal-6262b830a/", instagram: "https://www.instagram.com/niraj_bhusal551" } },
-    { name: "Pratik Mishra", type: "Executive", email: "pratikmis14@gmail.com", photo: "/media/2025/members/pratik_mishra.avif", memberYear: 2025, teamId: "t_mentors_2025", collegeYear: 4, socials: { github: "https://github.com/Retr0-0", facebook: "https://www.facebook.com/Prats8914" } },
-    { name: "Abishek Khadka", type: "Executive", email: "abishek.231303@ncit.edu.np", photo: "/media/2025/members/abishek_khadka.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/khadkaabishek", linkedin: "https://www.linkedin.com/in/abishekkhadkaa/", instagram: "https://www.instagram.com/awisek.null/", website: "https://abishek-khadka.com.np/" } },
-    { name: "Anuroop Tater", type: "Executive", email: "anuroop.231209@ncit.edu.np", photo: "/media/2025/members/anuroop_tater.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3 },
-    { name: "Apil Khadka", type: "Executive", email: "apil.231210@ncit.edu.np", photo: "/media/2025/members/apil_khadka.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/Apil-Khadka", linkedin: "https://www.linkedin.com/in/apil-khadka/", instagram: "https://www.instagram.com/apil.me/", website: "https://apilkhadka.com.np/" } },
-    { name: "Arpan Adhikhari", type: "Executive", email: "arpan.231309@ncit.edu.np", photo: "/media/2025/members/arpan_adhikari.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/adhikari-arpan", linkedin: "https://www.linkedin.com/in/adhikari-arpan63/", instagram: "https://www.instagram.com/adhikari__arpan", website: "https://arpanadhikari7.com.np/" } },
-    { name: "Niraj Bhatta", type: "Executive", email: "niraj.231326@ncit.edu.np", photo: "/media/2025/members/niaj_bhatta.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/Niraj-Bhatta", linkedin: "www.linkedin.com/in/nirajbhatta559", instagram: "https://www.instagram.com/niraj_bhatta_4/" } },
-    { name: "Sandesh Khadka", type: "Executive", email: "sandesh.231335@ncit.edu.np", photo: "/media/2025/members/sandesh_khadka.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/SandeshKhadka23", linkedin: "https://www.linkedin.com/in/sandeshkhadka1/", instagram: "https://www.instagram.com/sandesh.khadka.2/?hl=en" } },
-    { name: "Saru Chauwal", type: "Executive", email: "saru.231239@ncit.edu.np", photo: "/media/2025/members/saru_chauwal.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/SaruChauwal", instagram: "https://www.instagram.com/_saru00/" } },
-    { name: "Shyam Kishor Sah", type: "Executive", email: "shyam.231339@ncit.edu.np", photo: "/media/2025/members/shyam_kishor_shah.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3 },
-    { name: "Sudip Shrestha", type: "Executive", email: "sudip.231244@ncit.edu.np", photo: "/media/2025/members/sudip_shrestha.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/sudipshrestha-4", instagram: "https://www.instagram.com/sudip_shrestha4/" } },
-    { name: "Abaneesh Shrestha", type: "Executive", email: "abaneesh.241203@ncit.edu.np", photo: "/media/2025/members/abaneesh_shrestha.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2, socials: { github: "https://github.com/abaneeshshrestha-glitch", linkedin: "www.linkedin.com/in/Vanity URL name", instagram: "https://www.instagram.com/abaneeeeshh/" } },
-    { name: "Biraj Joshi", type: "Executive", email: "biraj.241212@ncit.edu.np", photo: "/media/2025/members/biraj_joshi.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2 },
-    { name: "Iksha Gurung", type: "Executive", email: "iksha.241312@ncit.edu.np", photo: "/media/2025/members/iksha_gurung.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2, socials: { github: "iksha241312-debug" } },
-    { name: "Pranish Manandhar", type: "Executive", email: "pranish.241324@ncit.edu.np", photo: "/media/2025/members/pranish_manandhar.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2, socials: { github: "https://github.com/PranishManandhar", linkedin: "https://www.linkedin.com/in/pranish-manandhar-54452b245/", instagram: "https://www.instagram.com/_pranish.manandhar/" } },
-    { name: "Anamol Rijal", type: "Executive", email: "anamol@ncit.edu.np", photo: "/media/2025/members/anmol.avif", memberYear: 2025, teamId: "t_exec_2025", collegeYear: 1, socials: { github: "https://github.com/", linkedin: "https://www.linkedin.com/", instagram: "https://www.instagram.com/" } },
+    { name: "Er. Amit Shrivastava", type: "Patron", title: "Patron", department: "HOD, Department of Computer Engineering", email: "hod.computer@ncit.edu.np", photo: "/media/2025/members/faculty_advisor_amit.avif", photoVersion: 0, memberYear: 2025, teamId: "t_patron" },
+    { name: "Manash Dev Bhatta", type: "Executive", email: "manash.221224@ncit.edu.np", photo: "/media/2025/members/manash_dev_bhatta.avif", photoVersion: 0, memberYear: 2025, teamId: "t_mentors_2025", collegeYear: 4, socials: { github: "https://github.com/dsxmanash", instagram: "https://www.instagram.com/sunfloweraholic01" } },
+    { name: "Niraj Bhusal", type: "Executive", email: "niraj.221315@ncit.edu.np", photo: "/media/2025/members/niraj_bhusal.avif", photoVersion: 0, memberYear: 2025, teamId: "t_mentors_2025", collegeYear: 4, socials: { github: "https://github.com/niraj5511", linkedin: "https://www.linkedin.com/in/niraj-bhusal-6262b830a/", instagram: "https://www.instagram.com/niraj_bhusal551" } },
+    {
+      name: "Pratik Mishra", type: "Mentor", email: "pratikmis14@gmail.com",
+      photo: "/media/2025/members/pratik_mishra.avif", photoVersion: 0,
+      memberYear: 2025, teamId: "t_mentors_2025", collegeYear: 4,
+      socials: {
+        github: "https://github.com/Retr0-0",
+        facebook: "https://www.facebook.com/Prats8914",
+        linkedin: "https://www.linkedin.com/in/pratikmis14?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+        instagram: "https://www.instagram.com/frldesigns?igsh=MTVrdDMyZDJhMTBycA==",
+      },
+    },
+    { name: "Abishek Khadka", type: "Executive", email: "abishek.231303@ncit.edu.np", photo: "/media/2025/members/abishek_khadka.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/khadkaabishek", linkedin: "https://www.linkedin.com/in/abishekkhadkaa/", instagram: "https://www.instagram.com/awisek.null/", website: "https://abishek-khadka.com.np/" } },
+    { name: "Anuroop Tater", type: "Executive", email: "anuroop.231209@ncit.edu.np", photo: "/media/2025/members/anuroop_tater.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3 },
+    { name: "Apil Khadka", type: "Executive", email: "apil.231210@ncit.edu.np", photo: "/media/2025/members/apil_khadka.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/Apil-Khadka", linkedin: "https://www.linkedin.com/in/apil-khadka/", instagram: "https://www.instagram.com/apil.me/", website: "https://apilkhadka.com.np/" } },
+    { name: "Arpan Adhikhari", type: "Executive", email: "arpan.231309@ncit.edu.np", photo: "/media/2025/members/arpan_adhikari.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/adhikari-arpan", linkedin: "https://www.linkedin.com/in/adhikari-arpan63/", instagram: "https://www.instagram.com/adhikari__arpan", website: "https://arpanadhikari7.com.np/" } },
+    { name: "Niraj Bhatta", type: "Executive", email: "niraj.231326@ncit.edu.np", photo: "/media/2025/members/niaj_bhatta.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/Niraj-Bhatta", linkedin: "www.linkedin.com/in/nirajbhatta559", instagram: "https://www.instagram.com/niraj_bhatta_4/" } },
+    { name: "Sandesh Khadka", type: "Executive", email: "sandesh.231335@ncit.edu.np", photo: "/media/2025/members/sandesh_khadka.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/SandeshKhadka23", linkedin: "https://www.linkedin.com/in/sandeshkhadka1/", instagram: "https://www.instagram.com/sandesh.khadka.2/?hl=en" } },
+    { name: "Saru Chauwal", type: "Executive", email: "saru.231239@ncit.edu.np", photo: "/media/2025/members/saru_chauwal.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/SaruChauwal", instagram: "https://www.instagram.com/_saru00/" } },
+    { name: "Shyam Kishor Sah", type: "Executive", email: "shyam.231339@ncit.edu.np", photo: "/media/2025/members/shyam_kishor_shah.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3 },
+    { name: "Sudip Shrestha", type: "Executive", email: "sudip.231244@ncit.edu.np", photo: "/media/2025/members/sudip_shrestha.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 3, socials: { github: "https://github.com/sudipshrestha-4", instagram: "https://www.instagram.com/sudip_shrestha4/" } },
+    { name: "Abaneesh Shrestha", type: "Executive", email: "abaneesh.241203@ncit.edu.np", photo: "/media/2025/members/abaneesh_shrestha.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2, socials: { github: "https://github.com/abaneeshshrestha-glitch", linkedin: "www.linkedin.com/in/Vanity URL name", instagram: "https://www.instagram.com/abaneeeeshh/" } },
+    { name: "Biraj Joshi", type: "Executive", email: "biraj.241212@ncit.edu.np", photo: "/media/2025/members/biraj_joshi.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2 },
+    { name: "Iksha Gurung", type: "Executive", email: "iksha.241312@ncit.edu.np", photo: "/media/2025/members/iksha_gurung.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2, socials: { github: "iksha241312-debug" } },
+    { name: "Pranish Manandhar", type: "Executive", email: "pranish.241324@ncit.edu.np", photo: "/media/2025/members/pranish_manandhar.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 2, socials: { github: "https://github.com/PranishManandhar", linkedin: "https://www.linkedin.com/in/pranish-manandhar-54452b245/", instagram: "https://www.instagram.com/_pranish.manandhar/" } },
+    { name: "Anamol Rijal", type: "Executive", email: "anamol@ncit.edu.np", photo: "/media/2025/members/anmol.avif", photoVersion: 0, memberYear: 2025, teamId: "t_exec_2025", collegeYear: 1, socials: { github: "https://github.com/", linkedin: "https://www.linkedin.com/", instagram: "https://www.instagram.com/" } },
   ];
 
   for (const member of memberData) {

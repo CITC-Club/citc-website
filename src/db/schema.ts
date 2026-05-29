@@ -1,4 +1,11 @@
-import { pgTable, serial, text, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
+import {
+  integer,
+  jsonb,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const teams = pgTable("teams", {
   id: text("id").primaryKey(),
@@ -16,6 +23,8 @@ export const members = pgTable("members", {
   department: text("department"),
   email: text("email").notNull(),
   photo: text("photo"),
+  photoThumb: text("photo_thumb"),
+  photoVersion: integer("photo_version").default(0).notNull(),
   memberYear: integer("member_year").notNull(),
   teamId: text("team_id")
     .notNull()

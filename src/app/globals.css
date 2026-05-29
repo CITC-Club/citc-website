@@ -5,6 +5,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --font-playfair: var(--font-playfair);
+  --font-source-sans: var(--font-source-sans);
+
+  --color-sage: #8C9A84;
+  --color-sage-light: #E8EDE4;
+  --color-sage-dark: #6B7A63;
+  --color-clay: #DCCFC2;
+  --color-clay-light: #F2F0EB;
+  --color-terracotta: #C27B66;
+  --color-forest: #2D3A31;
+  --color-alabaster: #F9F8F4;
+  --color-stone: #E6E2DA;
 }
 
 :root {

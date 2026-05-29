@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft, Upload } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import type { Member, Team } from "@/types";
 import { createClient } from "@/utils/supabase/client";
-import type { Team, Member } from "@/types";
 
 interface Props {
   teams: Team[];
@@ -25,7 +25,11 @@ export default function MemberForm({ teams, member }: Props) {
   const [department, setDepartment] = useState(member?.department || "");
   const [email, setEmail] = useState(member?.email || "");
   const [photo, setPhoto] = useState(member?.photo || "");
-  const [memberYear, setMemberYear] = useState(member?.memberYear || new Date().getFullYear());
+  const [photoThumb, setPhotoThumb] = useState(member?.photoThumb || "");
+  const [photoVersion, setPhotoVersion] = useState(member?.photoVersion ?? 0);
+  const [memberYear, setMemberYear] = useState(
+    member?.memberYear || new Date().getFullYear(),
+  );
   const [teamId, setTeamId] = useState(member?.teamId || "");
   const [collegeYear, setCollegeYear] = useState(member?.collegeYear || 1);
   const [github, setGithub] = useState(member?.socials?.github || "");
@@ -52,27 +56,48 @@ export default function MemberForm({ teams, member }: Props) {
     setError("");
 
     try {
-      const { compressImageToAvif } = await import("@/utils/imageCompressor");
-      const { blob, fileName: compressedName } = await compressImageToAvif(file, {
-        maxWidth: 500,
-        quality: 75,
-      });
+      const { compressImageToAvif, generateThumbnail } = await import(
+        "@/utils/imageCompressor"
+      );
 
-      const uploadPath = `members/${Date.now()}-${compressedName}`;
-      const { error: uploadError } = await supabase.storage
-        .from("media")
-        .upload(uploadPath, blob, {
-          contentType: blob.type,
-        });
+      const [
+        { blob: mainBlob, fileName: mainName },
+        { blob: thumbBlob, fileName: thumbName },
+      ] = await Promise.all([
+        compressImageToAvif(file, { maxWidth: 500, quality: 75 }),
+        generateThumbnail(file, { size: 64, quality: 60 }),
+      ]);
 
-      if (uploadError) {
-        setError(uploadError.message);
+      const timestamp = Date.now();
+
+      const mainPath = `members/${timestamp}-${mainName}`;
+      const thumbPath = `members/thumbs/${timestamp}-${thumbName}`;
+
+      const [{ error: mainError }, { error: thumbError }] = await Promise.all([
+        supabase.storage.from("media").upload(mainPath, mainBlob, {
+          contentType: mainBlob.type,
+        }),
+        supabase.storage.from("media").upload(thumbPath, thumbBlob, {
+          contentType: thumbBlob.type,
+        }),
+      ]);
+
+      if (mainError || thumbError) {
+        setError(mainError?.message || thumbError?.message || "Upload failed");
         setUploading(false);
         return;
       }
 
-      const { data: urlData } = supabase.storage.from("media").getPublicUrl(uploadPath);
-      setPhoto(urlData.publicUrl);
+      const { data: mainUrl } = supabase.storage
+        .from("media")
+        .getPublicUrl(mainPath);
+      const { data: thumbUrl } = supabase.storage
+        .from("media")
+        .getPublicUrl(thumbPath);
+
+      setPhoto(mainUrl.publicUrl);
+      setPhotoThumb(thumbUrl.publicUrl);
+      setPhotoVersion((v) => v + 1);
     } catch (err: any) {
       setError(err.message || "Failed to compress or upload photo");
     } finally {
@@ -100,6 +125,8 @@ export default function MemberForm({ teams, member }: Props) {
       department: department || null,
       email,
       photo: photo || null,
+      photoThumb: photoThumb || null,
+      photoVersion,
       memberYear,
       teamId,
       collegeYear,
@@ -148,19 +175,38 @@ export default function MemberForm({ teams, member }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Full Name *</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email *</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Email *
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Type
+              </label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              >
                 <option value="Executive">Executive</option>
                 <option value="Patron">Patron</option>
                 <option value="Faculty Advisor">Faculty Advisor</option>
@@ -168,14 +214,26 @@ export default function MemberForm({ teams, member }: Props) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Title (e.g., President)</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Title (e.g., President)
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Department</label>
-              <input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Department
+              </label>
+              <input
+                type="text"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
           </div>
         </div>
@@ -187,29 +245,54 @@ export default function MemberForm({ teams, member }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Team *</label>
-              <select value={teamId} onChange={(e) => setTeamId(e.target.value)} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Team *
+              </label>
+              <select
+                value={teamId}
+                onChange={(e) => setTeamId(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              >
                 <option value="">Select team</option>
                 {filteredTeams.map((team) => (
-                  <option key={team.id} value={team.id}>{team.name}</option>
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
                 ))}
               </select>
               {filteredTeams.length === 0 && (
-                <p className="text-xs text-red-500 mt-1.5">No teams configured for year {memberYear}. Please add teams for this year first.</p>
+                <p className="text-xs text-red-500 mt-1.5">
+                  No teams configured for year {memberYear}. Please add teams
+                  for this year first.
+                </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Member Year *</label>
-              <input type="number" value={memberYear} onChange={(e) => handleYearChange(Number(e.target.value))} required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Member Year *
+              </label>
+              <input
+                type="number"
+                value={memberYear}
+                onChange={(e) => handleYearChange(Number(e.target.value))}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">College Year</label>
-              <select value={collegeYear} onChange={(e) => setCollegeYear(Number(e.target.value))}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                College Year
+              </label>
+              <select
+                value={collegeYear}
+                onChange={(e) => setCollegeYear(Number(e.target.value))}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              >
                 {[1, 2, 3, 4].map((y) => (
-                  <option key={y} value={y}>Year {y}</option>
+                  <option key={y} value={y}>
+                    Year {y}
+                  </option>
                 ))}
               </select>
             </div>
@@ -224,7 +307,11 @@ export default function MemberForm({ teams, member }: Props) {
           <div className="flex items-start gap-6">
             <div className="w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
               {photo ? (
-                <img src={photo} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={photo}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-400">
                   <Upload className="w-6 h-6" />
@@ -235,9 +322,17 @@ export default function MemberForm({ teams, member }: Props) {
               <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
                 <Upload className="w-4 h-4" />
                 {uploading ? "Uploading..." : "Upload Photo"}
-                <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} className="hidden" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
               </label>
-              <p className="text-xs text-slate-400 mt-1.5">Recommended: 400x500px, .avif or .webp</p>
+              <p className="text-xs text-slate-400 mt-1.5">
+                Recommended: 400x500px, .avif or .webp
+              </p>
             </div>
           </div>
         </div>
@@ -249,37 +344,81 @@ export default function MemberForm({ teams, member }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">GitHub Username</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                GitHub Username
+              </label>
               <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-cyan-500">
-                <span className="px-3 text-slate-400 text-sm bg-slate-50 dark:bg-slate-800 py-2.5 border-r border-slate-300 dark:border-slate-700">gh/</span>
-                <input type="text" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="username"
-                  className="flex-1 px-3 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none" />
+                <span className="px-3 text-slate-400 text-sm bg-slate-50 dark:bg-slate-800 py-2.5 border-r border-slate-300 dark:border-slate-700">
+                  gh/
+                </span>
+                <input
+                  type="text"
+                  value={github}
+                  onChange={(e) => setGithub(e.target.value)}
+                  placeholder="username"
+                  className="flex-1 px-3 py-2.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none"
+                />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">LinkedIn URL</label>
-              <input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                LinkedIn URL
+              </label>
+              <input
+                type="url"
+                value={linkedin}
+                onChange={(e) => setLinkedin(e.target.value)}
+                placeholder="https://linkedin.com/in/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Instagram URL</label>
-              <input type="url" value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="https://instagram.com/..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Instagram URL
+              </label>
+              <input
+                type="url"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="https://instagram.com/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Facebook URL</label>
-              <input type="url" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Facebook URL
+              </label>
+              <input
+                type="url"
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+                placeholder="https://facebook.com/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Twitter / X URL</label>
-              <input type="url" value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="https://x.com/..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Twitter / X URL
+              </label>
+              <input
+                type="url"
+                value={twitter}
+                onChange={(e) => setTwitter(e.target.value)}
+                placeholder="https://x.com/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Personal Website URL</label>
-              <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Personal Website URL
+              </label>
+              <input
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
           </div>
         </div>
