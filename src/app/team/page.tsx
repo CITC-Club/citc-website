@@ -6,7 +6,10 @@ import TeamClient from "./TeamClient";
 export const dynamic = "force-dynamic";
 
 export default async function TeamPage() {
-  const allTeams = await db.select().from(teams).orderBy(teams.year);
+  const allTeams = await db
+    .select()
+    .from(teams)
+    .orderBy(teams.year);
   const allMembers = await db
     .select()
     .from(members)

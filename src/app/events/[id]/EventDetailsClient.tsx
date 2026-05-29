@@ -4,6 +4,7 @@ import { Calendar, MapPin, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { resolveMediaUrl } from "@/lib/media";
 import type { Event } from "@/types";
 
 interface EventDetailsClientProps {
@@ -14,34 +15,34 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
   const isRunning = event.status === "running";
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-white dark:bg-[#0f172a] transition-colors duration-300">
+    <div className="min-h-screen pt-24 pb-20 bg-white dark:bg-citc-navy transition-colors duration-300">
       <div className="h-10" />
       <div className="relative h-[40vh] md:h-[50vh] w-full overflow-hidden">
-        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0f172a] to-transparent" />
+        <img src={resolveMediaUrl(event.image)} alt={event.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-citc-navy to-transparent" />
         <div className="absolute inset-0 bg-black/30 dark:bg-black/50" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 container mx-auto">
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 site-container">
           <Link href="/events" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to Events
           </Link>
           <div className="flex flex-wrap gap-3 mb-4">
             {event.tags?.map((tag) => (
-              <span key={tag} className="text-xs font-bold px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-100 backdrop-blur-md border border-cyan-500/30">
+              <span key={tag} className="text-xs font-bold px-3 py-1 rounded-full bg-citc-blue/30 text-white backdrop-blur-md border border-citc-blue/40">
                 {tag}
               </span>
             ))}
-            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${isRunning ? "bg-red-500 text-white animate-pulse" : "bg-slate-700 text-slate-200"}`}>
+            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${isRunning ? "bg-citc-blue text-white" : "bg-slate-700 text-slate-200"}`}>
               {event.status}
             </span>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg text-balance max-w-5xl">
             {event.title}
           </h1>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-6 py-12">
+      <div className="site-container py-12">
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-12">
           <div className="order-1 lg:order-2 space-y-6">
             <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-white/10 sticky top-24 shadow-sm dark:shadow-none">
@@ -49,7 +50,7 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
 
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                  <div className="p-2 rounded-lg bg-citc-blue-muted dark:bg-citc-blue/20 text-citc-blue">
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
@@ -58,7 +59,7 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                  <div className="p-2 rounded-lg bg-citc-blue-muted dark:bg-citc-blue/20 text-citc-blue">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
@@ -67,7 +68,7 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                  <div className="p-2 rounded-lg bg-citc-blue-muted dark:bg-citc-blue/20 text-citc-blue">
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
@@ -83,7 +84,7 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
                     href={event.registrationLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-600 dark:bg-cyan-500 px-6 py-4 text-white font-bold transition-all hover:bg-cyan-700 dark:hover:bg-cyan-400 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-1"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-citc-blue px-6 py-4 text-white font-bold transition-colors hover:bg-citc-blue/90"
                   >
                     Register Now <ArrowRight className="w-5 h-5" />
                   </a>
@@ -111,7 +112,7 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
                   {event.gallery.map((img, index) => (
                     <div key={index} className="relative aspect-video rounded-xl overflow-hidden group">
                       <img
-                        src={img}
+                        src={resolveMediaUrl(img)}
                         alt={`Gallery ${index + 1}`}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />

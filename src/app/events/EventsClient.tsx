@@ -19,7 +19,9 @@ interface EventsClientProps {
 
 export default function EventsClient({ events }: EventsClientProps) {
   const [activeYear, setActiveYear] = useState<number | null>(null);
-  const years = [...new Set(events.map((e) => e.academicYear || 2025))].sort((a, b) => b - a);
+  const years = [...new Set(events.map((e) => e.academicYear || 2025))].sort(
+    (a, b) => b - a,
+  );
 
   const filteredEvents = activeYear
     ? events.filter((e) => (e.academicYear || 2025) === activeYear)
@@ -32,30 +34,41 @@ export default function EventsClient({ events }: EventsClientProps) {
   const activeEvents = [...runningEvents, ...upcomingEvents];
 
   return (
-    <div className="min-h-screen pt-40 pb-20 bg-white dark:bg-[#0f172a] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] transition-colors duration-300">
-      <div className="container mx-auto px-4 md:px-6">
+    <div className="min-h-screen pt-40 pb-20 bg-white dark:bg-citc-navy transition-colors duration-300">
+      <div className="site-container">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-cyan-500 to-cyan-400 dark:from-white dark:via-cyan-100 dark:to-cyan-200 mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-citc-navy dark:text-white mb-6">
             Events &amp; Workshops
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400">
-            Join us in our upcoming events or take a look at what we&apos;ve accomplished so far.
+            Join us in our upcoming events or take a look at what we&apos;ve
+            accomplished so far.
           </p>
         </div>
 
         {years.length > 1 && (
-          <div className="flex justify-center gap-3 mb-12">
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
             <button
+              type="button"
               onClick={() => setActiveYear(null)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!activeYear ? "bg-cyan-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                !activeYear
+                  ? "bg-citc-blue text-white"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+              }`}
             >
               All Years
             </button>
             {years.map((year) => (
               <button
                 key={year}
+                type="button"
                 onClick={() => setActiveYear(year)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeYear === year ? "bg-cyan-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                  activeYear === year
+                    ? "bg-citc-blue text-white"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                }`}
               >
                 {year}
               </button>
@@ -65,12 +78,13 @@ export default function EventsClient({ events }: EventsClientProps) {
 
         {activeEvents.length > 0 ? (
           <section className="mb-20">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
-              <h2 className="flex items-center gap-2 text-2xl md:text-3xl font-bold text-slate-900 dark:text-white text-center min-w-max">
-                <Calendar className="w-8 h-8 text-cyan-500" /> Running &amp; Upcoming
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+              <div className="hidden sm:block h-px flex-1 min-w-[2rem] bg-slate-200 dark:bg-white/10" />
+              <h2 className="flex items-center gap-2 text-xl sm:text-2xl md:text-3xl font-bold text-citc-navy dark:text-white text-center">
+                <Calendar className="w-7 h-7 sm:w-8 sm:h-8 text-citc-blue shrink-0" />
+                Running &amp; Upcoming
               </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+              <div className="hidden sm:block h-px flex-1 min-w-[2rem] bg-slate-200 dark:bg-white/10" />
             </div>
             <motion.div
               variants={gridContainerVariants}
@@ -87,19 +101,22 @@ export default function EventsClient({ events }: EventsClientProps) {
         ) : (
           !pastEvents.length && (
             <div className="text-center py-20">
-              <p className="text-slate-500 dark:text-slate-400">No events found for this academic year.</p>
+              <p className="text-slate-500 dark:text-slate-400">
+                No events found for this academic year.
+              </p>
             </div>
           )
         )}
 
         {pastEvents.length > 0 && (
           <section>
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-500/20 to-transparent" />
-              <h2 className="flex items-center gap-2 text-2xl md:text-3xl font-bold text-slate-600 dark:text-slate-400 text-center min-w-max">
-                <History className="w-8 h-8" /> Past Events
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+              <div className="hidden sm:block h-px flex-1 min-w-[2rem] bg-slate-200 dark:bg-white/10" />
+              <h2 className="flex items-center gap-2 text-xl sm:text-2xl md:text-3xl font-bold text-slate-600 dark:text-slate-400 text-center">
+                <History className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
+                Past Events
               </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-500/20 to-transparent" />
+              <div className="hidden sm:block h-px flex-1 min-w-[2rem] bg-slate-200 dark:bg-white/10" />
             </div>
             <motion.div
               variants={gridContainerVariants}

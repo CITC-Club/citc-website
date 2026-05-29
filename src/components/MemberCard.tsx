@@ -1,9 +1,10 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Mail, User, Globe } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
 import { motion } from "framer-motion";
+import { getMemberPhotoUrl } from "@/lib/media";
 import type { Member } from "@/types";
 
 interface MemberCardProps {
@@ -21,28 +22,46 @@ const cardItemVariants = {
 };
 
 const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [imageState, setImageState] = useState<"loading" | "ready" | "error">(
+    "loading",
+  );
+
+  const photoUrl = getMemberPhotoUrl(member);
+
+  useEffect(() => {
+    setImageState(photoUrl ? "loading" : "error");
+    const img = imgRef.current;
+    if (img?.complete && img.naturalWidth > 0) {
+      setImageState("ready");
+    }
+  }, [photoUrl]);
+
+  const showPhoto = photoUrl && imageState !== "error";
 
   return (
     <motion.div
+      id={`member-${member.id}`}
       variants={cardItemVariants}
-      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 scroll-mt-32"
     >
-      <div className={`relative aspect-[3/4] overflow-hidden ${!isLoaded && member.photo ? "animate-pulse bg-cyan-500/10" : "bg-slate-200 dark:bg-slate-700"}`}>
-        {member.photo ? (
+      <div className="relative aspect-[3/4] overflow-hidden bg-slate-200 dark:bg-slate-700">
+        {showPhoto ? (
           <>
-            {!isLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
-                <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
+            {imageState === "loading" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800 z-10">
+                <div className="w-12 h-12 border-4 border-citc-blue/30 border-t-citc-blue rounded-full animate-spin" />
               </div>
             )}
             <img
-              src={member.photo}
+              ref={imgRef}
+              src={photoUrl}
               alt={member.name}
-              onLoad={() => setIsLoaded(true)}
+              onLoad={() => setImageState("ready")}
+              onError={() => setImageState("error")}
               loading={priority ? "eager" : "lazy"}
               fetchPriority={priority ? "high" : "auto"}
-              className={`w-full h-full object-cover object-center transition-all duration-700 group-hover:scale-110 ${isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
             />
           </>
         ) : (
@@ -51,14 +70,14 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500 pointer-events-none" />
 
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 z-20">
           <div className="flex items-center gap-3">
             {member.email && (
               <a
                 href={`mailto:${member.email}`}
-                className="p-3 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white transition-all duration-300 hover:scale-125 shadow-lg"
+                className="p-3 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 hover:bg-citc-blue hover:text-white transition-all duration-300 hover:scale-125 shadow-lg"
                 title="Email"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -116,12 +135,15 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform transition-transform duration-500">
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform transition-transform duration-500 pointer-events-none z-10">
           <h3 className="text-xl md:text-2xl font-bold text-white mb-1 drop-shadow-lg">
             {member.name}
           </h3>
-          <p className="text-sm md:text-base text-cyan-300 font-medium drop-shadow-md">
-            {member.title || (member.department ? member.department : `${member.collegeYear ? `Year ${member.collegeYear}` : ""} ${member.type}`)}
+          <p className="text-sm md:text-base text-citc-blue-muted font-medium drop-shadow-md">
+            {member.title ||
+              (member.department
+                ? member.department
+                : `${member.collegeYear ? `Year ${member.collegeYear}` : ""} ${member.type}`.trim())}
           </p>
         </div>
       </div>

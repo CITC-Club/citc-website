@@ -63,7 +63,7 @@ export default function AIRegistrationPage() {
 
           {!isExpired && (
             <div className="py-4">
-              <Countdown targetDate={TARGET_DATE} description="Starts on 26 Jan 2026 — Thursday · 10:00 NPT" />
+              <Countdown targetDate={TARGET_DATE} description="Starts on 26 Jan 2026, Thursday · 10:00 NPT" />
             </div>
           )}
 

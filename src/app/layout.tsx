@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import {
   Geist,
   Geist_Mono,
@@ -34,11 +35,11 @@ const sourceSans = Source_Sans_3({
 export const metadata: Metadata = {
   title: "CITC | Tech Community at NCIT",
   description:
-    "Join CITC (Computer Engineering Innovation & Tech Club) - the premier tech community at Nepal College of Information Technology. Discover workshops, events, hackathons, and networking opportunities for aspiring tech enthusiasts.",
+    "Join CITC (Computer Engineering Innovation & Tech Club), the tech community at Nepal College of Information Technology. Discover workshops, events, hackathons, and networking opportunities for aspiring tech enthusiasts.",
   openGraph: {
     title: "CITC | Tech Community at NCIT",
     description:
-      "Join CITC (Computer Engineering Innovation & Tech Club) - the premier tech community at Nepal College of Information Technology.",
+      "Join CITC (Computer Engineering Innovation & Tech Club) at Nepal College of Information Technology.",
     siteName: "CITC",
   },
 };
@@ -59,22 +60,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
           rel="stylesheet"
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem("theme");
-                  if (theme === "dark") {
-                    document.documentElement.classList.add("dark");
-                  }
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
       </head>
-      <body className="min-h-full flex flex-col bg-white dark:bg-[#020617] transition-colors duration-300">
+      <body className="min-h-full flex flex-col w-full min-w-0 overflow-x-clip bg-white dark:bg-citc-navy transition-colors duration-300">
+        <Script src="/scripts/theme-init.js" strategy="beforeInteractive" />
         <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>

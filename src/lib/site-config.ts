@@ -3,7 +3,8 @@ export const SITE_CONFIG = {
   fullName: "Computer Engineering Innovation & Tech Club (CITC)",
   url: "https://citc.ncit.edu.np",
   description:
-    "Computer Engineering Innovation & Tech Club at Nepal College of Information Technology - Innovate. Connect. Transform",
+    "Computer Engineering Innovation & Tech Club at Nepal College of Information Technology. Innovate. Connect. Transform.",
+  tagline: "Innovate. Connect. Transform.",
   logo: "/favicon/favicon.ico",
   email: "citc@ncit.edu.np",
   foundingDate: "2025",

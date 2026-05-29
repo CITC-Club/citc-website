@@ -23,7 +23,7 @@ export default function JoinClubPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0f172a] transition-colors duration-300 flex items-center justify-center pt-24 px-4">
+    <main className="min-h-screen bg-white dark:bg-citc-navy transition-colors duration-300 flex items-center justify-center pt-24 px-4 w-full min-w-0 overflow-x-clip">
       <div className="w-full max-w-2xl">
         <iframe
           data-tally-src="https://tally.so/embed/yP4Dep?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"

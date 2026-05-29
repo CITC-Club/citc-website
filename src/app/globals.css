@@ -21,15 +21,20 @@
   --color-forest: #2D3A31;
   --color-alabaster: #F9F8F4;
   --color-stone: #E6E2DA;
+
+  /* CITC logo brand */
+  --color-citc-blue: #0052CC;
+  --color-citc-navy: #050A18;
+  --color-citc-blue-muted: #E8F0FC;
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: #050A18;
 }
 
 .dark {
-  --background: #020617;
+  --background: #050A18;
   --foreground: #e2e8f0;
 
   --color-sage: #7A8B72;
@@ -45,23 +50,41 @@
 
 /* ─── Public page styles ─── */
 
+html {
+  overflow-x: clip;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Outfit', sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Centered page width on large / ultrawide screens */
+.site-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .site-container {
+    padding-inline: 1.5rem;
+  }
+}
+
 ::selection {
-  background-color: rgba(6, 182, 212, 0.3);
-  color: #155e75;
+  background-color: rgba(0, 82, 204, 0.25);
+  color: #050A18;
 }
 
 .dark ::selection {
-  background-color: rgba(6, 182, 212, 0.3);
-  color: #cffafe;
+  background-color: rgba(0, 82, 204, 0.4);
+  color: #E8F0FC;
 }
 
 .bg-grid {
@@ -78,34 +101,19 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
+.surface-card {
+  background: #ffffff;
+  border: 1px solid rgba(5, 10, 24, 0.08);
+  box-shadow: 0 4px 24px rgba(5, 10, 24, 0.06);
 }
 
-.dark .glass-card {
-  background: rgba(15, 23, 42, 0.6);
+.dark .surface-card {
+  background: rgba(5, 10, 24, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.glass-card:hover {
-  border-color: rgba(6, 182, 212, 0.3);
-  transform: translateY(-4px);
-}
-
-.text-gradient {
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  background-image: linear-gradient(to right, #0891b2, #06b6d4, #2563eb);
-}
-
-.dark .text-gradient {
-  background-image: linear-gradient(to right, #fff, #cffafe, #22d3ee);
+.text-brand {
+  color: var(--color-citc-blue);
 }
 
 .markdown-content {
@@ -119,7 +127,7 @@ body {
   margin-top: 2rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+  border-bottom: 2px solid rgba(0, 82, 204, 0.25);
   color: var(--foreground);
 }
 
@@ -167,7 +175,7 @@ body {
   content: "→";
   position: absolute;
   left: 0;
-  color: #06b6d4;
+  color: #0052CC;
   font-weight: 700;
 }
 
@@ -181,7 +189,7 @@ body {
 }
 
 .markdown-content blockquote {
-  border-left: 4px solid #06b6d4;
+  border-left: 4px solid #0052CC;
   padding-left: 1rem;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -200,12 +208,12 @@ body {
   border-radius: 0.25rem;
   font-size: 0.875rem;
   font-family: monospace;
-  color: #0891b2;
+  color: #0052CC;
 }
 
 .dark .markdown-content code {
   background: #1e293b;
-  color: #22d3ee;
+  color: #7eb3ff;
 }
 
 .markdown-content pre {
@@ -221,7 +229,7 @@ body {
 }
 
 .markdown-content a {
-  color: #0891b2;
+  color: #0052CC;
   text-decoration: underline;
   transition: color 0.2s;
 }
@@ -231,9 +239,9 @@ body {
 }
 
 .dark .markdown-content a {
-  color: #22d3ee;
+  color: #7eb3ff;
 }
 
 .dark .markdown-content a:hover {
-  color: #67e8f9;
+  color: #a8c9ff;
 }

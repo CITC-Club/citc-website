@@ -52,9 +52,9 @@ export default function Navbar() {
           !isVisible ? "-translate-y-full" : "translate-y-0"
         }`}
       >
-        <div className="container mx-auto px-4 md:px-6">
+        <div className="site-container">
           <div
-            className={`mx-auto max-w-7xl relative transition-[border-radius,background-color,box-shadow,padding] duration-200 border border-black/[0.03] dark:border-white/[0.03] ${isMobileMenuOpen ? "rounded-[2.5rem]" : "rounded-full"} ${isScrolled || isMobileMenuOpen ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl px-6 py-3" : "bg-white/30 dark:bg-slate-950/20 backdrop-blur-md px-4 py-2 sm:px-6"}`}
+            className={`w-full relative transition-[border-radius,background-color,box-shadow,padding] duration-200 border border-black/[0.03] dark:border-white/[0.03] ${isMobileMenuOpen ? "rounded-[2.5rem]" : "rounded-full"} ${isScrolled || isMobileMenuOpen ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl px-6 py-3" : "bg-white/30 dark:bg-slate-950/20 backdrop-blur-md px-4 py-2 sm:px-6"}`}
           >
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 group shrink-0">
@@ -74,9 +74,9 @@ export default function Navbar() {
                       className="relative px-5 py-2 text-sm font-medium rounded-full transition-colors duration-200"
                     >
                       {active && (
-                        <span className="absolute inset-0 bg-rose-50 dark:bg-rose-500/10 rounded-full" />
+                        <span className="absolute inset-0 bg-citc-blue-muted dark:bg-citc-blue/20 rounded-full" />
                       )}
-                      <span className={`relative z-10 transition-colors duration-200 ${active ? "text-rose-600 dark:text-rose-400 font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>
+                      <span className={`relative z-10 transition-colors duration-200 ${active ? "text-citc-blue font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-citc-navy dark:hover:text-white"}`}>
                         {link.name}
                       </span>
                     </Link>
@@ -88,7 +88,7 @@ export default function Navbar() {
                 <ThemeToggle />
                 <Link
                   href="/join"
-                  className="group relative px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-full overflow-hidden hover:bg-slate-800 dark:hover:bg-cyan-50 transition-colors"
+                  className="px-6 py-2.5 bg-citc-blue text-white font-semibold rounded-full hover:bg-citc-blue/90 transition-colors"
                 >
                   <span className="relative flex items-center gap-2">
                     Join Club <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -118,15 +118,15 @@ export default function Navbar() {
                       key={link.name}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`text-xl font-bold transition-colors ${getIsActive(link.href) ? "text-rose-600 dark:text-rose-500" : "text-slate-700 dark:text-slate-300"}`}
+                      className={`text-xl font-bold transition-colors ${getIsActive(link.href) ? "text-citc-blue" : "text-slate-700 dark:text-slate-300"}`}
                     >
                       {link.name}
                     </Link>
                   ))}
-                  <div className="pt-8 border-t border-rose-100 dark:border-rose-900/10">
+                  <div className="pt-8 border-t border-slate-200 dark:border-white/10">
                     <Link
                       href="/join"
-                      className="flex items-center justify-center px-8 py-4 bg-rose-600 text-white font-bold rounded-2xl shadow-xl shadow-rose-500/20 w-fit min-w-[200px]"
+                      className="flex items-center justify-center px-8 py-4 bg-citc-blue text-white font-bold rounded-xl w-fit min-w-[200px] hover:bg-citc-blue/90 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Join Club Now

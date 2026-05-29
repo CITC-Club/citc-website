@@ -1,7 +1,8 @@
-import { Mail, MapPin, ArrowRight } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { Github, Linkedin, Facebook, Instagram } from "./Icons";
 import Link from "next/link";
 import { SITE_CONFIG } from "@/lib/site-config";
+import { BRAND } from "@/lib/brand";
 
 const socialIcons: Record<string, React.ElementType> = {
   github: Github,
@@ -19,29 +20,34 @@ const navLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#020617] pt-24 pb-12 overflow-hidden transition-colors duration-300">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] dark:opacity-5 pointer-events-none" />
-      <div className="absolute -top-24 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-20">
-          <div className="space-y-8">
-            <div className="group inline-block">
-              <div className="flex items-center gap-3">
-                <div className="relative w-40 h-40">
-                  <img src="/CITCLOGOW.webp" alt="CITC" width="480" height="209" className="w-full h-full object-contain dark:hidden" />
-                  <img src="/CITC_LOGOD.webp" alt="CITC" width="480" height="209" className="w-full h-full object-contain hidden dark:block" />
-                </div>
-              </div>
-              <p className="text-[18px] font-mono font-bold tracking-[0.2em] text-cyan-600 dark:text-rose-500 uppercase">
-                EST. 2025
-              </p>
-            </div>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm">
-              Fostering a culture of innovation and excellence in computer engineering at NCIT. Join us to transform ideas into reality.
+    <footer className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-citc-navy pt-12 pb-8 sm:pt-16 sm:pb-10">
+      <div className="site-container">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-12">
+          {/* Brand */}
+          <div className="space-y-5 sm:col-span-2 lg:col-span-5">
+            <Link href="/" className="inline-block">
+              <img
+                src="/CITCLOGOW.webp"
+                alt={SITE_CONFIG.name}
+                width={480}
+                height={209}
+                className="h-10 w-auto sm:h-12 dark:hidden"
+              />
+              <img
+                src="/CITC_LOGOD.webp"
+                alt={SITE_CONFIG.name}
+                width={480}
+                height={209}
+                className="h-10 w-auto sm:h-12 hidden dark:block"
+              />
+            </Link>
+            <p className="text-sm font-semibold text-citc-blue">
+              {BRAND.tagline}
             </p>
-            <div className="flex items-center gap-3">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">
+              {SITE_CONFIG.description}
+            </p>
+            <div className="flex flex-wrap items-center gap-2.5">
               {Object.entries(SITE_CONFIG.social).map(([platform, url]) => {
                 const Icon = socialIcons[platform];
                 if (!Icon) return null;
@@ -51,7 +57,7 @@ export default function Footer() {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white dark:hover:bg-rose-600 transition-all duration-300 border border-slate-200 dark:border-white/5 shadow-sm"
+                    className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-citc-blue hover:text-white transition-colors border border-slate-200 dark:border-white/10"
                     aria-label={platform}
                   >
                     <Icon size={18} />
@@ -61,18 +67,18 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-slate-900 dark:text-white mb-8 border-l-2 border-rose-500 pl-4">
+          {/* Navigation */}
+          <div className="lg:col-span-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-citc-navy dark:text-white mb-4">
               Navigation
             </h3>
-            <ul className="space-y-4">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-1">
               {navLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.path}
-                    className="text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-all flex items-center gap-2 group w-fit"
+                    className="text-sm sm:text-base text-slate-600 dark:text-slate-400 hover:text-citc-blue transition-colors flex items-center min-h-11 sm:min-h-0"
                   >
-                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                     {link.name}
                   </Link>
                 </li>
@@ -80,43 +86,51 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-slate-900 dark:text-white mb-8 border-l-2 border-rose-500 pl-4">
+          {/* Contact */}
+          <div className="lg:col-span-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-citc-navy dark:text-white mb-4">
               Get in Touch
             </h3>
-            <ul className="space-y-6">
-              <li className="flex items-start gap-4 text-slate-400 group">
-                <div className="w-11 h-11 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/5 flex items-center justify-center shrink-0 group-hover:bg-cyan-500/20 transition-colors border border-cyan-500/10 dark:border-cyan-500/20">
-                  <Mail className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-citc-blue-muted dark:bg-citc-blue/20 flex items-center justify-center shrink-0 border border-citc-blue/10">
+                  <Mail className="w-4 h-4 text-citc-blue" />
                 </div>
-                <div className="space-y-1">
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Email Address</span>
+                <div className="min-w-0 space-y-0.5">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Email
+                  </span>
                   <a
                     href={`mailto:${SITE_CONFIG.email}`}
-                    className="text-slate-700 dark:text-slate-200 hover:text-rose-500 dark:hover:text-rose-400 transition-colors font-medium"
+                    className="text-sm sm:text-base text-slate-700 dark:text-slate-200 hover:text-citc-blue transition-colors font-medium break-all"
                   >
                     {SITE_CONFIG.email}
                   </a>
                 </div>
               </li>
-              <li className="flex items-start gap-4 text-slate-400 group">
-                <div className="w-11 h-11 rounded-xl bg-orange-500/10 dark:bg-orange-500/5 flex items-center justify-center shrink-0 group-hover:bg-orange-500/20 transition-colors border border-orange-500/10 dark:border-orange-500/20">
-                  <MapPin className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <li className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-citc-blue-muted dark:bg-citc-blue/20 flex items-center justify-center shrink-0 border border-citc-blue/10">
+                  <MapPin className="w-4 h-4 text-citc-blue" />
                 </div>
-                <div className="space-y-1">
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Our Location</span>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium leading-tight">
-                    NCIT, Balkumari,<br />Lalitpur, Nepal
+                <div className="space-y-0.5">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Location
                   </span>
+                  <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 font-medium leading-snug">
+                    NCIT, Balkumari, Lalitpur, Nepal
+                  </p>
                 </div>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="pt-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-          <p className="text-slate-500 dark:text-slate-500 text-xs font-medium">
-            &copy; {new Date().getFullYear()} CITC. Crafted for Innovation.
+        <div className="mt-10 pt-6 border-t border-slate-200 dark:border-white/5 text-center sm:text-left">
+          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            <span className="block sm:inline">
+              &copy; {new Date().getFullYear()} {SITE_CONFIG.name}.
+            </span>{" "}
+            <span className="block sm:inline mt-1 sm:mt-0">{BRAND.tagline}</span>
           </p>
         </div>
       </div>
