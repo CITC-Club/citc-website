@@ -97,7 +97,7 @@ async function seed() {
     },
     {
       id: "003",
-      title: "IoT Workshop: IoT Hardware Forge",
+      title: "IoT Workshop",
       date: "2026-02-02",
       time: "6 Days (2 Hours Daily)",
       location: "NCIT Room:125",
@@ -109,7 +109,25 @@ async function seed() {
   ];
 
   for (const event of eventData) {
-    await db.insert(events).values(event).onConflictDoNothing({ target: events.id });
+    await db
+      .insert(events)
+      .values(event)
+      .onConflictDoUpdate({
+        target: events.id,
+        set: {
+          title: event.title,
+          date: event.date,
+          time: event.time,
+          location: event.location,
+          description: event.description,
+          image: event.image,
+          status: event.status,
+          registrationLink: event.registrationLink,
+          tags: event.tags,
+          gallery: event.gallery,
+          updatedAt: new Date(),
+        },
+      });
   }
   console.log("✅ Events seeded");
   console.log("🎉 Seeding complete!");

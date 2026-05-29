@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { resolveMediaUrl } from "@/lib/media";
+import MediaImage from "@/components/MediaImage";
 import type { Event } from "@/types";
 
 interface EventCardProps {
@@ -17,13 +17,10 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-citc-navy border border-slate-200 dark:border-white/10 shadow-sm transition-colors hover:border-citc-blue/30">
       <Link href={`/events/${event.id}`} className="block h-full">
         <div className="relative h-48 w-full overflow-hidden">
-          <img
-            src={resolveMediaUrl(event.image)}
+          <MediaImage
+            src={event.image}
             alt={event.title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            onError={(e) => {
-              e.currentTarget.src = "/media/og-team.avif";
-            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-citc-navy/80 to-transparent" />
 
