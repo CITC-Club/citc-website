@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { members } from "@/db/schema";
 import { createClient } from "@/utils/supabase/server";
 import AdminShell from "./AdminShell";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 export default async function AdminLayout({
   children,
@@ -35,7 +36,7 @@ export default async function AdminLayout({
       adminPhoto={adminMember?.photoThumb ?? null}
       adminPhotoVersion={adminMember?.photoVersion ?? 0}
     >
-      {children}
+      <QueryProvider>{children}</QueryProvider>
     </AdminShell>
   );
 }

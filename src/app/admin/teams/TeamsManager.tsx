@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,7 @@ const TEAM_TYPES = [
 
 export default function TeamsManager({ teams, countMap, years }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [newYear, setNewYear] = useState(new Date().getFullYear() + 1);
   const [newTeamId, setNewTeamId] = useState("t_exec");
@@ -33,6 +35,43 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
     setNewTeamName(t?.label || id);
   };
 
+  const createMutation = useMutation({
+    mutationFn: async (payload: { id: string; name: string; year: number }) => {
+      const res = await fetch("/api/teams", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to create");
+      }
+    },
+    onSuccess: () => {
+      setShowForm(false);
+      setError("");
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      router.refresh();
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (teamId: string) => {
+      const res = await fetch(`/api/teams/${teamId}/delete`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      router.refresh();
+    },
+  });
+
   const handleCreateTeam = async () => {
     const slug = `${newTeamId}_${newYear}`;
     const existing = teams.find((t) => t.id === slug);
@@ -40,22 +79,12 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
       setError(`Team "${newTeamName} (${newYear})" already exists`);
       return;
     }
+    createMutation.mutate({ id: slug, name: newTeamName, year: newYear });
+  };
 
-    const res = await fetch("/api/teams", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: slug, name: newTeamName, year: newYear }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || "Failed to create");
-      return;
-    }
-
-    setShowForm(false);
-    setError("");
-    router.refresh();
+  const handleDeleteTeam = async (teamId: string, e: React.FormEvent) => {
+    e.preventDefault();
+    deleteMutation.mutate(teamId);
   };
 
   return (
@@ -98,8 +127,14 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
                     >
                       View Members
                     </Link>
-                    <form action={`/api/teams/${team.id}/delete`} method="POST">
-                      <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                    <form
+                      onSubmit={(e) => handleDeleteTeam(team.id, e)}
+                    >
+                      <button
+                        type="submit"
+                        disabled={deleteMutation.isPending}
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </form>
@@ -155,9 +190,10 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
               <div className="flex items-end gap-2">
                 <button
                   onClick={handleCreateTeam}
-                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                  disabled={createMutation.isPending}
+                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
-                  Create
+                  {createMutation.isPending ? "Creating..." : "Create"}
                 </button>
                 <button
                   onClick={() => {

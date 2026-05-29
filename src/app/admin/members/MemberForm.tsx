@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,8 +15,8 @@ interface Props {
 
 export default function MemberForm({ teams, member }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const supabase = createClient();
-  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -105,9 +106,34 @@ export default function MemberForm({ teams, member }: Props) {
     }
   };
 
+  const saveMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const url = member ? `/api/members/${member.id}` : "/api/members";
+      const method = member ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-members"] });
+      router.push("/admin/members");
+      router.refresh();
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
     const cleanSocials: any = {};
@@ -133,23 +159,7 @@ export default function MemberForm({ teams, member }: Props) {
       socials: Object.keys(cleanSocials).length > 0 ? cleanSocials : null,
     };
 
-    const url = member ? `/api/members/${member.id}` : "/api/members";
-    const method = member ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || "Failed to save");
-      setLoading(false);
-      return;
-    }
-
-    router.push("/admin/members");
-    router.refresh();
+    saveMutation.mutate(payload);
   };
 
   return (
@@ -432,10 +442,10 @@ export default function MemberForm({ teams, member }: Props) {
         <div className="flex items-center gap-4">
           <button
             type="submit"
-            disabled={loading}
+            disabled={saveMutation.isPending}
             className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {loading ? "Saving..." : member ? "Update Member" : "Create Member"}
+            {saveMutation.isPending ? "Saving..." : member ? "Update Member" : "Create Member"}
           </button>
           <Link
             href="/admin/members"
