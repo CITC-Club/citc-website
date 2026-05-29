@@ -23,7 +23,7 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 z-40 h-screen bg-white border-r border-stone overflow-hidden transition-all duration-300 ease-in-out ${
+      className={`fixed left-0 top-0 z-40 h-screen bg-white dark:bg-clay-light border-r border-stone overflow-hidden transition-all duration-300 ease-in-out ${
         collapsed
           ? "-translate-x-full md:translate-x-0 md:w-16"
           : "translate-x-0 md:w-64"

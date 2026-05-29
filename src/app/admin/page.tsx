@@ -62,7 +62,7 @@ export default async function AdminDashboard() {
           return (
             <div
               key={card.label}
-              className="group relative bg-white rounded-2xl border border-stone/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] cursor-default"
+              className="group relative bg-white dark:bg-clay-light rounded-2xl border border-stone/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] cursor-default"
             >
               <div className="flex items-start justify-between">
                 <div className="space-y-1.5">
@@ -89,7 +89,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-white rounded-2xl border border-stone/60 shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md">
+        <div className="bg-white dark:bg-clay-light rounded-2xl border border-stone/60 shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md">
           <div className="px-5 md:px-6 py-4 border-b border-stone/60 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-forest uppercase tracking-wider flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-sage" strokeWidth={1.5} />
@@ -152,7 +152,7 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-stone/60 shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md">
+        <div className="bg-white dark:bg-clay-light rounded-2xl border border-stone/60 shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md">
           <div className="px-5 md:px-6 py-4 border-b border-stone/60">
             <h2 className="text-xs font-semibold text-forest uppercase tracking-wider flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-sage" strokeWidth={1.5} />
