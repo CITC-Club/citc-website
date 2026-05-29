@@ -44,7 +44,11 @@ const tiles = [
 
 export default function HomeAbout() {
   return (
-    <section className="relative overflow-hidden border-t border-slate-200 bg-white text-citc-navy dark:border-white/10 dark:bg-citc-navy dark:text-white">
+    <section className="relative -mt-24 overflow-hidden bg-white pt-6 text-citc-navy sm:-mt-32 sm:pt-10 dark:bg-citc-navy dark:text-white">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-24 bg-gradient-to-b from-white to-transparent sm:h-32 dark:from-citc-navy"
+        aria-hidden
+      />
       <div
         className="pointer-events-none absolute inset-0 opacity-60 dark:opacity-35"
         aria-hidden

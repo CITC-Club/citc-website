@@ -28,6 +28,10 @@ export default function Hero() {
         className="absolute -bottom-40 left-1/2 h-[min(80vw,600px)] w-[min(80vw,600px)] -translate-x-1/2 rounded-full bg-citc-blue/15 blur-3xl dark:bg-citc-blue/25"
         aria-hidden
       />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-b from-transparent via-white/70 to-white sm:h-40 sm:via-white/80 dark:via-citc-navy/70 dark:to-citc-navy"
+        aria-hidden
+      />
 
       <div className="relative z-10 flex w-full justify-center site-container py-28 md:py-36">
         <div className="mx-auto w-full max-w-xl text-center sm:max-w-2xl lg:max-w-3xl">
