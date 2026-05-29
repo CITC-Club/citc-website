@@ -36,18 +36,35 @@ export default function MemberForm({ teams, member }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const fileName = `members/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
-    const { error: uploadError } = await supabase.storage
-      .from("media")
-      .upload(fileName, file);
-    if (uploadError) {
-      setError(uploadError.message);
+    setError("");
+
+    try {
+      const { compressImageToAvif } = await import("@/utils/imageCompressor");
+      const { blob, fileName: compressedName } = await compressImageToAvif(file, {
+        maxWidth: 500,
+        quality: 75,
+      });
+
+      const uploadPath = `members/${Date.now()}-${compressedName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("media")
+        .upload(uploadPath, blob, {
+          contentType: blob.type,
+        });
+
+      if (uploadError) {
+        setError(uploadError.message);
+        setUploading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage.from("media").getPublicUrl(uploadPath);
+      setPhoto(urlData.publicUrl);
+    } catch (err: any) {
+      setError(err.message || "Failed to compress or upload photo");
+    } finally {
       setUploading(false);
-      return;
     }
-    const { data: urlData } = supabase.storage.from("media").getPublicUrl(fileName);
-    setPhoto(urlData.publicUrl);
-    setUploading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
