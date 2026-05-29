@@ -59,6 +59,20 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
           rel="stylesheet"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem("theme");
+                  if (theme === "dark") {
+                    document.documentElement.classList.add("dark");
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-[#020617] transition-colors duration-300">
         <ConditionalLayout>{children}</ConditionalLayout>

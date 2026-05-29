@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import Countdown from "@/components/Countdown";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface TallyWindow extends Window {
   Tally?: { loadEmbeds: () => void };
@@ -30,6 +31,9 @@ export default function AIRegistrationPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden py-12 sm:py-16 bg-white dark:bg-slate-950 transition-colors duration-300">
+      <div className="absolute top-6 right-6 z-20">
+        <ThemeToggle />
+      </div>
       <div className="absolute inset-0 bg-grid opacity-10 dark:opacity-5 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-radial from-cyan-500/5 dark:from-cyan-500/3 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />

@@ -1,6 +1,8 @@
 /* ─── Shared theme tokens (public + admin) ─── */
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
