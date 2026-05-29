@@ -44,7 +44,7 @@ const tiles = [
 
 export default function HomeAbout() {
   return (
-    <section className="relative -mt-24 overflow-hidden bg-white pt-6 text-citc-navy sm:-mt-32 sm:pt-10 dark:bg-citc-navy dark:text-white">
+    <section className="relative -mt-20 overflow-hidden bg-white pt-4 text-citc-navy sm:-mt-28 sm:pt-6 dark:bg-citc-navy dark:text-white">
       <div
         className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-24 bg-gradient-to-b from-white to-transparent sm:h-32 dark:from-citc-navy"
         aria-hidden
@@ -63,26 +63,22 @@ export default function HomeAbout() {
         aria-hidden
       />
 
-      <div className="relative site-container py-20 md:py-28">
+      <div className="relative site-container py-12 md:py-14">
         <header className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold tracking-wide text-citc-blue">
-            Since {SITE_CONFIG.foundingDate} · NCIT
-          </p>
-          <h2 className="mt-3 text-2xl font-bold tracking-tight text-balance md:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-balance md:text-3xl">
             Build skills outside the timetable
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400 md:text-lg">
-            {SITE_CONFIG.name} is run by computer engineering students. You show up to make
-            something, not to sit through another slide deck.
+          <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-400">
+            {SITE_CONFIG.name} is run by computer engineering students.
           </p>
         </header>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3 md:grid-rows-2 md:gap-4 md:min-h-[26rem] lg:min-h-[28rem]">
+        <div className="mt-8 grid grid-cols-1 gap-3 md:mt-10 md:grid-cols-3 md:grid-rows-2 md:gap-3 md:min-h-[22rem] lg:min-h-[24rem]">
           {tiles.map((tile) => (
             <Link
               key={tile.title}
               href={tile.href}
-              className={`group relative flex h-full min-h-[11rem] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-colors hover:border-citc-blue/40 hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-citc-blue/50 dark:hover:bg-white/[0.07] md:p-7 ${tile.layout}`}
+              className={`group relative flex h-full min-h-[9.5rem] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-colors hover:border-citc-blue/40 hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-citc-blue/50 dark:hover:bg-white/[0.07] md:p-6 ${tile.layout}`}
             >
               {tile.featured && tile.image ? (
                 <>
@@ -113,23 +109,13 @@ export default function HomeAbout() {
                 </p>
               </div>
 
-              <span className="relative mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-citc-blue transition-colors group-hover:text-citc-navy dark:group-hover:text-white">
+              <span className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-citc-blue transition-colors group-hover:text-citc-navy dark:group-hover:text-white">
                 {tile.cta}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
           ))}
         </div>
-
-        <p className="mt-10 text-center text-sm text-slate-500 dark:text-slate-500">
-          Questions?{" "}
-          <a
-            href={`mailto:${SITE_CONFIG.email}`}
-            className="font-medium text-citc-blue transition-colors hover:text-citc-navy dark:hover:text-white"
-          >
-            {SITE_CONFIG.email}
-          </a>
-        </p>
       </div>
     </section>
   );
