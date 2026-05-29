@@ -7,7 +7,13 @@ import MembersTable from "./MembersTable";
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersPage() {
+export default async function MembersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ team?: string; year?: string }>;
+}) {
+  const params = await searchParams;
+
   const allMembers = await db
     .select()
     .from(members)
@@ -19,6 +25,9 @@ export default async function MembersPage() {
   const years = [...new Set(allMembers.map((m) => m.memberYear))].sort(
     (a, b) => b - a,
   );
+
+  const initialTeam = params.team || null;
+  const initialYear = params.year ? Number(params.year) : null;
 
   return (
     <div>
@@ -45,6 +54,8 @@ export default async function MembersPage() {
           teams={allTeams}
           teamMap={teamMap}
           years={years}
+          initialTeam={initialTeam}
+          initialYear={initialYear}
         />
       </div>
     </div>

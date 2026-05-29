@@ -10,6 +10,8 @@ interface Props {
   teams: Team[];
   teamMap: Map<string, string>;
   years: number[];
+  initialTeam?: string | null;
+  initialYear?: number | null;
 }
 
 export default function MembersTable({
@@ -17,12 +19,16 @@ export default function MembersTable({
   teams,
   teamMap,
   years,
+  initialTeam,
+  initialYear,
 }: Props) {
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState<number | null>(
-    years.length > 0 ? years[0] : new Date().getFullYear(),
+    initialYear ?? (years.length > 0 ? years[0] : new Date().getFullYear()),
   );
-  const [teamFilter, setTeamFilter] = useState<string | null>(null);
+  const [teamFilter, setTeamFilter] = useState<string | null>(
+    initialTeam ?? null,
+  );
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
   const filtered = members.filter((m) => {

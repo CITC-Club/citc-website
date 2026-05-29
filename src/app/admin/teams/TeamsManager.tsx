@@ -122,7 +122,7 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
                   </div>
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/admin/members?team=${team.id}`}
+                      href={`/admin/members?team=${team.id}&year=${team.year}`}
                       className="px-3 py-1.5 text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 rounded-lg transition-colors"
                     >
                       View Members
