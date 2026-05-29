@@ -46,27 +46,13 @@ export default function HomeAbout() {
   return (
     <section className="relative -mt-20 overflow-hidden bg-white pt-4 text-citc-navy sm:-mt-28 sm:pt-6 dark:bg-citc-navy dark:text-white">
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-24 bg-gradient-to-b from-white to-transparent sm:h-32 dark:from-citc-navy"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-20 bg-gradient-to-b from-white to-transparent sm:h-28 dark:from-citc-navy"
         aria-hidden
       />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-60 dark:opacity-35"
-        aria-hidden
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,82,204,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(0,82,204,0.07) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute -right-24 top-0 h-96 w-96 rounded-full bg-citc-blue/10 blur-3xl dark:bg-citc-blue/20"
-        aria-hidden
-      />
-
-      <div className="relative site-container py-12 md:py-14">
+      <div className="relative z-10 site-container py-12 md:py-14">
         <header className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-balance md:text-3xl">
-            Build skills outside the timetable
+          <h2 className="text-2xl font-bold tracking-tight text-balance text-citc-navy md:text-3xl dark:text-white">
+            What we do
           </h2>
           <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-400">
             {SITE_CONFIG.name} is run by computer engineering students.
@@ -96,7 +82,7 @@ export default function HomeAbout() {
               ) : null}
 
               <div className="relative">
-                <p className="text-xs font-semibold uppercase tracking-wider text-citc-blue">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {tile.eyebrow}
                 </p>
                 <h3
@@ -109,7 +95,7 @@ export default function HomeAbout() {
                 </p>
               </div>
 
-              <span className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-citc-blue transition-colors group-hover:text-citc-navy dark:group-hover:text-white">
+              <span className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-citc-navy transition-colors group-hover:text-citc-blue dark:text-white dark:group-hover:text-citc-blue">
                 {tile.cta}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>

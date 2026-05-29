@@ -20,7 +20,7 @@ const navLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-citc-navy pt-12 pb-8 sm:pt-16 sm:pb-10">
+    <footer className="border-t border-slate-200 bg-white pt-12 pb-10 dark:border-white/5 dark:bg-citc-navy sm:pt-16 sm:pb-12">
       <div className="site-container">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-12">
           {/* Brand */}
@@ -125,12 +125,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-slate-200 dark:border-white/5 text-center sm:text-left">
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            <span className="block sm:inline">
-              &copy; {new Date().getFullYear()} {SITE_CONFIG.name}.
-            </span>{" "}
-            <span className="block sm:inline mt-1 sm:mt-0">{BRAND.tagline}</span>
+        <div className="mt-10 border-t border-slate-200 pt-6 text-center dark:border-white/5">
+          <p className="text-xs leading-relaxed text-slate-500 sm:text-sm">
+            &copy; {new Date().getFullYear()} {SITE_CONFIG.name}. {BRAND.tagline}
           </p>
         </div>
       </div>
