@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, History } from "lucide-react";
 import EventCard from "@/components/EventCard";
@@ -17,9 +18,16 @@ interface EventsClientProps {
 }
 
 export default function EventsClient({ events }: EventsClientProps) {
-  const runningEvents = events.filter((e) => e.status === "running");
-  const upcomingEvents = events.filter((e) => e.status === "upcoming");
-  const pastEvents = events.filter((e) => e.status === "past");
+  const [activeYear, setActiveYear] = useState<number | null>(null);
+  const years = [...new Set(events.map((e) => e.academicYear || 2025))].sort((a, b) => b - a);
+
+  const filteredEvents = activeYear
+    ? events.filter((e) => (e.academicYear || 2025) === activeYear)
+    : events;
+
+  const runningEvents = filteredEvents.filter((e) => e.status === "running");
+  const upcomingEvents = filteredEvents.filter((e) => e.status === "upcoming");
+  const pastEvents = filteredEvents.filter((e) => e.status === "past");
 
   const activeEvents = [...runningEvents, ...upcomingEvents];
 
@@ -35,7 +43,27 @@ export default function EventsClient({ events }: EventsClientProps) {
           </p>
         </div>
 
-        {activeEvents.length > 0 && (
+        {years.length > 1 && (
+          <div className="flex justify-center gap-3 mb-12">
+            <button
+              onClick={() => setActiveYear(null)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!activeYear ? "bg-cyan-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
+            >
+              All Years
+            </button>
+            {years.map((year) => (
+              <button
+                key={year}
+                onClick={() => setActiveYear(year)}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeYear === year ? "bg-cyan-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeEvents.length > 0 ? (
           <section className="mb-20">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
@@ -56,6 +84,12 @@ export default function EventsClient({ events }: EventsClientProps) {
               ))}
             </motion.div>
           </section>
+        ) : (
+          !pastEvents.length && (
+            <div className="text-center py-20">
+              <p className="text-slate-500 dark:text-slate-400">No events found for this academic year.</p>
+            </div>
+          )
         )}
 
         {pastEvents.length > 0 && (

@@ -26,6 +26,7 @@ export async function POST(request: Request) {
         registrationLink: body.registrationLink,
         tags: body.tags,
         gallery: body.gallery,
+        academicYear: body.academicYear,
       })
       .returning();
 

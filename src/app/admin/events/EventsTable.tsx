@@ -14,8 +14,14 @@ export default function EventsTable({ events }: Props) {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
+  const years = [...new Set(events.map((e) => e.academicYear || 2025))].sort((a, b) => b - a);
+  const [yearFilter, setYearFilter] = useState<number | null>(
+    years.length > 0 ? years[0] : new Date().getFullYear()
+  );
+
   const filtered = events.filter((e) => {
     if (statusFilter && e.status !== statusFilter) return false;
+    if (yearFilter && e.academicYear !== yearFilter) return false;
     if (search) {
       const s = search.toLowerCase();
       return e.title.toLowerCase().includes(s) || e.location.toLowerCase().includes(s);
@@ -42,18 +48,33 @@ export default function EventsTable({ events }: Props) {
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 dark:focus:ring-cyan-400/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all shadow-sm"
           />
         </div>
-        <div className="relative flex items-center">
-          <select
-            value={statusFilter ?? ""}
-            onChange={(e) => setStatusFilter(e.target.value || null)}
-            className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all cursor-pointer shadow-sm min-w-[140px]"
-          >
-            <option value="">All Status</option>
-            <option value="running">Running</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="past">Past</option>
-          </select>
-          <ChevronDown className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex items-center">
+            <select
+              value={yearFilter ?? ""}
+              onChange={(e) => setYearFilter(e.target.value ? Number(e.target.value) : null)}
+              className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all cursor-pointer shadow-sm min-w-[120px]"
+            >
+              <option value="">All Years</option>
+              {years.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
+          <div className="relative flex items-center">
+            <select
+              value={statusFilter ?? ""}
+              onChange={(e) => setStatusFilter(e.target.value || null)}
+              className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all cursor-pointer shadow-sm min-w-[140px]"
+            >
+              <option value="">All Status</option>
+              <option value="running">Running</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="past">Past</option>
+            </select>
+            <ChevronDown className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
         </div>
       </div>
 
@@ -164,7 +185,5 @@ export default function EventsTable({ events }: Props) {
         </p>
       </div>
     </div>
-  );
-}
   );
 }

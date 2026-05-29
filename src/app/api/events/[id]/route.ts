@@ -24,6 +24,7 @@ export async function PUT(
         registrationLink: body.registrationLink,
         tags: body.tags,
         gallery: body.gallery,
+        academicYear: body.academicYear,
       })
       .where(eq(events.id, id))
       .returning();

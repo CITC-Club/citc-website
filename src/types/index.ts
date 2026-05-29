@@ -21,7 +21,6 @@ export interface Member {
   department?: string | null;
   email: string;
   photo?: string | null;
-  year?: number | null;
   memberYear: number;
   teamId: string;
   socials?: Socials | null;
@@ -40,6 +39,7 @@ export interface Event {
   registrationLink?: string | null;
   tags?: string[] | null;
   gallery?: string[] | null;
+  academicYear: number;
 }
 
 export interface TeamData {

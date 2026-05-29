@@ -14,7 +14,9 @@ interface Props {
 
 export default function MembersTable({ members, teams, teamMap, years }: Props) {
   const [search, setSearch] = useState("");
-  const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [yearFilter, setYearFilter] = useState<number | null>(
+    years.length > 0 ? years[0] : new Date().getFullYear()
+  );
   const [teamFilter, setTeamFilter] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 

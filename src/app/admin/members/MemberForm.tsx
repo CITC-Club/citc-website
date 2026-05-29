@@ -31,6 +31,19 @@ export default function MemberForm({ teams, member }: Props) {
   const [github, setGithub] = useState(member?.socials?.github || "");
   const [linkedin, setLinkedin] = useState(member?.socials?.linkedin || "");
   const [instagram, setInstagram] = useState(member?.socials?.instagram || "");
+  const [facebook, setFacebook] = useState(member?.socials?.facebook || "");
+  const [twitter, setTwitter] = useState(member?.socials?.twitter || "");
+  const [website, setWebsite] = useState(member?.socials?.website || "");
+
+  const filteredTeams = teams.filter((t) => t.year === memberYear);
+
+  const handleYearChange = (year: number) => {
+    setMemberYear(year);
+    const validTeams = teams.filter((t) => t.year === year);
+    if (!validTeams.some((t) => t.id === teamId)) {
+      setTeamId("");
+    }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -72,6 +85,14 @@ export default function MemberForm({ teams, member }: Props) {
     setLoading(true);
     setError("");
 
+    const cleanSocials: any = {};
+    if (github) cleanSocials.github = github;
+    if (linkedin) cleanSocials.linkedin = linkedin;
+    if (instagram) cleanSocials.instagram = instagram;
+    if (facebook) cleanSocials.facebook = facebook;
+    if (twitter) cleanSocials.twitter = twitter;
+    if (website) cleanSocials.website = website;
+
     const payload = {
       name,
       type,
@@ -82,7 +103,7 @@ export default function MemberForm({ teams, member }: Props) {
       memberYear,
       teamId,
       collegeYear,
-      socials: { github, linkedin, instagram },
+      socials: Object.keys(cleanSocials).length > 0 ? cleanSocials : null,
     };
 
     const url = member ? `/api/members/${member.id}` : "/api/members";
@@ -170,14 +191,17 @@ export default function MemberForm({ teams, member }: Props) {
               <select value={teamId} onChange={(e) => setTeamId(e.target.value)} required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
                 <option value="">Select team</option>
-                {teams.map((team) => (
-                  <option key={team.id} value={team.id}>{team.name} ({team.year})</option>
+                {filteredTeams.map((team) => (
+                  <option key={team.id} value={team.id}>{team.name}</option>
                 ))}
               </select>
+              {filteredTeams.length === 0 && (
+                <p className="text-xs text-red-500 mt-1.5">No teams configured for year {memberYear}. Please add teams for this year first.</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Member Year *</label>
-              <input type="number" value={memberYear} onChange={(e) => setMemberYear(Number(e.target.value))} required
+              <input type="number" value={memberYear} onChange={(e) => handleYearChange(Number(e.target.value))} required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
             </div>
             <div>
@@ -223,9 +247,9 @@ export default function MemberForm({ teams, member }: Props) {
             Social Links
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">GitHub URL</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">GitHub Username</label>
               <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-cyan-500">
                 <span className="px-3 text-slate-400 text-sm bg-slate-50 dark:bg-slate-800 py-2.5 border-r border-slate-300 dark:border-slate-700">gh/</span>
                 <input type="text" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="username"
@@ -234,12 +258,27 @@ export default function MemberForm({ teams, member }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">LinkedIn URL</label>
-              <input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)}
+              <input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..."
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Instagram URL</label>
-              <input type="url" value={instagram} onChange={(e) => setInstagram(e.target.value)}
+              <input type="url" value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="https://instagram.com/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Facebook URL</label>
+              <input type="url" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Twitter / X URL</label>
+              <input type="url" value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="https://x.com/..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Personal Website URL</label>
+              <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://..."
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
             </div>
           </div>

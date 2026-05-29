@@ -16,7 +16,6 @@ export const members = pgTable("members", {
   department: text("department"),
   email: text("email").notNull(),
   photo: text("photo"),
-  year: integer("year"),
   memberYear: integer("member_year").notNull(),
   teamId: text("team_id")
     .notNull()
@@ -46,6 +45,7 @@ export const events = pgTable("events", {
   registrationLink: text("registration_link"),
   tags: jsonb("tags").$type<string[]>(),
   gallery: jsonb("gallery").$type<string[]>(),
+  academicYear: integer("academic_year").default(2025).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

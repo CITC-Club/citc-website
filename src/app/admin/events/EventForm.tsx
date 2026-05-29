@@ -28,6 +28,7 @@ export default function EventForm({ event }: Props) {
   const [registrationLink, setRegistrationLink] = useState(event?.registrationLink || "");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>(event?.tags || []);
+  const [academicYear, setAcademicYear] = useState(event?.academicYear || new Date().getFullYear());
 
   const addTag = () => {
     const t = tagInput.trim();
@@ -91,7 +92,8 @@ export default function EventForm({ event }: Props) {
       status,
       registrationLink: registrationLink || null,
       tags,
-      gallery: null,
+      gallery: event?.gallery || null,
+      academicYear,
     };
 
     const url = event ? `/api/events/${event.id}` : "/api/events";
@@ -167,6 +169,11 @@ export default function EventForm({ event }: Props) {
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Registration Link</label>
               <input type="url" value={registrationLink} onChange={(e) => setRegistrationLink(e.target.value)} placeholder="https://..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Academic Year *</label>
+              <input type="number" value={academicYear} onChange={(e) => setAcademicYear(Number(e.target.value))} required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
             </div>
           </div>
