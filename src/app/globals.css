@@ -1,3 +1,4 @@
+/* ─── Shared theme tokens (public + admin) ─── */
 @import "tailwindcss";
 
 @theme inline {
@@ -28,7 +29,19 @@
 .dark {
   --background: #020617;
   --foreground: #e2e8f0;
+
+  --color-sage: #7A8B72;
+  --color-sage-light: #2D3A31;
+  --color-sage-dark: #8C9A84;
+  --color-clay: #4A5F51;
+  --color-clay-light: #242B27;
+  --color-terracotta: #D48B76;
+  --color-forest: #E8EDE4;
+  --color-alabaster: #1A1F1C;
+  --color-stone: #3A4A33;
 }
+
+/* ─── Public page styles ─── */
 
 body {
   background: var(--background);

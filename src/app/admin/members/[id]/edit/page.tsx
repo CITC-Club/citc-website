@@ -32,6 +32,8 @@ export default async function EditMemberPage({
         department: member.department,
         email: member.email,
         photo: member.photo,
+        photoThumb: member.photoThumb,
+        photoVersion: member.photoVersion ?? 0,
         memberYear: member.memberYear,
         teamId: member.teamId,
         collegeYear: member.collegeYear,
