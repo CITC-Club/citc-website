@@ -13,7 +13,14 @@ function requireEnv(name: string): string {
 
 /** PostgreSQL connection string (server only). */
 export function getDatabaseUrl(): string {
-  return requireEnv("DATABASE_URL");
+  const value = process.env.DATABASE_URL;
+  if (!value) {
+    if (process.env.NEXT_PHASE === "phase-production-build" || process.env.CI) {
+      return "postgresql://placeholder-user:placeholder-pass@localhost:5432/placeholder-db";
+    }
+    throw new Error("Missing required environment variable: DATABASE_URL");
+  }
+  return value;
 }
 
 /** Supabase project URL (public). */
