@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { teams } from "@/db/schema";
-import MemberForm from "../MemberForm";
+import MemberForm from "@/app/admin/members/MemberForm";
 
 export const dynamic = "force-dynamic";
 

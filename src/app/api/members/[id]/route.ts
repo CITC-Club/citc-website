@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidateAfterMemberChange } from "@/lib/revalidate";
 import { db } from "@/db";
 import { members } from "@/db/schema";
 
@@ -30,27 +30,10 @@ export async function PUT(
       .where(eq(members.id, Number(id)))
       .returning();
 
-    revalidatePath("/team");
-    revalidatePath("/admin/members");
+    revalidateAfterMemberChange();
     return Response.json(member);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return Response.json({ error: message }, { status: 500 });
   }
-}
-
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params;
-  const [member] = await db
-    .select()
-    .from(members)
-    .where(eq(members.id, Number(id)));
-
-  if (!member) {
-    return Response.json({ error: "Member not found" }, { status: 404 });
-  }
-  return Response.json(member);
 }

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { members, teams } from "@/db/schema";
-import MemberForm from "../../MemberForm";
+import MemberForm from "@/app/admin/members/MemberForm";
 
 export const dynamic = "force-dynamic";
 
@@ -21,24 +21,5 @@ export default async function EditMemberPage({
 
   const allTeams = await db.select().from(teams).orderBy(teams.year);
 
-  return (
-    <MemberForm
-      teams={allTeams}
-      member={{
-        id: member.id,
-        name: member.name,
-        type: member.type,
-        title: member.title,
-        department: member.department,
-        email: member.email,
-        photo: member.photo,
-        photoThumb: member.photoThumb,
-        photoVersion: member.photoVersion ?? 0,
-        memberYear: member.memberYear,
-        teamId: member.teamId,
-        collegeYear: member.collegeYear,
-        socials: member.socials,
-      }}
-    />
-  );
+  return <MemberForm teams={allTeams} member={member} />;
 }

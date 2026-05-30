@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { events } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidateAfterEventChange } from "@/lib/revalidate";
 import { redirect } from "next/navigation";
 
 export async function POST(
@@ -10,7 +10,6 @@ export async function POST(
 ) {
   const { id } = await params;
   await db.delete(events).where(eq(events.id, id));
-  revalidatePath("/events");
-  revalidatePath("/admin/events");
-  redirect("/admin/events");
+  revalidateAfterEventChange(id);
+  redirect("/admin/events?flash=deleted");
 }

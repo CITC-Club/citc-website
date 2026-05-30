@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { teams } from "@/db/schema";
-import { revalidatePath } from "next/cache";
+import { revalidateAfterTeamChange } from "@/lib/revalidate";
 
 export async function POST(request: Request) {
   try {
@@ -9,8 +9,7 @@ export async function POST(request: Request) {
       .insert(teams)
       .values({ id: body.id, name: body.name, year: body.year })
       .returning();
-    revalidatePath("/admin/teams");
-    revalidatePath("/team");
+    revalidateAfterTeamChange();
     return Response.json(team, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

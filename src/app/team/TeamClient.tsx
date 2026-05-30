@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import MemberCard from "@/components/MemberCard";
 import TeamYearPicker from "@/components/TeamYearPicker";
+import { sortYearsDesc } from "@/lib/years";
 import {
   sortMembersBySeniorityAndName,
   sortTeamsForDisplay,
@@ -23,8 +24,7 @@ interface TeamClientProps {
 
 export default function TeamClient({ teamData }: TeamClientProps) {
   const years = useMemo(
-    () =>
-      [...new Set(teamData.members.map((m) => m.memberYear))].sort((a, b) => b - a),
+    () => sortYearsDesc(teamData.members.map((m) => m.memberYear)),
     [teamData.members],
   );
 

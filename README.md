@@ -36,7 +36,7 @@ All public content (events, members, stats) is loaded from **PostgreSQL** via Dr
 ```
 src/
   app/
-    page.tsx              # Home (hero + recent events)
+    page.tsx              # Home (hero + about bento)
     events/               # Events list & detail pages
     team/                 # Team roster by academic year
     join/                 # Membership form (Tally)
@@ -44,20 +44,22 @@ src/
     login/                # Admin login
     admin/                # Dashboard (members, teams, events)
     api/                  # CRUD API routes for admin
-  components/             # UI (Hero, Footer, MemberCard, etc.)
-  db/                     # Schema, migrations, seed
-  lib/                    # site-config, brand, media URLs, team ordering
+  components/             # Shared public UI (Hero, Footer, …)
+  db/                     # Schema, migrations, seed.ts
+  lib/                    # env, site-config, media, years, seed-assets, team-order
+  types/                  # Drizzle-inferred Member, Event, Team
+  utils/                  # Supabase clients, image compression
 public/
-  event/                  # Local event photos (e.g. /event/001/…)
-  media/2025/members/     # Local member AVIF photos
-  scripts/theme-init.js   # Dark mode before paint (no flash)
+  _seed/                  # Optional bootstrap images — safe to delete later (see public/README.md)
+  CITCLOGOW.webp, …       # Site logos (required)
+  favicon/, scripts/      # Icons + theme-init.js
 ```
 
 ---
 
 ## Environment variables
 
-Create `.env.local` (not committed):
+Copy `.env.example` to `.env.local` (not committed):
 
 | Variable | Used for |
 |----------|----------|
@@ -78,7 +80,9 @@ npm run db:seed      # optional: seed teams, members, events
 npm run dev          # http://localhost:3000
 ```
 
-Other scripts: `npm run build`, `npm run lint`, `npm run format`.
+Other scripts: `npm run build`, `npm run lint`, `npm run format`, `npm run check` (lint + build).
+
+**Contributing:** see [CONTRIBUTING.md](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md) for conventions.
 
 ---
 
@@ -86,7 +90,7 @@ Other scripts: `npm run build`, `npm run lint`, `npm run format`.
 
 | Route | Description |
 |-------|-------------|
-| `/` | Hero (club intro + stats), “What we do” section; events only on `/events` |
+| `/` | Hero + “What we do” bento section; events only on `/events` |
 | `/events` | All events from DB, filter by academic year |
 | `/events/[id]` | Event detail + markdown description + gallery |
 | `/team` | Team by academic year; advisors → mentors → executives |
@@ -113,7 +117,7 @@ Admin UI uses a separate **botanical** theme (sage/clay) from the public CITC bl
 
 ### Public site & branding
 - Applied **CITC logo colors** across navbar, footer, buttons, and content (replacing generic cyan/rose AI-style palette).
-- Homepage shows **member/event counts** from the database; hero uses a club photo (not event galleries).
+- Homepage hero uses a full-bleed club photo; **HomeAbout** bento section (events only on `/events`).
 - **Events are only on `/events`**; home has a short “What we do” section (`HomeAbout`) with a link to events.
 - **Minimal animations** on the homepage (removed heavy Framer Motion from hero/features/navbar).
 - **Large-screen layout:** content capped with `.site-container` (max 1280px), no horizontal overflow on ultrawide monitors.
@@ -143,25 +147,21 @@ Admin UI uses a separate **botanical** theme (sage/clay) from the public CITC bl
 
 Recent commits on `main` include:
 
-- `090f2ae` — CITC branding, large-screen fixes, team/events UX, `HomeEvents`, year picker, media helpers.
-- `30d08a1` — Reduced front-page motion; dark mode persistence fix.
-- Earlier — Admin botanical redesign, Drizzle migrations, academic year separation, Supabase auth fixes.
-
-**Uncommitted (as of last doc update):** `MediaImage.tsx` and Hero/EventCard wiring (fixes Server Component `onError` crash). Commit when ready.
+- Standardization: `CONTRIBUTING.md`, `.env.example`, Drizzle-inferred types, `lib/env`, Supabase middleware, shared year helpers.
+- Earlier — CITC branding, team year picker, `MediaImage`, admin dashboard, Drizzle + Supabase.
 
 ---
 
 ## To be done
 
 ### High priority
-- [ ] **Commit & push** latest fixes (`MediaImage`, any remaining tweaks) to remote.
+- [ ] **Push** local commits to remote and verify production deploy.
 - [ ] **Verify production:** `DATABASE_URL`, Supabase storage public URLs, and admin login on the deployed environment.
 - [ ] **End-to-end browser pass:** all routes on mobile, tablet, and desktop; fix any layout or broken images.
-- [ ] **Production build:** run `npm run build` in CI/deploy and resolve any errors.
 
 ### Content & data
 - [ ] Add **new academic years** in admin when committees change (teams + members `member_year`).
-- [ ] Ensure all event images are either in `public/event/` or uploaded to Supabase (DB `image` / `gallery` fields).
+- [ ] Ensure event images are in `public/_seed/` (dev seed) or Supabase (production DB `image` / `gallery`).
 - [ ] Replace placeholder social links on any seed members if still present.
 
 ### UX / polish
@@ -180,7 +180,7 @@ Recent commits on `main` include:
 
 | Source | Example path |
 |--------|----------------|
-| Local public folder | `/event/002/top_image.jpg`, `/media/2025/members/name.avif` |
+| Local seed folder | `/_seed/event/002/top_image.jpg`, `/_seed/media/2025/members/name.avif` |
 | Supabase Storage | Full `https://…supabase.co/storage/v1/object/public/media/…` URL in DB |
 
 Helpers in `src/lib/media.ts`:
@@ -191,7 +191,7 @@ Helpers in `src/lib/media.ts`:
 
 ## Brand tokens
 
-Defined in `src/lib/brand.ts` and `src/app/globals.css`:
+Defined in `src/lib/site-config.ts` and `src/app/globals.css`:
 
 - **CITC blue:** `#0052CC`
 - **CITC navy:** `#050A18`

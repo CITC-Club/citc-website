@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import { Mail, User, Globe } from "lucide-react";
-import { Github, Linkedin, Instagram } from "./Icons";
+import { Github, Linkedin, Instagram } from "@/components/Icons";
 import { motion } from "framer-motion";
 import { getMemberPhotoUrl } from "@/lib/media";
 import type { Member } from "@/types";

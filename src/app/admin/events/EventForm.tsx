@@ -1,12 +1,13 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import type { Event } from "@/types";
-import { createClient } from "@/utils/supabase/client";
+import { createBrowserSupabaseClient } from "@/utils/supabase/client";
 
 interface Props {
   event?: Event;
@@ -14,9 +15,9 @@ interface Props {
 
 export default function EventForm({ event }: Props) {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const supabase = createClient();
+  const supabase = createBrowserSupabaseClient();
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const [title, setTitle] = useState(event?.title || "");
@@ -87,31 +88,10 @@ export default function EventForm({ event }: Props) {
     }
   };
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const url = event ? `/api/events/${event.id}` : "/api/events";
-      const method = event ? "PUT" : "POST";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      router.push("/admin/events");
-      router.refresh();
-    },
-    onError: (err: Error) => setError(err.message),
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSaving(true);
 
     const id = event?.id || `e${Date.now()}`;
     const payload = {
@@ -129,23 +109,44 @@ export default function EventForm({ event }: Props) {
       academicYear,
     };
 
-    saveMutation.mutate(payload);
+    try {
+      const url = event ? `/api/events/${event.id}` : "/api/events";
+      const method = event ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save");
+      }
+      router.push(
+        event ? "/admin/events?flash=saved" : "/admin/events?flash=created",
+      );
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div>
-      <Link
-        href="/admin/events"
-        className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Events
-      </Link>
+      <AdminPageHeader
+        title={event ? "Edit event" : "Create event"}
+        description="Published events appear on the public Events page. Set status to Upcoming or Running for active listings."
+        breadcrumbs={[
+          { label: "Dashboard", href: "/admin" },
+          { label: "Events", href: "/admin/events" },
+          { label: event ? "Edit" : "New" },
+        ]}
+      />
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          {event ? "Edit Event" : "Add New Event"}
-        </h1>
-      </div>
+      {error ? (
+        <AdminAlert variant="error" title="Could not save" message={error} />
+      ) : null}
 
       <form onSubmit={handleSubmit} className="max-w-4xl space-y-8">
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-6">
@@ -367,19 +368,13 @@ export default function EventForm({ event }: Props) {
           )}
         </div>
 
-        {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
-
         <div className="flex items-center gap-4">
           <button
             type="submit"
-            disabled={saveMutation.isPending}
+            disabled={saving}
             className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {saveMutation.isPending ? "Saving..." : event ? "Update Event" : "Create Event"}
+            {saving ? "Saving..." : event ? "Update Event" : "Create Event"}
           </button>
           <Link
             href="/admin/events"

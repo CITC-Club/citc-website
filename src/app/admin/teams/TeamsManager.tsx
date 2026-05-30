@@ -1,6 +1,5 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,55 +21,20 @@ const TEAM_TYPES = [
 
 export default function TeamsManager({ teams, countMap, years }: Props) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [newYear, setNewYear] = useState(new Date().getFullYear() + 1);
   const [newTeamId, setNewTeamId] = useState("t_exec");
   const [newTeamName, setNewTeamName] = useState("Executive Committee");
   const [error, setError] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleTeamTypeChange = (id: string) => {
     setNewTeamId(id);
     const t = TEAM_TYPES.find((t) => t.id === id);
     setNewTeamName(t?.label || id);
   };
-
-  const createMutation = useMutation({
-    mutationFn: async (payload: { id: string; name: string; year: number }) => {
-      const res = await fetch("/api/teams", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to create");
-      }
-    },
-    onSuccess: () => {
-      setShowForm(false);
-      setError("");
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
-      router.refresh();
-    },
-    onError: (err: Error) => setError(err.message),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (teamId: string) => {
-      const res = await fetch(`/api/teams/${teamId}/delete`, {
-        method: "POST",
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
-      router.refresh();
-    },
-  });
 
   const handleCreateTeam = async () => {
     const slug = `${newTeamId}_${newYear}`;
@@ -79,16 +43,63 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
       setError(`Team "${newTeamName} (${newYear})" already exists`);
       return;
     }
-    createMutation.mutate({ id: slug, name: newTeamName, year: newYear });
+    setCreating(true);
+    setError("");
+    try {
+      const res = await fetch("/api/teams", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: slug, name: newTeamName, year: newYear }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to create");
+      }
+      setShowForm(false);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create");
+    } finally {
+      setCreating(false);
+    }
   };
 
-  const handleDeleteTeam = async (teamId: string, e: React.FormEvent) => {
-    e.preventDefault();
-    deleteMutation.mutate(teamId);
+  const handleDeleteTeam = async (teamId: string) => {
+    const memberTotal = countMap.get(teamId) ?? 0;
+    if (memberTotal > 0) {
+      setError(
+        `Cannot delete: ${memberTotal} member(s) still assigned. Reassign or remove them first.`,
+      );
+      setConfirmDeleteId(null);
+      return;
+    }
+    setDeletingId(teamId);
+    setError("");
+    try {
+      const res = await fetch(`/api/teams/${teamId}/delete`, { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete");
+      }
+      setConfirmDeleteId(null);
+      router.push("/admin/teams?flash=deleted");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete");
+      setConfirmDeleteId(null);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
     <div className="space-y-6">
+      {error ? (
+        <p className="text-sm text-terracotta bg-terracotta/10 border border-terracotta/20 rounded-xl px-4 py-3">
+          {error}
+        </p>
+      ) : null}
+
       {years.map((year) => {
         const yearTeams = teams.filter((t) => t.year === year);
         return (
@@ -127,17 +138,38 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
                     >
                       View Members
                     </Link>
-                    <form
-                      onSubmit={(e) => handleDeleteTeam(team.id, e)}
-                    >
+                    {confirmDeleteId === team.id ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTeam(team.id)}
+                          disabled={deletingId !== null}
+                          className="px-2.5 py-1 text-xs font-bold text-white bg-terracotta rounded-lg hover:bg-terracotta/90 disabled:opacity-50"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="px-2.5 py-1 text-xs font-medium text-forest/70 hover:bg-clay-light rounded-lg"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
                       <button
-                        type="submit"
-                        disabled={deleteMutation.isPending}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                        type="button"
+                        onClick={() => {
+                          setError("");
+                          setConfirmDeleteId(team.id);
+                        }}
+                        disabled={deletingId !== null}
+                        className="p-2 text-forest/40 hover:text-terracotta hover:bg-terracotta/10 rounded-lg transition-colors disabled:opacity-50"
+                        aria-label={`Delete ${team.name}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
-                    </form>
+                    )}
                   </div>
                 </div>
               ))}
@@ -190,10 +222,10 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
               <div className="flex items-end gap-2">
                 <button
                   onClick={handleCreateTeam}
-                  disabled={createMutation.isPending}
+                  disabled={creating}
                   className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {createMutation.isPending ? "Creating..." : "Create"}
+                  {creating ? "Creating..." : "Create"}
                 </button>
                 <button
                   onClick={() => {

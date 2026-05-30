@@ -16,7 +16,7 @@ function encodePathSegment(segment: string): string {
 
 /**
  * Normalizes image URLs from Postgres or Supabase Storage.
- * Local paths under /public are encoded only when segments contain spaces or special characters.
+ * Local paths (e.g. `/_seed/…` from `public/`) are encoded when segments contain spaces or special characters.
  */
 export function resolveMediaUrl(url: string | null | undefined): string {
   if (!url) return "";
@@ -32,8 +32,22 @@ export function resolveMediaUrl(url: string | null | undefined): string {
     .join("/");
 }
 
+function withPhotoVersion(url: string, version: number | undefined): string {
+  return version ? `${url}?v=${version}` : url;
+}
+
 export function getMemberPhotoUrl(member: Pick<Member, "photo" | "photoVersion">): string {
   if (!member.photo) return "";
-  const base = resolveMediaUrl(member.photo);
-  return member.photoVersion ? `${base}?v=${member.photoVersion}` : base;
+  return withPhotoVersion(resolveMediaUrl(member.photo), member.photoVersion);
+}
+
+/** Admin list avatars — only the small thumb from upload/seed, not the full photo. */
+export function getMemberThumbnailUrl(
+  member: Pick<Member, "photoThumb" | "photoVersion">,
+): string {
+  if (!member.photoThumb) return "";
+  return withPhotoVersion(
+    resolveMediaUrl(member.photoThumb),
+    member.photoVersion,
+  );
 }

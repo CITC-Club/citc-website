@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { resolveMediaUrl } from "@/lib/media";
+import { seedAssetPath } from "@/lib/seed-assets";
 
-const DEFAULT_FALLBACK = "/media/og-team.avif";
+const DEFAULT_FALLBACK = seedAssetPath("media/og-team.avif");
 
 interface MediaImageProps
   extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> {

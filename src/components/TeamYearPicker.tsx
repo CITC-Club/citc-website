@@ -1,5 +1,6 @@
 "use client";
 
+import { sortYearsDesc } from "@/lib/years";
 import type { Member } from "@/types";
 
 interface TeamYearPickerProps {
@@ -13,9 +14,7 @@ export default function TeamYearPicker({
   activeYear,
   onSelectYear,
 }: TeamYearPickerProps) {
-  const years = [...new Set(members.map((m) => m.memberYear))].sort(
-    (a, b) => b - a,
-  );
+  const years = sortYearsDesc(members.map((m) => m.memberYear));
   const latestYear = years[0];
 
   if (years.length <= 1) return null;

@@ -1,7 +1,8 @@
 "use client";
 
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import AdminFlash from "@/components/admin/AdminFlash";
 import Sidebar from "@/components/admin/Sidebar";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -40,10 +41,7 @@ export default function AdminShell({
 
   const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
 
-  const photoUrl =
-    adminPhoto && !imgError
-      ? `${adminPhoto}${adminPhotoVersion ? `?v=${adminPhotoVersion}` : ""}`
-      : null;
+  const photoUrl = adminPhoto && !imgError ? adminPhoto : null;
   const initial = adminName.charAt(0).toUpperCase();
 
   return (
@@ -121,6 +119,9 @@ export default function AdminShell({
           </div>
         </header>
         <main className="flex-1 p-4 md:p-8 max-w-6xl w-full mx-auto">
+          <Suspense fallback={null}>
+            <AdminFlash />
+          </Suspense>
           {children}
         </main>
       </div>

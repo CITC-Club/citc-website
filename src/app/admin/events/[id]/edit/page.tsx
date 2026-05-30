@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { events } from "@/db/schema";
-import EventForm from "../../EventForm";
+import EventForm from "@/app/admin/events/EventForm";
 
 export const dynamic = "force-dynamic";
 

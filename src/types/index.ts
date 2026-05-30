@@ -1,54 +1,16 @@
-export interface Socials {
-  github?: string;
-  linkedin?: string;
-  instagram?: string;
-  facebook?: string;
-  twitter?: string;
-  website?: string;
-}
+import type { InferSelectModel } from "drizzle-orm";
+import type { events, members, teams } from "@/db/schema";
 
-export interface Team {
-  id: string;
-  name: string;
-  year: number;
-}
+/** Row types inferred from Drizzle schema — keep in sync automatically. */
+export type Team = InferSelectModel<typeof teams>;
+export type Member = InferSelectModel<typeof members>;
+export type Event = InferSelectModel<typeof events>;
+export type EventStatus = Event["status"];
 
-export interface Member {
-  id: number;
-  name: string;
-  type: string;
-  title?: string | null;
-  department?: string | null;
-  email: string;
-  photo?: string | null;
-  photoThumb?: string | null;
-  photoVersion?: number;
-  memberYear: number;
-  teamId: string;
-  socials?: Socials | null;
-  collegeYear?: number | null;
-}
+export type Socials = NonNullable<Member["socials"]>;
 
-export interface Event {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  description: string;
-  image: string;
-  status: "upcoming" | "past" | "running";
-  registrationLink?: string | null;
-  tags?: string[] | null;
-  gallery?: string[] | null;
-  academicYear: number;
-}
-
+/** Payload for `/team` client view. */
 export interface TeamData {
   teams: Team[];
   members: Member[];
-}
-
-export interface EventData {
-  events: Event[];
 }

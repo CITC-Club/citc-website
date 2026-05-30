@@ -3,6 +3,8 @@
 import { ChevronDown, Pencil, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import MediaImage from "@/components/MediaImage";
+import { getMemberThumbnailUrl } from "@/lib/media";
 import type { Member, Team } from "@/types";
 
 interface Props {
@@ -66,7 +68,7 @@ export default function MembersTable({
             placeholder="Search members by name, email, or department..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 dark:focus:ring-cyan-400/20 focus:border-cyan-550 dark:focus:border-cyan-400 transition-all shadow-sm"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 dark:focus:ring-cyan-400/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all shadow-sm"
           />
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -131,6 +133,7 @@ export default function MembersTable({
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
             {filtered.map((member) => {
+              const thumbUrl = getMemberThumbnailUrl(member);
               const tagClass =
                 typeColors[member.type] ||
                 "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-350 border-slate-200";
@@ -143,9 +146,9 @@ export default function MembersTable({
                   <td className="px-6 py-4.5">
                     <div className="flex items-center gap-3">
                       <div className="relative w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-clay-light text-forest/60 flex items-center justify-center text-xs font-semibold">
-                        {member.photoThumb ? (
-                          <img
-                            src={`${member.photoThumb}${member.photoVersion ? `?v=${member.photoVersion}` : ""}`}
+                        {thumbUrl ? (
+                          <MediaImage
+                            src={thumbUrl}
                             alt={member.name}
                             className="w-full h-full object-cover"
                           />
@@ -198,21 +201,26 @@ export default function MembersTable({
                             action={`/api/members/${member.id}/delete`}
                             method="POST"
                           >
-                            <button className="px-2.5 py-1 text-xs font-bold text-white bg-red-500 rounded-lg hover:bg-red-655 transition-colors cursor-pointer shadow-sm shadow-red-500/10">
+                            <button
+                              type="submit"
+                              className="px-2.5 py-1 text-xs font-bold text-white bg-terracotta rounded-lg hover:bg-terracotta/90 transition-colors"
+                            >
                               Confirm
                             </button>
                           </form>
                           <button
+                            type="button"
                             onClick={() => setConfirmDelete(null)}
-                            className="px-2.5 py-1 text-xs font-bold text-slate-650 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+                            className="px-2.5 py-1 text-xs font-medium text-forest/70 bg-clay-light hover:bg-stone/80 rounded-lg transition-colors"
                           >
                             Cancel
                           </button>
                         </div>
                       ) : (
                         <button
+                          type="button"
                           onClick={() => setConfirmDelete(member.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all cursor-pointer"
+                          className="p-2 text-forest/40 hover:text-terracotta hover:bg-terracotta/10 rounded-xl transition-all"
                           aria-label="Delete Member"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -228,15 +236,25 @@ export default function MembersTable({
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-16 bg-slate-50/10 dark:bg-slate-900/5">
-          <p className="text-slate-400 dark:text-slate-600 text-sm">
-            No members match your active filters
+        <div className="text-center py-16 px-6">
+          <p className="text-forest/50 text-sm mb-4">
+            {members.length === 0
+              ? "No members yet. Create teams for the year, then add your first member."
+              : "No members match these filters. Try another year or clear search."}
           </p>
+          {members.length === 0 ? (
+            <Link
+              href="/admin/teams"
+              className="text-sm font-semibold text-sage hover:underline"
+            >
+              Go to Teams →
+            </Link>
+          ) : null}
         </div>
       )}
 
       <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/10 dark:bg-slate-900/5">
-        <p className="text-xs font-semibold text-slate-400 dark:text-slate-555">
+        <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">
           Showing {filtered.length} of {members.length} total members
         </p>
       </div>

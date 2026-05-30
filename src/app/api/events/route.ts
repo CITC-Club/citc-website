@@ -1,6 +1,8 @@
 import { db } from "@/db";
 import { events } from "@/db/schema";
-import { revalidatePath } from "next/cache";
+import { isEventStatus } from "@/lib/event-status";
+import { revalidateAfterEventChange } from "@/lib/revalidate";
+import { resolveAcademicYear } from "@/lib/years";
 
 export async function POST(request: Request) {
   try {
@@ -10,28 +12,29 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const id = `e${Date.now()}`;
+    const status = isEventStatus(body.status) ? body.status : "upcoming";
 
     const [event] = await db
       .insert(events)
       .values({
-        id,
+        id: body.id ?? `e${Date.now()}`,
         title: body.title,
         date: body.date,
         time: body.time,
         location: body.location,
         description: body.description,
         image: body.image,
-        status: body.status || "upcoming",
+        status,
         registrationLink: body.registrationLink,
         tags: body.tags,
         gallery: body.gallery,
-        academicYear: body.academicYear,
+        academicYear: resolveAcademicYear(
+          typeof body.academicYear === "number" ? body.academicYear : undefined,
+        ),
       })
       .returning();
 
-    revalidatePath("/events");
-    revalidatePath("/admin/events");
+    revalidateAfterEventChange(event.id);
     return Response.json(event, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

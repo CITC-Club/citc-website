@@ -2,16 +2,17 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { members } from "@/db/schema";
-import { createClient } from "@/utils/supabase/server";
+import { getMemberThumbnailUrl } from "@/lib/media";
+import { SITE_CONFIG } from "@/lib/site-config";
+import { createServerSupabaseClient } from "@/utils/supabase/server";
 import AdminShell from "./AdminShell";
-import QueryProvider from "@/components/providers/QueryProvider";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  const supabase = await createServerSupabaseClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -32,11 +33,13 @@ export default async function AdminLayout({
   return (
     <AdminShell
       adminName={adminMember?.name ?? "Administrator"}
-      adminEmail={adminEmail ?? "admin@citc.com"}
-      adminPhoto={adminMember?.photoThumb ?? null}
+      adminEmail={adminEmail ?? SITE_CONFIG.email}
+      adminPhoto={
+        adminMember ? getMemberThumbnailUrl(adminMember) || null : null
+      }
       adminPhotoVersion={adminMember?.photoVersion ?? 0}
     >
-      <QueryProvider>{children}</QueryProvider>
+      {children}
     </AdminShell>
   );
 }

@@ -4,7 +4,7 @@ import { Calendar, MapPin, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { resolveMediaUrl } from "@/lib/media";
+import MediaImage from "@/components/MediaImage";
 import type { Event } from "@/types";
 
 interface EventDetailsClientProps {
@@ -18,7 +18,11 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
     <div className="min-h-screen pt-24 pb-20 bg-white dark:bg-citc-navy transition-colors duration-300">
       <div className="h-10" />
       <div className="relative h-[40vh] md:h-[50vh] w-full overflow-hidden">
-        <img src={resolveMediaUrl(event.image)} alt={event.title} className="w-full h-full object-cover" />
+        <MediaImage
+          src={event.image}
+          alt={event.title}
+          className="h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-citc-navy to-transparent" />
         <div className="absolute inset-0 bg-black/30 dark:bg-black/50" />
 
@@ -111,10 +115,10 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {event.gallery.map((img, index) => (
                     <div key={index} className="relative aspect-video rounded-xl overflow-hidden group">
-                      <img
-                        src={resolveMediaUrl(img)}
+                      <MediaImage
+                        src={img}
                         alt={`Gallery ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                     </div>

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { resolveAcademicYear, sortYearsDesc } from "@/lib/years";
 import type { Event } from "@/types";
 
 interface Props {
@@ -21,16 +22,15 @@ export default function EventsTable({ events }: Props) {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const years = [...new Set(events.map((e) => e.academicYear || 2025))].sort(
-    (a, b) => b - a,
-  );
+  const years = sortYearsDesc(events.map((e) => resolveAcademicYear(e.academicYear)));
   const [yearFilter, setYearFilter] = useState<number | null>(
     years.length > 0 ? years[0] : new Date().getFullYear(),
   );
 
   const filtered = events.filter((e) => {
     if (statusFilter && e.status !== statusFilter) return false;
-    if (yearFilter && e.academicYear !== yearFilter) return false;
+    if (yearFilter && resolveAcademicYear(e.academicYear) !== yearFilter)
+      return false;
     if (search) {
       const s = search.toLowerCase();
       return (
@@ -198,7 +198,7 @@ export default function EventsTable({ events }: Props) {
                         </form>
                         <button
                           onClick={() => setConfirmDelete(null)}
-                          className="px-2.5 py-1 text-xs font-bold text-slate-650 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+                          className="px-2.5 py-1 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -206,7 +206,7 @@ export default function EventsTable({ events }: Props) {
                     ) : (
                       <button
                         onClick={() => setConfirmDelete(event.id)}
-                        className="p-2 text-slate-400 hover:text-red-655 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all cursor-pointer"
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all cursor-pointer"
                         aria-label="Delete Event"
                       >
                         <Trash2 className="w-4 h-4" />

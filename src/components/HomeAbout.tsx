@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { seedAssetPath } from "@/lib/seed-assets";
 import { SITE_CONFIG } from "@/lib/site-config";
 
 const tiles = [
@@ -11,7 +12,7 @@ const tiles = [
     body: "Embedded systems, IoT, and web builds. Recent workshops ran in NCIT Room 125.",
     cta: "Past events",
     featured: true,
-    image: "/event/003/IoTExpo2082.png",
+    image: seedAssetPath("event/003/IoTExpo2082.png"),
   },
   {
     href: "/events",

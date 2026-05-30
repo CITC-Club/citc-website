@@ -1,14 +1,14 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { seedAssetPath } from "@/lib/seed-assets";
 import { SITE_CONFIG } from "@/lib/site-config";
-import { BRAND } from "@/lib/brand";
 
 export default function Hero() {
   return (
     <section className="relative overflow-hidden min-h-[min(92vh,880px)] flex items-center">
       <div className="absolute inset-0" aria-hidden>
         <img
-          src="/media/og-team.avif"
+          src={seedAssetPath("media/og-team.avif")}
           alt=""
           className="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-[0.38] dark:opacity-[0.28]"
           fetchPriority="high"
@@ -37,7 +37,7 @@ export default function Hero() {
         <div className="mx-auto w-full max-w-xl text-center sm:max-w-2xl lg:max-w-3xl">
           <div className="flex flex-col gap-4 sm:gap-5">
             <p className="text-sm font-semibold tracking-wide text-citc-blue uppercase">
-              {BRAND.tagline}
+              {SITE_CONFIG.tagline}
             </p>
 
             <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-5xl font-bold tracking-tight text-citc-navy dark:text-white leading-[1.15] text-balance mx-auto">

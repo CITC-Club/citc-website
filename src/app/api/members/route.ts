@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateAfterMemberChange } from "@/lib/revalidate";
 import { db } from "@/db";
 import { members } from "@/db/schema";
 
@@ -23,8 +23,7 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    revalidatePath("/team");
-    revalidatePath("/admin/members");
+    revalidateAfterMemberChange();
     return Response.json(member, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, History } from "lucide-react";
 import EventCard from "@/components/EventCard";
+import { resolveAcademicYear, sortYearsDesc } from "@/lib/years";
 import type { Event } from "@/types";
 
 const gridContainerVariants = {
@@ -19,12 +20,10 @@ interface EventsClientProps {
 
 export default function EventsClient({ events }: EventsClientProps) {
   const [activeYear, setActiveYear] = useState<number | null>(null);
-  const years = [...new Set(events.map((e) => e.academicYear || 2025))].sort(
-    (a, b) => b - a,
-  );
+  const years = sortYearsDesc(events.map((e) => resolveAcademicYear(e.academicYear)));
 
   const filteredEvents = activeYear
-    ? events.filter((e) => (e.academicYear || 2025) === activeYear)
+    ? events.filter((e) => resolveAcademicYear(e.academicYear) === activeYear)
     : events;
 
   const runningEvents = filteredEvents.filter((e) => e.status === "running");

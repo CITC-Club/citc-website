@@ -13,8 +13,7 @@ export default function ConditionalLayout({
   const isAdminOrAuth =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
-    pathname.startsWith("/admin-login");
+    pathname.startsWith("/register");
 
   if (isAdminOrAuth) {
     return <>{children}</>;

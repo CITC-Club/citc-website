@@ -1,8 +1,7 @@
 import { Mail, MapPin } from "lucide-react";
-import { Github, Linkedin, Facebook, Instagram } from "./Icons";
+import { Github, Linkedin, Facebook, Instagram } from "@/components/Icons";
 import Link from "next/link";
 import { SITE_CONFIG } from "@/lib/site-config";
-import { BRAND } from "@/lib/brand";
 
 const socialIcons: Record<string, React.ElementType> = {
   github: Github,
@@ -42,7 +41,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-sm font-semibold text-citc-blue">
-              {BRAND.tagline}
+              {SITE_CONFIG.tagline}
             </p>
             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">
               {SITE_CONFIG.description}
@@ -127,7 +126,7 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-slate-200 pt-6 text-center dark:border-white/5">
           <p className="text-xs leading-relaxed text-slate-500 sm:text-sm">
-            &copy; {new Date().getFullYear()} {SITE_CONFIG.name}. {BRAND.tagline}
+            &copy; {new Date().getFullYear()} {SITE_CONFIG.name}. {SITE_CONFIG.tagline}
           </p>
         </div>
       </div>

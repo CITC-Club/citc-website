@@ -1,12 +1,13 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import type { Member, Team } from "@/types";
-import { createClient } from "@/utils/supabase/client";
+import { createBrowserSupabaseClient } from "@/utils/supabase/client";
 
 interface Props {
   teams: Team[];
@@ -15,9 +16,9 @@ interface Props {
 
 export default function MemberForm({ teams, member }: Props) {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const supabase = createClient();
+  const supabase = createBrowserSupabaseClient();
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const [name, setName] = useState(member?.name || "");
@@ -106,37 +107,20 @@ export default function MemberForm({ teams, member }: Props) {
     }
   };
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const url = member ? `/api/members/${member.id}` : "/api/members";
-      const method = member ? "PUT" : "POST";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save");
-      }
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-members"] });
-      router.push("/admin/members");
-      router.refresh();
-    },
-    onError: (err: Error) => {
-      setError(err.message);
-    },
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const cleanSocials: any = {};
+    if (photo && !photoThumb) {
+      setError(
+        "Upload the photo again so a small list thumbnail can be generated.",
+      );
+      return;
+    }
+
+    setSaving(true);
+
+    const cleanSocials: Record<string, string> = {};
     if (github) cleanSocials.github = github;
     if (linkedin) cleanSocials.linkedin = linkedin;
     if (instagram) cleanSocials.instagram = instagram;
@@ -159,23 +143,57 @@ export default function MemberForm({ teams, member }: Props) {
       socials: Object.keys(cleanSocials).length > 0 ? cleanSocials : null,
     };
 
-    saveMutation.mutate(payload);
+    try {
+      const url = member ? `/api/members/${member.id}` : "/api/members";
+      const method = member ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save");
+      }
+      router.push(
+        member ? "/admin/members?flash=saved" : "/admin/members?flash=created",
+      );
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div>
-      <Link
-        href="/admin/members"
-        className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Members
-      </Link>
+      <AdminPageHeader
+        title={member ? "Edit member" : "Add member"}
+        description={
+          member
+            ? "Update profile, team, and photo. Changes appear on the public team page."
+            : "Add a member to a team for the selected academic year."
+        }
+        breadcrumbs={[
+          { label: "Dashboard", href: "/admin" },
+          { label: "Members", href: "/admin/members" },
+          { label: member ? "Edit" : "New" },
+        ]}
+      />
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          {member ? "Edit Member" : "Add New Member"}
-        </h1>
-      </div>
+      {error ? (
+        <AdminAlert variant="error" title="Could not save" message={error} />
+      ) : null}
+
+      {filteredTeams.length === 0 ? (
+        <AdminAlert
+          variant="info"
+          title="Create teams first"
+          message={`No teams exist for ${memberYear}. Go to Teams and add Patron, Mentors, and Executive groups for this year before adding members.`}
+          dismissible={false}
+        />
+      ) : null}
 
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-8">
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-6">
@@ -433,19 +451,13 @@ export default function MemberForm({ teams, member }: Props) {
           </div>
         </div>
 
-        {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
-
         <div className="flex items-center gap-4">
           <button
             type="submit"
-            disabled={saveMutation.isPending}
+            disabled={saving}
             className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {saveMutation.isPending ? "Saving..." : member ? "Update Member" : "Create Member"}
+            {saving ? "Saving..." : member ? "Update Member" : "Create Member"}
           </button>
           <Link
             href="/admin/members"

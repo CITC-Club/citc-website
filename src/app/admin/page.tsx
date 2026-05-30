@@ -8,6 +8,8 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import MediaImage from "@/components/MediaImage";
+import { getMemberThumbnailUrl } from "@/lib/media";
 import { db } from "@/db";
 import { events, members, teams } from "@/db/schema";
 
@@ -31,38 +33,66 @@ export default async function AdminDashboard() {
           Dashboard
         </h1>
         <p className="text-sm text-forest/60">
-          Overview of your CITC website content and metrics
+          Manage what appears on the public CITC website
         </p>
+      </div>
+
+      <div className="rounded-2xl border border-sage/25 bg-sage-light/40 px-5 py-4">
+        <p className="text-sm font-semibold text-forest mb-2">Recommended order</p>
+        <ol className="text-sm text-forest/70 space-y-1 list-decimal list-inside">
+          <li>
+            <Link href="/admin/teams" className="text-sage font-medium hover:underline">
+              Teams
+            </Link>{" "}
+            — set up groups for each academic year
+          </li>
+          <li>
+            <Link href="/admin/members" className="text-sage font-medium hover:underline">
+              Members
+            </Link>{" "}
+            — add people to those teams
+          </li>
+          <li>
+            <Link href="/admin/events" className="text-sage font-medium hover:underline">
+              Events
+            </Link>{" "}
+            — publish workshops and competitions
+          </li>
+        </ol>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
         {(
           [
             {
-              label: "Total Members",
+              label: "Members",
               count: memberCount.count,
               icon: Users,
-              tag: "Active",
+              tag: "In database",
+              href: "/admin/members",
             },
             {
-              label: "Total Events",
+              label: "Events",
               count: eventCount.count,
               icon: Calendar,
-              tag: "All-time",
+              tag: "All time",
+              href: "/admin/events",
             },
             {
-              label: "Active Teams",
+              label: "Teams",
               count: teamCount.count,
               icon: Layers,
-              tag: "Divisions",
+              tag: "All years",
+              href: "/admin/teams",
             },
           ] as const
         ).map((card) => {
           const Icon = card.icon;
           return (
-            <div
+            <Link
               key={card.label}
-              className="group relative bg-white dark:bg-clay-light rounded-2xl border border-stone/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] cursor-default"
+              href={card.href}
+              className="group relative bg-white dark:bg-clay-light rounded-2xl border border-stone/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage/50"
             >
               <div className="flex items-start justify-between">
                 <div className="space-y-1.5">
@@ -81,9 +111,11 @@ export default async function AdminDashboard() {
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-sage-light text-forest font-medium text-[10px] uppercase tracking-wider">
                   {card.tag}
                 </span>
-                <span>registered portal users</span>
+                <span className="group-hover:text-sage transition-colors">
+                  Open →
+                </span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -98,6 +130,7 @@ export default async function AdminDashboard() {
           </div>
           <div className="p-2 md:p-3 space-y-0.5">
             {recentMembers.map((m) => {
+              const thumbUrl = getMemberThumbnailUrl(m);
               return (
                 <Link
                   key={m.id}
@@ -105,9 +138,9 @@ export default async function AdminDashboard() {
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-clay-light/60 transition-all duration-200 active:scale-[0.99] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage/50"
                 >
                   <div className="relative w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-clay-light text-forest/60 flex items-center justify-center text-sm font-semibold">
-                    {m.photoThumb ? (
-                      <img
-                        src={`${m.photoThumb}${m.photoVersion ? `?v=${m.photoVersion}` : ""}`}
+                    {thumbUrl ? (
+                      <MediaImage
+                        src={thumbUrl}
                         alt={m.name}
                         className="w-full h-full object-cover"
                       />

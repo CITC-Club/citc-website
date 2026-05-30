@@ -1,22 +1,9 @@
 "use client";
 
-import {
-  Calendar,
-  ExternalLink,
-  Layers,
-  LayoutDashboard,
-  LogOut,
-  Users,
-} from "lucide-react";
+import { ExternalLink, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const navItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Members", href: "/admin/members", icon: Users },
-  { label: "Teams", href: "/admin/teams", icon: Layers },
-  { label: "Events", href: "/admin/events", icon: Calendar },
-];
+import { ADMIN_NAV_ITEMS, isAdminNavActive } from "@/lib/admin-nav";
 
 export default function Sidebar({ collapsed }: { collapsed: boolean }) {
   const pathname = usePathname();
@@ -36,24 +23,29 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
         {!collapsed && (
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-semibold tracking-tight text-forest truncate">
-              CITC
+              CITC Admin
             </span>
             <span className="text-[10px] font-medium text-forest/50 uppercase tracking-widest truncate">
-              Management Panel
+              Content manager
             </span>
           </div>
         )}
       </div>
 
       <nav className="flex flex-col px-2 py-4 gap-0.5 overflow-y-auto flex-1">
-        {navItems.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+        {!collapsed && (
+          <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-forest/40">
+            Menu
+          </p>
+        )}
+        {ADMIN_NAV_ITEMS.map((item) => {
+          const isActive = isAdminNavActive(pathname, item.href);
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
+              title={collapsed ? item.label : item.description}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative ${
                 collapsed ? "justify-center" : ""
               } ${
@@ -73,7 +65,11 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
                 }`}
                 strokeWidth={1.5}
               />
-              {!collapsed && <span className="truncate">{item.label}</span>}
+              {!collapsed && (
+                <span className="flex flex-col min-w-0">
+                  <span className="truncate">{item.label}</span>
+                </span>
+              )}
             </Link>
           );
         })}
@@ -86,12 +82,14 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
       >
         <a
           href="/"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-forest/60 hover:bg-clay-light/50 hover:text-forest transition-all duration-200 ${
             collapsed ? "justify-center" : ""
           } active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage/50`}
         >
           <ExternalLink className="w-5 h-5 shrink-0" strokeWidth={1.5} />
-          {!collapsed && <span className="truncate">View Website</span>}
+          {!collapsed && <span className="truncate">View website</span>}
         </a>
         <form action="/admin/logout" method="POST">
           <button
@@ -101,7 +99,7 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
             } active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta/50 cursor-pointer`}
           >
             <LogOut className="w-5 h-5 shrink-0" strokeWidth={1.5} />
-            {!collapsed && <span className="truncate">Sign Out</span>}
+            {!collapsed && <span className="truncate">Sign out</span>}
           </button>
         </form>
       </div>
