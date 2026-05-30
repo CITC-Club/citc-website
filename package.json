@@ -10,14 +10,14 @@
     "format": "biome format --write",
     "check": "biome check && npm run build",
     "db:push": "drizzle-kit push",
-    "db:seed": "npx tsx src/db/seed.ts",
-    "db:seed-thumbs": "npx tsx -e \"import('./src/db/seed-thumbs.ts').then(m => m.ensureSeedMemberThumbs())\""
+    "db:seed": "tsx src/db/seed.ts",
+    "db:seed-thumbs": "tsx -e \"import('./src/db/seed-thumbs.ts').then(m => m.ensureSeedMemberThumbs())\""
   },
   "dependencies": {
     "@jsquash/avif": "^2.1.1",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^1.0.0-rc.3",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.6",
@@ -35,9 +35,10 @@
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "dotenv": "^17.4.2",
-    "drizzle-kit": "^0.31.10",
+    "drizzle-kit": "^1.0.0-rc.3",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5"
   }
 }
