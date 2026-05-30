@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Calendar, MapPin, Clock, ArrowLeft, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import MediaImage from "@/components/MediaImage";
-import type { Event } from "@/types";
+import {Calendar, MapPin, Clock, ArrowLeft, ArrowRight} from 'lucide-react';
+import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import MediaImage from '@/components/MediaImage';
+import type {Event} from '@/types';
 
 interface EventDetailsClientProps {
   event: Event;
 }
 
-export default function EventDetailsClient({ event }: EventDetailsClientProps) {
-  const isRunning = event.status === "running";
+export default function EventDetailsClient({event}: EventDetailsClientProps) {
+  const isRunning = event.status === 'running';
 
   return (
     <div className="min-h-screen pt-24 pb-20 bg-white dark:bg-citc-navy transition-colors duration-300">
@@ -36,7 +36,7 @@ export default function EventDetailsClient({ event }: EventDetailsClientProps) {
                 {tag}
               </span>
             ))}
-            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${isRunning ? "bg-citc-blue text-white" : "bg-slate-700 text-slate-200"}`}>
+            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${isRunning ? 'bg-citc-blue text-white' : 'bg-slate-700 text-slate-200'}`}>
               {event.status}
             </span>
           </div>

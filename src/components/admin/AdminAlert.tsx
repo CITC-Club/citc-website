@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
-import { useState } from "react";
+import {AlertCircle, CheckCircle2, Info, X} from 'lucide-react';
+import {useState} from 'react';
 
-type AlertVariant = "success" | "error" | "info";
+type AlertVariant = 'success' | 'error' | 'info';
 
 const styles: Record<
   AlertVariant,
   { box: string; icon: typeof CheckCircle2 }
 > = {
   success: {
-    box: "bg-sage-light/80 border-sage/30 text-forest",
+    box: 'bg-sage-light/80 border-sage/30 text-forest',
     icon: CheckCircle2,
   },
   error: {
-    box: "bg-terracotta/10 border-terracotta/25 text-forest",
+    box: 'bg-terracotta/10 border-terracotta/25 text-forest',
     icon: AlertCircle,
   },
   info: {
-    box: "bg-clay-light/80 border-stone text-forest",
+    box: 'bg-clay-light/80 border-stone text-forest',
     icon: Info,
   },
 };

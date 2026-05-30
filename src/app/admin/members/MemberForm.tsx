@@ -1,45 +1,45 @@
-"use client";
+'use client';
 
-import { Upload } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import AdminAlert from "@/components/admin/AdminAlert";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import type { Member, Team } from "@/types";
-import { createBrowserSupabaseClient } from "@/utils/supabase/client";
+import {Upload} from 'lucide-react';
+import Link from 'next/link';
+import {useRouter} from 'next/navigation';
+import {useState} from 'react';
+import AdminAlert from '@/components/admin/AdminAlert';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import type {Member, Team} from '@/types';
+import {createBrowserSupabaseClient} from '@/utils/supabase/client';
 
 interface Props {
   teams: Team[];
   member?: Member;
 }
 
-export default function MemberForm({ teams, member }: Props) {
+export default function MemberForm({teams, member}: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
-  const [name, setName] = useState(member?.name || "");
-  const [type, setType] = useState(member?.type || "Executive");
-  const [title, setTitle] = useState(member?.title || "");
-  const [department, setDepartment] = useState(member?.department || "");
-  const [email, setEmail] = useState(member?.email || "");
-  const [photo, setPhoto] = useState(member?.photo || "");
-  const [photoThumb, setPhotoThumb] = useState(member?.photoThumb || "");
+  const [name, setName] = useState(member?.name || '');
+  const [type, setType] = useState(member?.type || 'Executive');
+  const [title, setTitle] = useState(member?.title || '');
+  const [department, setDepartment] = useState(member?.department || '');
+  const [email, setEmail] = useState(member?.email || '');
+  const [photo, setPhoto] = useState(member?.photo || '');
+  const [photoThumb, setPhotoThumb] = useState(member?.photoThumb || '');
   const [photoVersion, setPhotoVersion] = useState(member?.photoVersion ?? 0);
   const [memberYear, setMemberYear] = useState(
-    member?.memberYear || new Date().getFullYear(),
+      member?.memberYear || new Date().getFullYear(),
   );
-  const [teamId, setTeamId] = useState(member?.teamId || "");
+  const [teamId, setTeamId] = useState(member?.teamId || '');
   const [collegeYear, setCollegeYear] = useState(member?.collegeYear || 1);
-  const [github, setGithub] = useState(member?.socials?.github || "");
-  const [linkedin, setLinkedin] = useState(member?.socials?.linkedin || "");
-  const [instagram, setInstagram] = useState(member?.socials?.instagram || "");
-  const [facebook, setFacebook] = useState(member?.socials?.facebook || "");
-  const [twitter, setTwitter] = useState(member?.socials?.twitter || "");
-  const [website, setWebsite] = useState(member?.socials?.website || "");
+  const [github, setGithub] = useState(member?.socials?.github || '');
+  const [linkedin, setLinkedin] = useState(member?.socials?.linkedin || '');
+  const [instagram, setInstagram] = useState(member?.socials?.instagram || '');
+  const [facebook, setFacebook] = useState(member?.socials?.facebook || '');
+  const [twitter, setTwitter] = useState(member?.socials?.twitter || '');
+  const [website, setWebsite] = useState(member?.socials?.website || '');
 
   const filteredTeams = teams.filter((t) => t.year === memberYear);
 
@@ -47,7 +47,7 @@ export default function MemberForm({ teams, member }: Props) {
     setMemberYear(year);
     const validTeams = teams.filter((t) => t.year === year);
     if (!validTeams.some((t) => t.id === teamId)) {
-      setTeamId("");
+      setTeamId('');
     }
   };
 
@@ -55,19 +55,19 @@ export default function MemberForm({ teams, member }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    setError("");
+    setError('');
 
     try {
-      const { compressImageToAvif, generateThumbnail } = await import(
-        "@/utils/imageCompressor"
+      const {compressImageToAvif, generateThumbnail} = await import(
+          '@/utils/imageCompressor'
       );
 
       const [
-        { blob: mainBlob, fileName: mainName },
-        { blob: thumbBlob, fileName: thumbName },
+        {blob: mainBlob, fileName: mainName},
+        {blob: thumbBlob, fileName: thumbName},
       ] = await Promise.all([
-        compressImageToAvif(file, { maxWidth: 500, quality: 75 }),
-        generateThumbnail(file, { size: 64, quality: 60 }),
+        compressImageToAvif(file, {maxWidth: 500, quality: 75}),
+        generateThumbnail(file, {size: 64, quality: 60}),
       ]);
 
       const timestamp = Date.now();
@@ -75,33 +75,33 @@ export default function MemberForm({ teams, member }: Props) {
       const mainPath = `members/${timestamp}-${mainName}`;
       const thumbPath = `members/thumbs/${timestamp}-${thumbName}`;
 
-      const [{ error: mainError }, { error: thumbError }] = await Promise.all([
-        supabase.storage.from("media").upload(mainPath, mainBlob, {
+      const [{error: mainError}, {error: thumbError}] = await Promise.all([
+        supabase.storage.from('media').upload(mainPath, mainBlob, {
           contentType: mainBlob.type,
         }),
-        supabase.storage.from("media").upload(thumbPath, thumbBlob, {
+        supabase.storage.from('media').upload(thumbPath, thumbBlob, {
           contentType: thumbBlob.type,
         }),
       ]);
 
       if (mainError || thumbError) {
-        setError(mainError?.message || thumbError?.message || "Upload failed");
+        setError(mainError?.message || thumbError?.message || 'Upload failed');
         setUploading(false);
         return;
       }
 
-      const { data: mainUrl } = supabase.storage
-        .from("media")
-        .getPublicUrl(mainPath);
-      const { data: thumbUrl } = supabase.storage
-        .from("media")
-        .getPublicUrl(thumbPath);
+      const {data: mainUrl} = supabase.storage
+          .from('media')
+          .getPublicUrl(mainPath);
+      const {data: thumbUrl} = supabase.storage
+          .from('media')
+          .getPublicUrl(thumbPath);
 
       setPhoto(mainUrl.publicUrl);
       setPhotoThumb(thumbUrl.publicUrl);
       setPhotoVersion((v) => v + 1);
     } catch (err: any) {
-      setError(err.message || "Failed to compress or upload photo");
+      setError(err.message || 'Failed to compress or upload photo');
     } finally {
       setUploading(false);
     }
@@ -109,11 +109,11 @@ export default function MemberForm({ teams, member }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     if (photo && !photoThumb) {
       setError(
-        "Upload the photo again so a small list thumbnail can be generated.",
+          'Upload the photo again so a small list thumbnail can be generated.',
       );
       return;
     }
@@ -144,23 +144,23 @@ export default function MemberForm({ teams, member }: Props) {
     };
 
     try {
-      const url = member ? `/api/members/${member.id}` : "/api/members";
-      const method = member ? "PUT" : "POST";
+      const url = member ? `/api/members/${member.id}` : '/api/members';
+      const method = member ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to save");
+        throw new Error(data.error || 'Failed to save');
       }
       router.push(
-        member ? "/admin/members?flash=saved" : "/admin/members?flash=created",
+        member ? '/admin/members?flash=saved' : '/admin/members?flash=created',
       );
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
     }
@@ -169,16 +169,16 @@ export default function MemberForm({ teams, member }: Props) {
   return (
     <div>
       <AdminPageHeader
-        title={member ? "Edit member" : "Add member"}
+        title={member ? 'Edit member' : 'Add member'}
         description={
-          member
-            ? "Update profile, team, and photo. Changes appear on the public team page."
-            : "Add a member to a team for the selected academic year."
+          member ?
+            'Update profile, team, and photo. Changes appear on the public team page.' :
+            'Add a member to a team for the selected academic year.'
         }
         breadcrumbs={[
-          { label: "Dashboard", href: "/admin" },
-          { label: "Members", href: "/admin/members" },
-          { label: member ? "Edit" : "New" },
+          {label: 'Dashboard', href: '/admin'},
+          {label: 'Members', href: '/admin/members'},
+          {label: member ? 'Edit' : 'New'},
         ]}
       />
 
@@ -349,7 +349,7 @@ export default function MemberForm({ teams, member }: Props) {
             <div className="flex-1">
               <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
                 <Upload className="w-4 h-4" />
-                {uploading ? "Uploading..." : "Upload Photo"}
+                {uploading ? 'Uploading...' : 'Upload Photo'}
                 <input
                   type="file"
                   accept="image/*"
@@ -457,7 +457,7 @@ export default function MemberForm({ teams, member }: Props) {
             disabled={saving}
             className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {saving ? "Saving..." : member ? "Update Member" : "Create Member"}
+            {saving ? 'Saving...' : member ? 'Update Member' : 'Create Member'}
           </button>
           <Link
             href="/admin/members"

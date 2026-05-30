@@ -1,14 +1,14 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { seedAssetPath } from "@/lib/seed-assets";
-import { SITE_CONFIG } from "@/lib/site-config";
+import {ArrowRight} from 'lucide-react';
+import Link from 'next/link';
+import {seedAssetPath} from '@/lib/seed-assets';
+import {SITE_CONFIG} from '@/lib/site-config';
 
 export default function Hero() {
   return (
     <section className="relative overflow-hidden min-h-[min(92vh,880px)] flex items-center">
       <div className="absolute inset-0" aria-hidden>
         <img
-          src={seedAssetPath("media/og-team.avif")}
+          src={seedAssetPath('media/og-team.avif')}
           alt=""
           className="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-[0.38] dark:opacity-[0.28]"
           fetchPriority="high"

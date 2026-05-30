@@ -1,6 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
+import {createServerClient} from '@supabase/ssr';
+import {cookies} from 'next/headers';
+import {getSupabaseAnonKey, getSupabaseUrl} from '@/lib/env';
 
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
@@ -12,7 +12,7 @@ export async function createServerSupabaseClient() {
       },
       setAll(cookiesToSet) {
         try {
-          for (const { name, value, options } of cookiesToSet) {
+          for (const {name, value, options} of cookiesToSet) {
             cookieStore.set(name, value, options);
           }
         } catch {

@@ -1,44 +1,44 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { seedAssetPath } from "@/lib/seed-assets";
-import { SITE_CONFIG } from "@/lib/site-config";
+import Link from 'next/link';
+import {ArrowRight} from 'lucide-react';
+import {seedAssetPath} from '@/lib/seed-assets';
+import {SITE_CONFIG} from '@/lib/site-config';
 
 const tiles = [
   {
-    href: "/events",
-    layout: "md:col-start-1 md:row-start-1 md:row-span-2",
-    eyebrow: "Workshops",
-    title: "Multi-day sessions in the lab",
-    body: "Embedded systems, IoT, and web builds. Recent workshops ran in NCIT Room 125.",
-    cta: "Past events",
+    href: '/events',
+    layout: 'md:col-start-1 md:row-start-1 md:row-span-2',
+    eyebrow: 'Workshops',
+    title: 'Multi-day sessions in the lab',
+    body: 'Embedded systems, IoT, and web builds. Recent workshops ran in NCIT Room 125.',
+    cta: 'Past events',
     featured: true,
-    image: seedAssetPath("event/003/IoTExpo2082.png"),
+    image: seedAssetPath('event/003/IoTExpo2082.png'),
   },
   {
-    href: "/events",
-    layout: "md:col-start-2 md:col-span-2 md:row-start-1",
-    eyebrow: "Competitions",
-    title: "Club-run contests",
-    body: "Structured challenges like Prompt to Image with real judging and prizes.",
-    cta: "See results",
+    href: '/events',
+    layout: 'md:col-start-2 md:col-span-2 md:row-start-1',
+    eyebrow: 'Competitions',
+    title: 'Club-run contests',
+    body: 'Structured challenges like Prompt to Image with real judging and prizes.',
+    cta: 'See results',
     featured: false,
   },
   {
-    href: "/team",
-    layout: "md:col-start-2 md:row-start-2",
-    eyebrow: "People",
-    title: "Students who organize it",
-    body: "Mentors, executives, and advisors from comp eng who book the room and run the night.",
-    cta: "Meet the team",
+    href: '/team',
+    layout: 'md:col-start-2 md:row-start-2',
+    eyebrow: 'People',
+    title: 'Students who organize it',
+    body: 'Mentors, executives, and advisors from comp eng who book the room and run the night.',
+    cta: 'Meet the team',
     featured: false,
   },
   {
-    href: "/join",
-    layout: "md:col-start-3 md:row-start-2",
-    eyebrow: "Join",
-    title: "Open to NCIT students",
-    body: "Show up for the next workshop or competition. No prior club membership required.",
-    cta: "Sign up",
+    href: '/join',
+    layout: 'md:col-start-3 md:row-start-2',
+    eyebrow: 'Join',
+    title: 'Open to NCIT students',
+    body: 'Show up for the next workshop or competition. No prior club membership required.',
+    cta: 'Sign up',
     featured: false,
   },
 ] as const;
@@ -87,7 +87,7 @@ export default function HomeAbout() {
                   {tile.eyebrow}
                 </p>
                 <h3
-                  className={`mt-2 font-bold text-citc-navy dark:text-white ${tile.featured ? "text-xl md:text-2xl" : "text-lg"}`}
+                  className={`mt-2 font-bold text-citc-navy dark:text-white ${tile.featured ? 'text-xl md:text-2xl' : 'text-lg'}`}
                 >
                   {tile.title}
                 </h3>

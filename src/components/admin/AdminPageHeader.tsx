@@ -1,6 +1,6 @@
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import type { ReactNode } from "react";
+import {ChevronRight} from 'lucide-react';
+import Link from 'next/link';
+import type {ReactNode} from 'react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -42,7 +42,7 @@ export default function AdminPageHeader({
                     {item.label}
                   </Link>
                 ) : (
-                  <span className={isLast ? "text-forest/70" : undefined}>
+                  <span className={isLast ? 'text-forest/70' : undefined}>
                     {item.label}
                   </span>
                 )}

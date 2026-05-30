@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import MemberProfileContent from "@/components/MemberProfileContent";
-import type { Member, Team } from "@/types";
+import {useEffect, useRef} from 'react';
+import {X} from 'lucide-react';
+import {motion, AnimatePresence} from 'framer-motion';
+import MemberProfileContent from '@/components/MemberProfileContent';
+import type {Member, Team} from '@/types';
 
 interface MemberProfileModalProps {
   member: Member | null;
@@ -25,17 +25,17 @@ export default function MemberProfileModal({
     if (!open) return;
 
     const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     closeRef.current?.focus();
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
       document.body.style.overflow = prevOverflow;
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener('keydown', onKeyDown);
     };
   }, [open, onClose]);
 
@@ -47,9 +47,9 @@ export default function MemberProfileModal({
             type="button"
             aria-label="Close profile"
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
             onClick={onClose}
           />
           <motion.div
@@ -57,10 +57,10 @@ export default function MemberProfileModal({
             aria-modal="true"
             aria-labelledby="member-profile-title"
             className="relative z-10 w-full sm:max-w-2xl max-h-[92vh] sm:max-h-[88vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white dark:bg-citc-navy shadow-2xl border border-slate-200 dark:border-white/10"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ type: "spring", stiffness: 380, damping: 32 }}
+            initial={{opacity: 0, y: 40}}
+            animate={{opacity: 1, y: 0}}
+            exit={{opacity: 0, y: 24}}
+            transition={{type: 'spring', stiffness: 380, damping: 32}}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 z-20 flex justify-end p-3 sm:p-4 bg-white/90 dark:bg-citc-navy/90 backdrop-blur-md border-b border-slate-100 dark:border-white/5">

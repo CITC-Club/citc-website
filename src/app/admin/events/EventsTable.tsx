@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Calendar,
@@ -7,18 +7,18 @@ import {
   Pencil,
   Search,
   Trash2,
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { resolveAcademicYear, sortYearsDesc } from "@/lib/years";
-import type { Event } from "@/types";
+} from 'lucide-react';
+import Link from 'next/link';
+import {useState} from 'react';
+import {resolveAcademicYear, sortYearsDesc} from '@/lib/years';
+import type {Event} from '@/types';
 
 interface Props {
   events: Event[];
 }
 
-export default function EventsTable({ events }: Props) {
-  const [search, setSearch] = useState("");
+export default function EventsTable({events}: Props) {
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
@@ -29,8 +29,9 @@ export default function EventsTable({ events }: Props) {
 
   const filtered = events.filter((e) => {
     if (statusFilter && e.status !== statusFilter) return false;
-    if (yearFilter && resolveAcademicYear(e.academicYear) !== yearFilter)
+    if (yearFilter && resolveAcademicYear(e.academicYear) !== yearFilter) {
       return false;
+    }
     if (search) {
       const s = search.toLowerCase();
       return (
@@ -43,10 +44,10 @@ export default function EventsTable({ events }: Props) {
 
   const statusColors: Record<string, string> = {
     running:
-      "bg-red-50 text-red-700 border-red-100 dark:bg-red-950/20 dark:text-red-450 dark:border-red-900/25",
+      'bg-red-50 text-red-700 border-red-100 dark:bg-red-950/20 dark:text-red-450 dark:border-red-900/25',
     upcoming:
-      "bg-cyan-50 text-cyan-700 border-cyan-100 dark:bg-cyan-950/20 dark:text-cyan-400 dark:border-cyan-900/25",
-    past: "bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800/40 dark:text-slate-400 dark:border-slate-800/30",
+      'bg-cyan-50 text-cyan-700 border-cyan-100 dark:bg-cyan-950/20 dark:text-cyan-400 dark:border-cyan-900/25',
+    past: 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800/40 dark:text-slate-400 dark:border-slate-800/30',
   };
 
   return (
@@ -65,7 +66,7 @@ export default function EventsTable({ events }: Props) {
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex items-center">
             <select
-              value={yearFilter ?? ""}
+              value={yearFilter ?? ''}
               onChange={(e) =>
                 setYearFilter(e.target.value ? Number(e.target.value) : null)
               }
@@ -82,7 +83,7 @@ export default function EventsTable({ events }: Props) {
           </div>
           <div className="relative flex items-center">
             <select
-              value={statusFilter ?? ""}
+              value={statusFilter ?? ''}
               onChange={(e) => setStatusFilter(e.target.value || null)}
               className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all cursor-pointer shadow-sm min-w-[140px]"
             >
@@ -172,7 +173,7 @@ export default function EventsTable({ events }: Props) {
                 </td>
                 <td className="px-6 py-4.5">
                   <span
-                    className={`inline-flex px-2.5 py-0.5 rounded-lg text-xs font-semibold border capitalize ${statusColors[event.status] || ""}`}
+                    className={`inline-flex px-2.5 py-0.5 rounded-lg text-xs font-semibold border capitalize ${statusColors[event.status] || ''}`}
                   >
                     {event.status}
                   </span>

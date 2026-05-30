@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import {useState, useEffect} from 'react';
+import {motion} from 'framer-motion';
 
 interface CountdownProps {
   targetDate: number;
@@ -9,9 +9,9 @@ interface CountdownProps {
   description?: string;
 }
 
-export default function Countdown({ targetDate, title, description }: CountdownProps) {
+export default function Countdown({targetDate, title, description}: CountdownProps) {
   const [isExpired, setIsExpired] = useState(false);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [countdown, setCountdown] = useState({days: 0, hours: 0, minutes: 0, seconds: 0});
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -36,10 +36,10 @@ export default function Countdown({ targetDate, title, description }: CountdownP
   if (isExpired) return null;
 
   const units: Array<[string, number]> = [
-    ["Days", countdown.days],
-    ["Hours", countdown.hours],
-    ["Mins", countdown.minutes],
-    ["Secs", countdown.seconds],
+    ['Days', countdown.days],
+    ['Hours', countdown.hours],
+    ['Mins', countdown.minutes],
+    ['Secs', countdown.seconds],
   ];
 
   return (
@@ -49,9 +49,9 @@ export default function Countdown({ targetDate, title, description }: CountdownP
           <div key={key} className="flex flex-col items-center min-w-[60px] sm:min-w-[80px]">
             <motion.div
               key={`${key}-${value}`}
-              initial={{ y: -4, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              initial={{y: -4, opacity: 0}}
+              animate={{y: 0, opacity: 1}}
+              transition={{duration: 0.3}}
               className="text-4xl sm:text-5xl md:text-6xl font-black text-cyan-600 dark:text-cyan-400 tabular-nums"
             >
               {value < 10 ? `0${value}` : value}

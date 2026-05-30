@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
-import { getMemberWithTeam } from "@/lib/members";
-import { memberProfilePath } from "@/lib/member-slug";
-import { createPageMetadata } from "@/lib/seo";
+import type {Metadata} from 'next';
+import {notFound, redirect} from 'next/navigation';
+import {getMemberWithTeam} from '@/lib/members';
+import {memberProfilePath} from '@/lib/member-slug';
+import {createPageMetadata} from '@/lib/seo';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 type PageProps = {
   params: Promise<{ year: string; slug: string }>;
@@ -13,27 +13,27 @@ type PageProps = {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { year, slug } = await params;
+  const {year, slug} = await params;
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum)) {
-    return { title: "Member not found | CITC" };
+    return {title: 'Member not found | CITC'};
   }
 
   const data = await getMemberWithTeam(yearNum, slug);
   if (!data) {
-    return { title: "Member not found | CITC" };
+    return {title: 'Member not found | CITC'};
   }
 
-  const { member, team } = data;
+  const {member, team} = data;
   const path = memberProfilePath(member);
   const description = [
     member.type,
     team?.name,
     `Academic year ${member.memberYear}`,
-    "CITC at NCIT",
+    'CITC at NCIT',
   ]
-    .filter(Boolean)
-    .join(" · ");
+      .filter(Boolean)
+      .join(' · ');
 
   return createPageMetadata({
     title: `${member.name} — CITC Team ${member.memberYear}`,
@@ -44,8 +44,8 @@ export async function generateMetadata({
 }
 
 /** Shareable link: opens team roster with profile popup. */
-export default async function MemberProfilePage({ params }: PageProps) {
-  const { year, slug } = await params;
+export default async function MemberProfilePage({params}: PageProps) {
+  const {year, slug} = await params;
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum)) notFound();
 

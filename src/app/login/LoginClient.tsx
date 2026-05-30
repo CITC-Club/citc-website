@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createBrowserSupabaseClient } from "@/utils/supabase/client";
-import ThemeToggle from "@/components/ThemeToggle";
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {createBrowserSupabaseClient} from '@/utils/supabase/client';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function LoginClient() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const {error: authError} = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -29,7 +29,7 @@ export default function LoginClient() {
       return;
     }
 
-    router.push("/admin");
+    router.push('/admin');
     router.refresh();
   };
 
@@ -73,7 +73,7 @@ export default function LoginClient() {
             disabled={loading}
             className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
       </div>

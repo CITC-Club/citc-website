@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Menu, X, ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import ThemeToggle from "@/components/ThemeToggle";
+import {useState, useEffect} from 'react';
+import {Menu, X, ChevronRight} from 'lucide-react';
+import Link from 'next/link';
+import {usePathname} from 'next/navigation';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -30,18 +30,18 @@ export default function Navbar() {
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, {passive: true});
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY, isMobileMenuOpen]);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Events", href: "/events" },
-    { name: "Team", href: "/team" },
+    {name: 'Home', href: '/'},
+    {name: 'Events', href: '/events'},
+    {name: 'Team', href: '/team'},
   ];
 
   const getIsActive = (href: string) => {
-    if (href === "/") return pathname === "/";
+    if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   };
 
@@ -49,16 +49,16 @@ export default function Navbar() {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 py-4 transition-transform duration-200 ease-out ${
-          !isVisible ? "-translate-y-full" : "translate-y-0"
+          !isVisible ? '-translate-y-full' : 'translate-y-0'
         }`}
       >
         <div className="site-container">
           <div
-            className={`w-full relative transition-[border-radius,background-color,box-shadow,padding] duration-200 border border-black/[0.03] dark:border-white/[0.03] ${isMobileMenuOpen ? "rounded-[2.5rem]" : "rounded-full"} ${isScrolled || isMobileMenuOpen ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl px-6 py-3" : "bg-white/30 dark:bg-slate-950/20 backdrop-blur-md px-4 py-2 sm:px-6"}`}
+            className={`w-full relative transition-[border-radius,background-color,box-shadow,padding] duration-200 border border-black/[0.03] dark:border-white/[0.03] ${isMobileMenuOpen ? 'rounded-[2.5rem]' : 'rounded-full'} ${isScrolled || isMobileMenuOpen ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl px-6 py-3' : 'bg-white/30 dark:bg-slate-950/20 backdrop-blur-md px-4 py-2 sm:px-6'}`}
           >
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 group shrink-0">
-                <div className={`relative flex items-center justify-center transition-[width,height] duration-200 ${isScrolled || isMobileMenuOpen ? "w-10 h-10" : "w-12 h-12"}`}>
+                <div className={`relative flex items-center justify-center transition-[width,height] duration-200 ${isScrolled || isMobileMenuOpen ? 'w-10 h-10' : 'w-12 h-12'}`}>
                   <img src="/CITCLOGOW.webp" alt="CITC" width="480" height="209" className="w-full h-full object-contain dark:hidden" fetchPriority="high" />
                   <img src="/CITC_LOGOD.webp" alt="CITC" width="480" height="209" className="w-full h-full object-contain hidden dark:block" fetchPriority="high" />
                 </div>
@@ -76,7 +76,7 @@ export default function Navbar() {
                       {active && (
                         <span className="absolute inset-0 bg-citc-blue-muted dark:bg-citc-blue/20 rounded-full" />
                       )}
-                      <span className={`relative z-10 transition-colors duration-200 ${active ? "text-citc-blue font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-citc-navy dark:hover:text-white"}`}>
+                      <span className={`relative z-10 transition-colors duration-200 ${active ? 'text-citc-blue font-semibold' : 'text-slate-600 dark:text-slate-400 hover:text-citc-navy dark:hover:text-white'}`}>
                         {link.name}
                       </span>
                     </Link>
@@ -102,7 +102,7 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
                   aria-expanded={isMobileMenuOpen}
-                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                  aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 >
                   {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
                 </button>
@@ -118,7 +118,7 @@ export default function Navbar() {
                       key={link.name}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`text-xl font-bold transition-colors ${getIsActive(link.href) ? "text-citc-blue" : "text-slate-700 dark:text-slate-300"}`}
+                      className={`text-xl font-bold transition-colors ${getIsActive(link.href) ? 'text-citc-blue' : 'text-slate-700 dark:text-slate-300'}`}
                     >
                       {link.name}
                     </Link>

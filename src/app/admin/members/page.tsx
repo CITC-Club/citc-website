@@ -1,13 +1,13 @@
-import { asc, desc } from "drizzle-orm";
-import { Plus } from "lucide-react";
-import { db } from "@/db";
-import { members, teams } from "@/db/schema";
-import MembersTable from "@/app/admin/members/MembersTable";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import AdminPrimaryButton from "@/components/admin/AdminPrimaryButton";
-import { sortYearsDesc } from "@/lib/years";
+import {asc, desc} from 'drizzle-orm';
+import {Plus} from 'lucide-react';
+import {db} from '@/db';
+import {members, teams} from '@/db/schema';
+import MembersTable from '@/app/admin/members/MembersTable';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminPrimaryButton from '@/components/admin/AdminPrimaryButton';
+import {sortYearsDesc} from '@/lib/years';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function MembersPage({
   searchParams,
@@ -17,9 +17,9 @@ export default async function MembersPage({
   const params = await searchParams;
 
   const allMembers = await db
-    .select()
-    .from(members)
-    .orderBy(desc(members.memberYear), asc(members.name));
+      .select()
+      .from(members)
+      .orderBy(desc(members.memberYear), asc(members.name));
 
   const allTeams = await db.select().from(teams).orderBy(desc(teams.year));
   const teamMap = new Map(allTeams.map((t) => [t.id, t.name]));
@@ -35,8 +35,8 @@ export default async function MembersPage({
         title="Members"
         description="Search and filter by year or team. Add members after teams are set up for that year."
         breadcrumbs={[
-          { label: "Dashboard", href: "/admin" },
-          { label: "Members" },
+          {label: 'Dashboard', href: '/admin'},
+          {label: 'Members'},
         ]}
         action={
           <AdminPrimaryButton href="/admin/members/new" icon={<Plus className="w-4 h-4" />}>

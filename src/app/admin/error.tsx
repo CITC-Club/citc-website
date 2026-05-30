@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { AlertCircle, RefreshCw } from "lucide-react";
-import Link from "next/link";
-import { useEffect } from "react";
+import {AlertCircle, RefreshCw} from 'lucide-react';
+import Link from 'next/link';
+import {useEffect} from 'react';
 
 export default function AdminError({
   error,

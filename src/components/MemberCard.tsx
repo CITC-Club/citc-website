@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { memo, useEffect, useRef, useState } from "react";
-import { Mail, User, Globe } from "lucide-react";
-import { Github, Linkedin, Instagram } from "@/components/Icons";
-import { motion } from "framer-motion";
-import { getMemberPhotoUrl } from "@/lib/media";
-import type { Member } from "@/types";
+import {memo, useEffect, useRef, useState} from 'react';
+import {Mail, User, Globe} from 'lucide-react';
+import {Github, Linkedin, Instagram} from '@/components/Icons';
+import {motion} from 'framer-motion';
+import {getMemberPhotoUrl} from '@/lib/media';
+import type {Member} from '@/types';
 
 interface MemberCardProps {
   member: Member;
@@ -14,11 +14,11 @@ interface MemberCardProps {
 }
 
 const cardItemVariants = {
-  hidden: { y: 40, opacity: 0 },
+  hidden: {y: 40, opacity: 0},
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: "spring" as const, stiffness: 80, damping: 16 },
+    transition: {type: 'spring' as const, stiffness: 80, damping: 16},
   },
 };
 
@@ -28,21 +28,21 @@ const MemberCard: React.FC<MemberCardProps> = ({
   onSelect,
 }) => {
   const imgRef = useRef<HTMLImageElement>(null);
-  const [imageState, setImageState] = useState<"loading" | "ready" | "error">(
-    "loading",
+  const [imageState, setImageState] = useState<'loading' | 'ready' | 'error'>(
+      'loading',
   );
 
   const photoUrl = getMemberPhotoUrl(member);
 
   useEffect(() => {
-    setImageState(photoUrl ? "loading" : "error");
+    setImageState(photoUrl ? 'loading' : 'error');
     const img = imgRef.current;
     if (img?.complete && img.naturalWidth > 0) {
-      setImageState("ready");
+      setImageState('ready');
     }
   }, [photoUrl]);
 
-  const showPhoto = photoUrl && imageState !== "error";
+  const showPhoto = photoUrl && imageState !== 'error';
 
   return (
     <motion.button
@@ -56,7 +56,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
       <div className="relative aspect-[3/4] overflow-hidden bg-slate-200 dark:bg-slate-700">
         {showPhoto ? (
           <>
-            {imageState === "loading" && (
+            {imageState === 'loading' && (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800 z-10">
                 <div className="w-12 h-12 border-4 border-citc-blue/30 border-t-citc-blue rounded-full animate-spin" />
               </div>
@@ -65,10 +65,10 @@ const MemberCard: React.FC<MemberCardProps> = ({
               ref={imgRef}
               src={photoUrl}
               alt={member.name}
-              onLoad={() => setImageState("ready")}
-              onError={() => setImageState("error")}
-              loading={priority ? "eager" : "lazy"}
-              fetchPriority={priority ? "high" : "auto"}
+              onLoad={() => setImageState('ready')}
+              onError={() => setImageState('error')}
+              loading={priority ? 'eager' : 'lazy'}
+              fetchPriority={priority ? 'high' : 'auto'}
               className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
             />
           </>
@@ -149,9 +149,9 @@ const MemberCard: React.FC<MemberCardProps> = ({
           </h3>
           <p className="text-sm md:text-base text-citc-blue-muted font-medium drop-shadow-md">
             {member.title ||
-              (member.department
-                ? member.department
-                : `${member.collegeYear ? `Year ${member.collegeYear}` : ""} ${member.type}`.trim())}
+              (member.department ?
+                member.department :
+                `${member.collegeYear ? `Year ${member.collegeYear}` : ''} ${member.type}`.trim())}
           </p>
         </div>
       </div>

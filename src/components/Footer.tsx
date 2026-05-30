@@ -1,7 +1,7 @@
-import { Mail, MapPin } from "lucide-react";
-import { Github, Linkedin, Facebook, Instagram } from "@/components/Icons";
-import Link from "next/link";
-import { SITE_CONFIG } from "@/lib/site-config";
+import {Mail, MapPin} from 'lucide-react';
+import {Github, Linkedin, Facebook, Instagram} from '@/components/Icons';
+import Link from 'next/link';
+import {SITE_CONFIG} from '@/lib/site-config';
 
 const socialIcons: Record<string, React.ElementType> = {
   github: Github,
@@ -11,10 +11,10 @@ const socialIcons: Record<string, React.ElementType> = {
 };
 
 const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "Events", path: "/events" },
-  { name: "Our Team", path: "/team" },
-  { name: "Join Club", path: "/join" },
+  {name: 'Home', path: '/'},
+  {name: 'Events', path: '/events'},
+  {name: 'Our Team', path: '/team'},
+  {name: 'Join Club', path: '/join'},
 ];
 
 export default function Footer() {

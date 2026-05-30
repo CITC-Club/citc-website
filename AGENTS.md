@@ -29,7 +29,8 @@ CITC club website — Next.js 16, Drizzle (Postgres), Supabase (admin auth + sto
 | Pages | Prefer Server Components; add `*Client.tsx` beside `page.tsx` for interactivity. Mark client files with `"use client"`. |
 | Data | Public pages fetch in RSC; admin CRUD via `src/app/api/*`. Seed with `npm run db:seed` (`src/db/seed.ts`). |
 | Build | Production uses Webpack (`npm run build --webpack` in `package.json`); Turbopack build hangs. |
-| Lint / format | `npm run lint` / `npm run format` (Biome). |
+| Lint / format | `npm run lint` / `npm run format` (ESLint + Google style) |
+| Git hooks | Husky pre-push runs `npm run verify` |
 
 ## Brand
 

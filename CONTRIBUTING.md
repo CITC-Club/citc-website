@@ -24,8 +24,10 @@ Optional: `NEXT_PUBLIC_SITE_URL` for correct canonical/OG URLs on preview hosts 
 | `npm run dev` | Local dev server |
 | `npm run build` | Production build (Webpack; see `package.json`) |
 | `npm run start` | Run production build |
-| `npm run lint` | Biome check |
-| `npm run format` | Biome format (write) |
+| `npm run lint` | ESLint (Google style + Next.js rules) |
+| `npm run lint:fix` | ESLint with auto-fix |
+| `npm run format` | Same as `lint:fix` (Google style formatting) |
+| `npm run verify` | Lint + production build (also runs on `git push` via Husky) |
 | `npm run check` | Lint + build |
 | `npm run db:push` | Apply Drizzle schema |
 | `npm run db:seed` | Seed teams, members, events |
@@ -63,7 +65,7 @@ src/
 
 - **TypeScript** strict; avoid `any`.
 - **Imports:** `@/` alias only (see `tsconfig.json`).
-- **Formatting:** Biome (2 spaces). Run `npm run format` before committing.
+- **Formatting:** ESLint auto-fix (`npm run format`). Google JavaScript Style Guide via `eslint-config-google`.
 - **React:** Default export for pages and single-purpose components is fine; named exports for icon bundles (`Icons.tsx`).
 - **Server vs client:** Fetch data in Server Components; use `useState` / `fetch` in client files (`"use client"`).
 
@@ -105,9 +107,13 @@ src/
 ## Pull requests
 
 1. Branch from `main`.
-2. `npm run lint` and `npm run build` must pass.
+2. `npm run verify` must pass (lint + build). Husky runs this on `git push`.
 3. Describe what pages you tested in the PR body.
 4. Do not commit `.env.local`, `.env`, or secrets.
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the [Apache License 2.0](./LICENSE).
 
 ## Questions
 

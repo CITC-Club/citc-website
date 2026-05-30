@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
+import {useEffect} from 'react';
 
 interface TallyWindow extends Window {
   Tally?: { loadEmbeds: () => void };
@@ -8,11 +8,11 @@ interface TallyWindow extends Window {
 
 export default function JoinClubPage() {
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://tally.so/widgets/embed.js";
+    const script = document.createElement('script');
+    script.src = 'https://tally.so/widgets/embed.js';
     script.async = true;
     script.onload = () => {
-      if (typeof window !== "undefined" && (window as TallyWindow).Tally) {
+      if (typeof window !== 'undefined' && (window as TallyWindow).Tally) {
         (window as TallyWindow).Tally?.loadEmbeds();
       }
     };
@@ -35,7 +35,7 @@ export default function JoinClubPage() {
           marginWidth={0}
           title="CITC Reserve"
           className="tally-embed rounded-2xl dark:invert"
-          style={{ minHeight: "600px" }}
+          style={{minHeight: '600px'}}
         />
       </div>
     </main>

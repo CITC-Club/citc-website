@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Calendar, History } from "lucide-react";
-import EventCard from "@/components/EventCard";
-import { resolveAcademicYear, sortYearsDesc } from "@/lib/years";
-import type { Event } from "@/types";
+import {useState} from 'react';
+import {motion} from 'framer-motion';
+import {Calendar, History} from 'lucide-react';
+import EventCard from '@/components/EventCard';
+import {resolveAcademicYear, sortYearsDesc} from '@/lib/years';
+import type {Event} from '@/types';
 
 const gridContainerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.1 },
+    transition: {staggerChildren: 0.1},
   },
 };
 
@@ -18,17 +18,17 @@ interface EventsClientProps {
   events: Event[];
 }
 
-export default function EventsClient({ events }: EventsClientProps) {
+export default function EventsClient({events}: EventsClientProps) {
   const [activeYear, setActiveYear] = useState<number | null>(null);
   const years = sortYearsDesc(events.map((e) => resolveAcademicYear(e.academicYear)));
 
-  const filteredEvents = activeYear
-    ? events.filter((e) => resolveAcademicYear(e.academicYear) === activeYear)
-    : events;
+  const filteredEvents = activeYear ?
+    events.filter((e) => resolveAcademicYear(e.academicYear) === activeYear) :
+    events;
 
-  const runningEvents = filteredEvents.filter((e) => e.status === "running");
-  const upcomingEvents = filteredEvents.filter((e) => e.status === "upcoming");
-  const pastEvents = filteredEvents.filter((e) => e.status === "past");
+  const runningEvents = filteredEvents.filter((e) => e.status === 'running');
+  const upcomingEvents = filteredEvents.filter((e) => e.status === 'upcoming');
+  const pastEvents = filteredEvents.filter((e) => e.status === 'past');
 
   const activeEvents = [...runningEvents, ...upcomingEvents];
 
@@ -51,9 +51,9 @@ export default function EventsClient({ events }: EventsClientProps) {
               type="button"
               onClick={() => setActiveYear(null)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                !activeYear
-                  ? "bg-citc-blue text-white"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                !activeYear ?
+                  'bg-citc-blue text-white' :
+                  'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               All Years
@@ -64,9 +64,9 @@ export default function EventsClient({ events }: EventsClientProps) {
                 type="button"
                 onClick={() => setActiveYear(year)}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeYear === year
-                    ? "bg-citc-blue text-white"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  activeYear === year ?
+                    'bg-citc-blue text-white' :
+                    'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >
                 {year}
@@ -89,7 +89,7 @@ export default function EventsClient({ events }: EventsClientProps) {
               variants={gridContainerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{once: true, margin: '-50px'}}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {activeEvents.map((event) => (
@@ -121,7 +121,7 @@ export default function EventsClient({ events }: EventsClientProps) {
               variants={gridContainerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{once: true, margin: '-50px'}}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {pastEvents.map((event) => (

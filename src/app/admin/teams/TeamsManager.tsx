@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Plus, Trash2, Users } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import type { Team } from "@/types";
+import {Plus, Trash2, Users} from 'lucide-react';
+import Link from 'next/link';
+import {useRouter} from 'next/navigation';
+import {useState} from 'react';
+import type {Team} from '@/types';
 
 interface Props {
   teams: Team[];
@@ -13,21 +13,21 @@ interface Props {
 }
 
 const TEAM_TYPES = [
-  { id: "t_patron", label: "Patron" },
-  { id: "t_faculty", label: "Faculty Advisors" },
-  { id: "t_mentors", label: "Mentors" },
-  { id: "t_exec", label: "Executive Committee" },
+  {id: 't_patron', label: 'Patron'},
+  {id: 't_faculty', label: 'Faculty Advisors'},
+  {id: 't_mentors', label: 'Mentors'},
+  {id: 't_exec', label: 'Executive Committee'},
 ];
 
-export default function TeamsManager({ teams, countMap, years }: Props) {
+export default function TeamsManager({teams, countMap, years}: Props) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [newYear, setNewYear] = useState(new Date().getFullYear() + 1);
-  const [newTeamId, setNewTeamId] = useState("t_exec");
-  const [newTeamName, setNewTeamName] = useState("Executive Committee");
-  const [error, setError] = useState("");
+  const [newTeamId, setNewTeamId] = useState('t_exec');
+  const [newTeamName, setNewTeamName] = useState('Executive Committee');
+  const [error, setError] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleTeamTypeChange = (id: string) => {
@@ -44,21 +44,21 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
       return;
     }
     setCreating(true);
-    setError("");
+    setError('');
     try {
-      const res = await fetch("/api/teams", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: slug, name: newTeamName, year: newYear }),
+      const res = await fetch('/api/teams', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: slug, name: newTeamName, year: newYear}),
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to create");
+        throw new Error(data.error || 'Failed to create');
       }
       setShowForm(false);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create");
+      setError(err instanceof Error ? err.message : 'Failed to create');
     } finally {
       setCreating(false);
     }
@@ -68,24 +68,24 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
     const memberTotal = countMap.get(teamId) ?? 0;
     if (memberTotal > 0) {
       setError(
-        `Cannot delete: ${memberTotal} member(s) still assigned. Reassign or remove them first.`,
+          `Cannot delete: ${memberTotal} member(s) still assigned. Reassign or remove them first.`,
       );
       setConfirmDeleteId(null);
       return;
     }
     setDeletingId(teamId);
-    setError("");
+    setError('');
     try {
-      const res = await fetch(`/api/teams/${teamId}/delete`, { method: "POST" });
+      const res = await fetch(`/api/teams/${teamId}/delete`, {method: 'POST'});
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to delete");
+        throw new Error(data.error || 'Failed to delete');
       }
       setConfirmDeleteId(null);
-      router.push("/admin/teams?flash=deleted");
+      router.push('/admin/teams?flash=deleted');
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete");
+      setError(err instanceof Error ? err.message : 'Failed to delete');
       setConfirmDeleteId(null);
     } finally {
       setDeletingId(null);
@@ -160,7 +160,7 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
                       <button
                         type="button"
                         onClick={() => {
-                          setError("");
+                          setError('');
                           setConfirmDeleteId(team.id);
                         }}
                         disabled={deletingId !== null}
@@ -225,12 +225,12 @@ export default function TeamsManager({ teams, countMap, years }: Props) {
                   disabled={creating}
                   className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {creating ? "Creating..." : "Create"}
+                  {creating ? 'Creating...' : 'Create'}
                 </button>
                 <button
                   onClick={() => {
                     setShowForm(false);
-                    setError("");
+                    setError('');
                   }}
                   className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
                 >

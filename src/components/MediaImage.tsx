@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { resolveMediaUrl } from "@/lib/media";
-import { seedAssetPath } from "@/lib/seed-assets";
+import {useState} from 'react';
+import {resolveMediaUrl} from '@/lib/media';
+import {seedAssetPath} from '@/lib/seed-assets';
 
-const DEFAULT_FALLBACK = seedAssetPath("media/og-team.avif");
+const DEFAULT_FALLBACK = seedAssetPath('media/og-team.avif');
 
 interface MediaImageProps
-  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> {
+  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src: string;
   fallbackSrc?: string;
 }
@@ -15,7 +15,7 @@ interface MediaImageProps
 export default function MediaImage({
   src,
   fallbackSrc = DEFAULT_FALLBACK,
-  alt = "",
+  alt = '',
   className,
   ...rest
 }: MediaImageProps) {

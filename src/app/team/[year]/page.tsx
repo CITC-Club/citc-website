@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import { db } from "@/db";
-import { members, teams } from "@/db/schema";
-import { createPageMetadata } from "@/lib/seo";
-import { sortYearsDesc } from "@/lib/years";
-import TeamClient from "../TeamClient";
+import type {Metadata} from 'next';
+import {Suspense} from 'react';
+import {notFound} from 'next/navigation';
+import {db} from '@/db';
+import {members, teams} from '@/db/schema';
+import {createPageMetadata} from '@/lib/seo';
+import {sortYearsDesc} from '@/lib/years';
+import TeamClient from '../TeamClient';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 type PageProps = {
   params: Promise<{ year: string }>;
@@ -17,10 +17,10 @@ type PageProps = {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { year } = await params;
+  const {year} = await params;
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum)) {
-    return { title: "Team | CITC" };
+    return {title: 'Team | CITC'};
   }
 
   return createPageMetadata({
@@ -31,9 +31,9 @@ export async function generateMetadata({
   });
 }
 
-export default async function TeamYearPage({ params, searchParams }: PageProps) {
-  const { year } = await params;
-  const { member: memberSlug } = await searchParams;
+export default async function TeamYearPage({params, searchParams}: PageProps) {
+  const {year} = await params;
+  const {member: memberSlug} = await searchParams;
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum)) notFound();
 
@@ -46,7 +46,7 @@ export default async function TeamYearPage({ params, searchParams }: PageProps) 
   return (
     <Suspense fallback={null}>
       <TeamClient
-        teamData={{ teams: allTeams, members: allMembers }}
+        teamData={{teams: allTeams, members: allMembers}}
         initialYear={yearNum}
         initialMemberSlug={memberSlug ?? null}
       />

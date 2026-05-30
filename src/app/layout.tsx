@@ -1,24 +1,24 @@
-import type { Metadata } from "next";
-import Script from "next/script";
-import ConditionalLayout from "@/components/ConditionalLayout";
-import { defaultSiteMetadata } from "@/lib/seo";
-import "./globals.css";
+import type {Metadata} from 'next';
+import Script from 'next/script';
+import ConditionalLayout from '@/components/ConditionalLayout';
+import {defaultSiteMetadata} from '@/lib/seo';
+import './globals.css';
 
 export const metadata: Metadata = {
   ...defaultSiteMetadata,
   icons: {
     icon: [
-      { url: "/favicon/favicon.ico", sizes: "any" },
-      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      {url: '/favicon/favicon.ico', sizes: 'any'},
+      {url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png'},
+      {url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png'},
     ],
-    apple: "/favicon/apple-touch-icon.png",
-    shortcut: "/favicon/favicon.ico",
+    apple: '/favicon/apple-touch-icon.png',
+    shortcut: '/favicon/favicon.ico',
   },
-  manifest: "/favicon/site.webmanifest",
+  manifest: '/favicon/site.webmanifest',
   appleWebApp: {
-    title: "CITC",
-    statusBarStyle: "default",
+    title: 'CITC',
+    statusBarStyle: 'default',
   },
 };
 
@@ -40,7 +40,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify({
               NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-              NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+              NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+                process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
             })};`,
           }}
         />

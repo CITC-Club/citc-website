@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { ChevronDown, Pencil, Search, Trash2 } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import MediaImage from "@/components/MediaImage";
-import { getMemberThumbnailUrl } from "@/lib/media";
-import type { Member, Team } from "@/types";
+import {ChevronDown, Pencil, Search, Trash2} from 'lucide-react';
+import Link from 'next/link';
+import {useState} from 'react';
+import MediaImage from '@/components/MediaImage';
+import {getMemberThumbnailUrl} from '@/lib/media';
+import type {Member, Team} from '@/types';
 
 interface Props {
   members: Member[];
@@ -24,12 +24,12 @@ export default function MembersTable({
   initialTeam,
   initialYear,
 }: Props) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState<number | null>(
-    initialYear ?? (years.length > 0 ? years[0] : new Date().getFullYear()),
+      initialYear ?? (years.length > 0 ? years[0] : new Date().getFullYear()),
   );
   const [teamFilter, setTeamFilter] = useState<string | null>(
-    initialTeam ?? null,
+      initialTeam ?? null,
   );
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
@@ -49,13 +49,13 @@ export default function MembersTable({
 
   const typeColors: Record<string, string> = {
     Executive:
-      "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900/30",
+      'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900/30',
     Faculty:
-      "bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900/30",
+      'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900/30',
     Mentor:
-      "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/30",
+      'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/30',
     Patron:
-      "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30",
+      'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30',
   };
 
   return (
@@ -74,7 +74,7 @@ export default function MembersTable({
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex items-center">
             <select
-              value={yearFilter ?? ""}
+              value={yearFilter ?? ''}
               onChange={(e) =>
                 setYearFilter(e.target.value ? Number(e.target.value) : null)
               }
@@ -91,7 +91,7 @@ export default function MembersTable({
           </div>
           <div className="relative flex items-center">
             <select
-              value={teamFilter ?? ""}
+              value={teamFilter ?? ''}
               onChange={(e) => setTeamFilter(e.target.value || null)}
               className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 dark:focus:border-cyan-400 transition-all cursor-pointer shadow-sm"
             >
@@ -136,7 +136,7 @@ export default function MembersTable({
               const thumbUrl = getMemberThumbnailUrl(member);
               const tagClass =
                 typeColors[member.type] ||
-                "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-350 border-slate-200";
+                'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-350 border-slate-200';
 
               return (
                 <tr
@@ -184,7 +184,7 @@ export default function MembersTable({
                     </span>
                   </td>
                   <td className="px-6 py-4.5 text-sm font-medium text-slate-500 dark:text-slate-400">
-                    {member.collegeYear ? `Year ${member.collegeYear}` : "-"}
+                    {member.collegeYear ? `Year ${member.collegeYear}` : '-'}
                   </td>
                   <td className="px-6 py-4.5 text-right">
                     <div className="flex items-center justify-end gap-1.5">
@@ -238,9 +238,9 @@ export default function MembersTable({
       {filtered.length === 0 && (
         <div className="text-center py-16 px-6">
           <p className="text-forest/50 text-sm mb-4">
-            {members.length === 0
-              ? "No members yet. Create teams for the year, then add your first member."
-              : "No members match these filters. Try another year or clear search."}
+            {members.length === 0 ?
+              'No members yet. Create teams for the year, then add your first member.' :
+              'No members match these filters. Try another year or clear search.'}
           </p>
           {members.length === 0 ? (
             <Link

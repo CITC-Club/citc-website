@@ -112,9 +112,9 @@ Postgres runs on port `5432` with credentials from `docker-compose.yml`. Apply s
 | `npm run dev` | Local dev server |
 | `npm run build` | Production build (Webpack) |
 | `npm run start` | Run production build |
-| `npm run lint` | Biome check |
-| `npm run format` | Biome format (write) |
-| `npm run check` | Lint + build |
+| `npm run lint` | ESLint (Google style + Next.js) |
+| `npm run format` | ESLint auto-fix |
+| `npm run verify` | Lint + build (Husky pre-push hook) |
 | `npm run db:push` | Apply Drizzle schema |
 | `npm run db:seed` | Seed teams, members, events |
 | `npm run db:seed-thumbs` | Generate missing member thumbnail AVIFs for seed paths |
@@ -231,6 +231,10 @@ Social links (GitHub, Facebook, Instagram, LinkedIn) live in `SITE_CONFIG.social
 
 ---
 
-## License / ownership
+## License
 
-Private project for CITC @ NCIT. Contact: [citc@ncit.edu.np](mailto:citc@ncit.edu.np).
+Licensed under the [Apache License, Version 2.0](./LICENSE).
+
+Copyright 2025-2026 [CITC-Club](https://github.com/CITC-Club) (Computer Engineering Innovation & Tech Club, NCIT).
+
+Contact: [citc@ncit.edu.np](mailto:citc@ncit.edu.np)

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { memo } from "react";
-import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import MediaImage from "@/components/MediaImage";
-import type { Event } from "@/types";
+import {memo} from 'react';
+import {Calendar, MapPin, Clock, ArrowRight} from 'lucide-react';
+import Link from 'next/link';
+import MediaImage from '@/components/MediaImage';
+import type {Event} from '@/types';
 
 interface EventCardProps {
   event: Event;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event }) => {
-  const isRunning = event.status === "running";
+const EventCard: React.FC<EventCardProps> = ({event}) => {
+  const isRunning = event.status === 'running';
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-citc-navy border border-slate-200 dark:border-white/10 shadow-sm transition-colors hover:border-citc-blue/30">
@@ -26,9 +26,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
           <div
             className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-              isRunning
-                ? "bg-citc-blue text-white"
-                : "bg-slate-800/80 text-white backdrop-blur-sm"
+              isRunning ?
+                'bg-citc-blue text-white' :
+                'bg-slate-800/80 text-white backdrop-blur-sm'
             }`}
           >
             {event.status}
@@ -51,7 +51,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               {event.title}
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
-              {event.description.replace(/[#*_\[\]()~`>]/g, "").substring(0, 150)}
+              {event.description.replace(/[#*_\[\]()~`>]/g, '').substring(0, 150)}
             </p>
           </div>
 

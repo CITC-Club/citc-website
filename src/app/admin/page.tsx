@@ -1,4 +1,4 @@
-import { count, desc } from "drizzle-orm";
+import {count, desc} from 'drizzle-orm';
 import {
   ArrowRight,
   Calendar,
@@ -6,25 +6,25 @@ import {
   Sparkles,
   UserPlus,
   Users,
-} from "lucide-react";
-import Link from "next/link";
-import MediaImage from "@/components/MediaImage";
-import { getMemberThumbnailUrl } from "@/lib/media";
-import { db } from "@/db";
-import { events, members, teams } from "@/db/schema";
+} from 'lucide-react';
+import Link from 'next/link';
+import MediaImage from '@/components/MediaImage';
+import {getMemberThumbnailUrl} from '@/lib/media';
+import {db} from '@/db';
+import {events, members, teams} from '@/db/schema';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const [memberCount] = await db.select({ count: count() }).from(members);
-  const [eventCount] = await db.select({ count: count() }).from(events);
-  const [teamCount] = await db.select({ count: count() }).from(teams);
+  const [memberCount] = await db.select({count: count()}).from(members);
+  const [eventCount] = await db.select({count: count()}).from(events);
+  const [teamCount] = await db.select({count: count()}).from(teams);
 
   const recentMembers = await db
-    .select()
-    .from(members)
-    .orderBy(desc(members.createdAt))
-    .limit(5);
+      .select()
+      .from(members)
+      .orderBy(desc(members.createdAt))
+      .limit(5);
 
   return (
     <div className="space-y-8 md:space-y-10">
@@ -43,19 +43,19 @@ export default async function AdminDashboard() {
           <li>
             <Link href="/admin/teams" className="text-sage font-medium hover:underline">
               Teams
-            </Link>{" "}
+            </Link>{' '}
             — set up groups for each academic year
           </li>
           <li>
             <Link href="/admin/members" className="text-sage font-medium hover:underline">
               Members
-            </Link>{" "}
+            </Link>{' '}
             — add people to those teams
           </li>
           <li>
             <Link href="/admin/events" className="text-sage font-medium hover:underline">
               Events
-            </Link>{" "}
+            </Link>{' '}
             — publish workshops and competitions
           </li>
         </ol>
@@ -65,25 +65,25 @@ export default async function AdminDashboard() {
         {(
           [
             {
-              label: "Members",
+              label: 'Members',
               count: memberCount.count,
               icon: Users,
-              tag: "In database",
-              href: "/admin/members",
+              tag: 'In database',
+              href: '/admin/members',
             },
             {
-              label: "Events",
+              label: 'Events',
               count: eventCount.count,
               icon: Calendar,
-              tag: "All time",
-              href: "/admin/events",
+              tag: 'All time',
+              href: '/admin/events',
             },
             {
-              label: "Teams",
+              label: 'Teams',
               count: teamCount.count,
               icon: Layers,
-              tag: "All years",
-              href: "/admin/teams",
+              tag: 'All years',
+              href: '/admin/teams',
             },
           ] as const
         ).map((card) => {

@@ -1,9 +1,9 @@
-import MemberProfileContent from "@/components/MemberProfileContent";
-import { memberProfilePath } from "@/lib/member-slug";
-import { absoluteUrl } from "@/lib/seo";
-import { SITE_CONFIG } from "@/lib/site-config";
-import { getMemberPhotoUrl } from "@/lib/media";
-import type { Member, Team } from "@/types";
+import MemberProfileContent from '@/components/MemberProfileContent';
+import {memberProfilePath} from '@/lib/member-slug';
+import {absoluteUrl} from '@/lib/seo';
+import {SITE_CONFIG} from '@/lib/site-config';
+import {getMemberPhotoUrl} from '@/lib/media';
+import type {Member, Team} from '@/types';
 
 interface MemberProfileProps {
   member: Member;
@@ -11,38 +11,38 @@ interface MemberProfileProps {
 }
 
 /** Full-page fallback for shared profile links (redirects to team + modal in normal flow). */
-export default function MemberProfile({ member, team }: MemberProfileProps) {
+export default function MemberProfile({member, team}: MemberProfileProps) {
   const photoUrl = getMemberPhotoUrl(member);
   const profileUrl = absoluteUrl(memberProfilePath(member));
 
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: member.name,
-    email: member.email,
-    jobTitle: member.type,
-    url: profileUrl,
-    image: photoUrl ? absoluteUrl(photoUrl.split("?")[0] ?? photoUrl) : undefined,
-    affiliation: {
-      "@type": "Organization",
-      name: SITE_CONFIG.fullName,
-      url: SITE_CONFIG.url,
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    'name': member.name,
+    'email': member.email,
+    'jobTitle': member.type,
+    'url': profileUrl,
+    'image': photoUrl ? absoluteUrl(photoUrl.split('?')[0] ?? photoUrl) : undefined,
+    'affiliation': {
+      '@type': 'Organization',
+      'name': SITE_CONFIG.fullName,
+      'url': SITE_CONFIG.url,
     },
-    ...(team
-      ? {
-          memberOf: {
-            "@type": "OrganizationRole",
-            roleName: team.name,
-          },
-        }
-      : {}),
+    ...(team ?
+      {
+        memberOf: {
+          '@type': 'OrganizationRole',
+          'roleName': team.name,
+        },
+      } :
+      {}),
   };
 
   return (
     <article className="min-h-screen pt-32 pb-20 bg-white dark:bg-citc-navy">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
       />
       <div className="site-container max-w-3xl">
         <MemberProfileContent member={member} team={team} />

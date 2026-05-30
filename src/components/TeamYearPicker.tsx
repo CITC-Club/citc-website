@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { sortYearsDesc } from "@/lib/years";
-import type { Member } from "@/types";
+import {sortYearsDesc} from '@/lib/years';
+import type {Member} from '@/types';
 
 interface TeamYearPickerProps {
   members: Member[];
@@ -23,8 +23,8 @@ export default function TeamYearPicker({
     onSelectYear(year);
     requestAnimationFrame(() => {
       document
-        .getElementById("team-roster")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          .getElementById('team-roster')
+          ?.scrollIntoView({behavior: 'smooth', block: 'start'});
     });
   };
 
@@ -63,9 +63,9 @@ export default function TeamYearPicker({
                 aria-pressed={isActive}
                 onClick={() => scrollToRoster(year)}
                 className={`snap-center shrink-0 flex flex-col items-center justify-center w-[7.5rem] h-[7.5rem] sm:w-32 sm:h-32 rounded-full border-2 transition-all ${
-                  isActive
-                    ? "border-citc-blue bg-citc-blue text-white shadow-lg shadow-citc-blue/25 scale-105"
-                    : "border-slate-200 dark:border-white/15 bg-white dark:bg-white/5 text-citc-navy dark:text-white hover:border-citc-blue/50 hover:bg-citc-blue-muted dark:hover:bg-citc-blue/10"
+                  isActive ?
+                    'border-citc-blue bg-citc-blue text-white shadow-lg shadow-citc-blue/25 scale-105' :
+                    'border-slate-200 dark:border-white/15 bg-white dark:bg-white/5 text-citc-navy dark:text-white hover:border-citc-blue/50 hover:bg-citc-blue-muted dark:hover:bg-citc-blue/10'
                 }`}
               >
                 <span className="text-2xl sm:text-3xl font-bold tabular-nums leading-none">
@@ -73,17 +73,17 @@ export default function TeamYearPicker({
                 </span>
                 <span
                   className={`mt-1.5 text-[10px] font-semibold uppercase tracking-wide ${
-                    isActive ? "text-white/90" : "text-citc-blue"
+                    isActive ? 'text-white/90' : 'text-citc-blue'
                   }`}
                 >
-                  {isCurrent ? "Current" : "Past"}
+                  {isCurrent ? 'Current' : 'Past'}
                 </span>
                 <span
                   className={`mt-0.5 text-[10px] ${
-                    isActive ? "text-white/80" : "text-slate-500 dark:text-slate-400"
+                    isActive ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'
                   }`}
                 >
-                  {count} {count === 1 ? "member" : "members"}
+                  {count} {count === 1 ? 'member' : 'members'}
                 </span>
               </button>
             );

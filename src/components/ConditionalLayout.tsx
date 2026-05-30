@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import {usePathname} from 'next/navigation';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export default function ConditionalLayout({
   children,
@@ -11,9 +11,9 @@ export default function ConditionalLayout({
 }) {
   const pathname = usePathname();
   const isAdminOrAuth =
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/register");
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register');
 
   if (isAdminOrAuth) {
     return <>{children}</>;

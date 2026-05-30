@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import MemberCard from "@/components/MemberCard";
-import MemberProfileModal from "@/components/MemberProfileModal";
-import TeamYearPicker from "@/components/TeamYearPicker";
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {motion} from 'framer-motion';
+import MemberCard from '@/components/MemberCard';
+import MemberProfileModal from '@/components/MemberProfileModal';
+import TeamYearPicker from '@/components/TeamYearPicker';
 import {
   findMemberByYearAndSlug,
   memberSlugFromName,
-} from "@/lib/member-slug";
-import { sortYearsDesc } from "@/lib/years";
+} from '@/lib/member-slug';
+import {sortYearsDesc} from '@/lib/years';
 import {
   sortMembersBySeniorityAndName,
   sortTeamsForDisplay,
-} from "@/lib/team-order";
-import type { Member, Team, TeamData } from "@/types";
+} from '@/lib/team-order';
+import type {Member, Team, TeamData} from '@/types';
 
 const gridContainerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.08 },
+    transition: {staggerChildren: 0.08},
   },
 };
 
@@ -38,11 +38,11 @@ export default function TeamClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const memberSlugFromUrl =
-    searchParams.get("member") ?? initialMemberSlug ?? null;
+    searchParams.get('member') ?? initialMemberSlug ?? null;
 
   const years = useMemo(
-    () => sortYearsDesc(teamData.members.map((m) => m.memberYear)),
-    [teamData.members],
+      () => sortYearsDesc(teamData.members.map((m) => m.memberYear)),
+      [teamData.members],
   );
 
   const latestYear = years[0] ?? new Date().getFullYear();
@@ -59,34 +59,34 @@ export default function TeamClient({
   }, [teamData.teams]);
 
   const resolveMember = useCallback(
-    (year: number, slug: string) => {
-      const member = findMemberByYearAndSlug(teamData.members, year, slug);
-      if (!member) return null;
-      return { member, team: teamById.get(member.teamId) ?? null };
-    },
-    [teamData.members, teamById],
+      (year: number, slug: string) => {
+        const member = findMemberByYearAndSlug(teamData.members, year, slug);
+        if (!member) return null;
+        return {member, team: teamById.get(member.teamId) ?? null};
+      },
+      [teamData.members, teamById],
   );
 
   const openMember = useCallback(
-    (member: Member) => {
-      const team = teamById.get(member.teamId) ?? null;
-      setSelectedMember(member);
-      setSelectedTeam(team);
-      if (member.memberYear !== activeYear) {
-        setActiveYear(member.memberYear);
-      }
-      const slug = memberSlugFromName(member.name);
-      router.replace(`/team/${member.memberYear}?member=${slug}`, {
-        scroll: false,
-      });
-    },
-    [activeYear, router, teamById],
+      (member: Member) => {
+        const team = teamById.get(member.teamId) ?? null;
+        setSelectedMember(member);
+        setSelectedTeam(team);
+        if (member.memberYear !== activeYear) {
+          setActiveYear(member.memberYear);
+        }
+        const slug = memberSlugFromName(member.name);
+        router.replace(`/team/${member.memberYear}?member=${slug}`, {
+          scroll: false,
+        });
+      },
+      [activeYear, router, teamById],
   );
 
   const closeMember = useCallback(() => {
     setSelectedMember(null);
     setSelectedTeam(null);
-    router.replace(`/team/${activeYear}`, { scroll: false });
+    router.replace(`/team/${activeYear}`, {scroll: false});
   }, [activeYear, router]);
 
   useEffect(() => {
@@ -112,20 +112,20 @@ export default function TeamClient({
     setActiveYear(year);
     setSelectedMember(null);
     setSelectedTeam(null);
-    router.push(`/team/${year}`, { scroll: false });
+    router.push(`/team/${year}`, {scroll: false});
   };
 
   const filteredMembers = teamData.members.filter(
-    (m) => m.memberYear === activeYear,
+      (m) => m.memberYear === activeYear,
   );
 
   const displayTeams = sortTeamsForDisplay(
-    teamData.teams.filter((t) => t.year === activeYear),
+      teamData.teams.filter((t) => t.year === activeYear),
   );
 
   const getTeamMembers = (teamId: string) => {
     const members = filteredMembers.filter((m) => m.teamId === teamId);
-    if (teamId.startsWith("t_exec") || teamId.includes("mentor")) {
+    if (teamId.startsWith('t_exec') || teamId.includes('mentor')) {
       return sortMembersBySeniorityAndName(members);
     }
     return [...members].sort((a, b) => a.name.localeCompare(b.name));
@@ -176,18 +176,18 @@ export default function TeamClient({
                     variants={gridContainerVariants}
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: true, margin: "-50px" }}
+                    viewport={{once: true, margin: '-50px'}}
                     className={`grid gap-8 ${
-                      isSmallTeam
-                        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
-                        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                      isSmallTeam ?
+                        'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
+                        'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                     }`}
                   >
                     {teamMembers.map((member) => (
                       <MemberCard
                         key={member.id}
                         member={member}
-                        priority={team.id === "t_patron"}
+                        priority={team.id === 't_patron'}
                         onSelect={() => openMember(member)}
                       />
                     ))}

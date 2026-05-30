@@ -1,11 +1,11 @@
-import type { Member, Team } from "@/types";
+import type {Member, Team} from '@/types';
 
 /** Display order: advisors → mentors → executive committee */
 export function getTeamDisplayOrder(teamId: string): number {
-  if (teamId === "t_patron" || teamId.startsWith("t_patron")) return 0;
-  if (teamId === "t_faculty" || teamId.startsWith("t_faculty")) return 1;
-  if (teamId.includes("mentor")) return 2;
-  if (teamId.startsWith("t_exec")) return 3;
+  if (teamId === 't_patron' || teamId.startsWith('t_patron')) return 0;
+  if (teamId === 't_faculty' || teamId.startsWith('t_faculty')) return 1;
+  if (teamId.includes('mentor')) return 2;
+  if (teamId.startsWith('t_exec')) return 3;
   return 99;
 }
 

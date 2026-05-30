@@ -1,6 +1,6 @@
-import { ImageResponse } from "next/og";
+import {ImageResponse} from 'next/og';
 
-export const OG_SIZE = { width: 1200, height: 630 };
+export const OG_SIZE = {width: 1200, height: 630};
 
 type OgImageOptions = {
   title: string;
@@ -12,82 +12,82 @@ type OgImageOptions = {
 export function renderOgImage({
   title,
   subtitle,
-  label = "CITC · NCIT",
+  label = 'CITC · NCIT',
   imageUrl,
 }: OgImageOptions) {
   const displayTitle =
     title.length > 72 ? `${title.slice(0, 69)}…` : title;
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          background: "linear-gradient(145deg, #050A18 0%, #003d99 55%, #0052CC 100%)",
-          padding: 56,
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
+      (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            flex: 1,
-            paddingRight: imageUrl ? 40 : 0,
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            background: 'linear-gradient(145deg, #050A18 0%, #003d99 55%, #0052CC 100%)',
+            padding: 56,
+            fontFamily: 'system-ui, sans-serif',
           }}
         >
           <div
             style={{
-              fontSize: 26,
-              fontWeight: 600,
-              color: "#E8F0FC",
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              flex: 1,
+              paddingRight: imageUrl ? 40 : 0,
             }}
           >
-            {label}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div
               style={{
-                fontSize: 56,
-                fontWeight: 700,
-                color: "#ffffff",
-                lineHeight: 1.15,
-                maxWidth: imageUrl ? 720 : 1000,
+                fontSize: 26,
+                fontWeight: 600,
+                color: '#E8F0FC',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
               }}
             >
-              {displayTitle}
+              {label}
             </div>
-            {subtitle ? (
+            <div style={{display: 'flex', flexDirection: 'column', gap: 20}}>
+              <div
+                style={{
+                  fontSize: 56,
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  lineHeight: 1.15,
+                  maxWidth: imageUrl ? 720 : 1000,
+                }}
+              >
+                {displayTitle}
+              </div>
+              {subtitle ? (
               <div
                 style={{
                   fontSize: 28,
-                  color: "rgba(232, 240, 252, 0.92)",
+                  color: 'rgba(232, 240, 252, 0.92)',
                   maxWidth: 800,
                   lineHeight: 1.35,
                 }}
               >
-                {subtitle.length > 120
-                  ? `${subtitle.slice(0, 117)}…`
-                  : subtitle}
+                {subtitle.length > 120 ?
+                  `${subtitle.slice(0, 117)}…` :
+                  subtitle}
               </div>
             ) : null}
-          </div>
-          <div style={{ fontSize: 22, color: "rgba(255,255,255,0.55)" }}>
+            </div>
+            <div style={{fontSize: 22, color: 'rgba(255,255,255,0.55)'}}>
             citc.ncit.edu.np
+            </div>
           </div>
-        </div>
-        {imageUrl ? (
+          {imageUrl ? (
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -98,14 +98,14 @@ export function renderOgImage({
               height={280}
               style={{
                 borderRadius: 24,
-                objectFit: "cover",
-                border: "4px solid rgba(255,255,255,0.2)",
+                objectFit: 'cover',
+                border: '4px solid rgba(255,255,255,0.2)',
               }}
             />
           </div>
         ) : null}
-      </div>
-    ),
-    { ...OG_SIZE },
+        </div>
+      ),
+      {...OG_SIZE},
   );
 }

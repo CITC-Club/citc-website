@@ -1,11 +1,11 @@
-import { Mail, Globe } from "lucide-react";
-import { Github, Linkedin, Instagram, Facebook } from "@/components/Icons";
-import MediaImage from "@/components/MediaImage";
-import { getMemberPhotoUrl } from "@/lib/media";
-import type { Member, Team } from "@/types";
+import {Mail, Globe} from 'lucide-react';
+import {Github, Linkedin, Instagram, Facebook} from '@/components/Icons';
+import MediaImage from '@/components/MediaImage';
+import {getMemberPhotoUrl} from '@/lib/media';
+import type {Member, Team} from '@/types';
 
 function normalizeSocialUrl(url: string): string {
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
   return `https://${url}`;
 }
 
@@ -22,9 +22,9 @@ export default function MemberProfileContent({
   const roleLine =
     member.title ||
     member.department ||
-    (member.collegeYear
-      ? `Year ${member.collegeYear} · ${member.type}`
-      : member.type);
+    (member.collegeYear ?
+      `Year ${member.collegeYear} · ${member.type}` :
+      member.type);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-8 items-start">
@@ -46,7 +46,7 @@ export default function MemberProfileContent({
       <div className="space-y-5 min-w-0">
         <header>
           <p className="text-xs font-semibold uppercase tracking-wider text-citc-blue mb-1.5">
-            {team?.name ?? "CITC"} · {member.memberYear}
+            {team?.name ?? 'CITC'} · {member.memberYear}
           </p>
           <h2
             id="member-profile-title"

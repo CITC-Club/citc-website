@@ -1,48 +1,48 @@
-"use client";
+'use client';
 
-import { Upload, X } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import AdminAlert from "@/components/admin/AdminAlert";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import type { Event } from "@/types";
-import { createBrowserSupabaseClient } from "@/utils/supabase/client";
+import {Upload, X} from 'lucide-react';
+import Link from 'next/link';
+import {useRouter} from 'next/navigation';
+import {useState} from 'react';
+import AdminAlert from '@/components/admin/AdminAlert';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import type {Event} from '@/types';
+import {createBrowserSupabaseClient} from '@/utils/supabase/client';
 
 interface Props {
   event?: Event;
 }
 
-export default function EventForm({ event }: Props) {
+export default function EventForm({event}: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
-  const [title, setTitle] = useState(event?.title || "");
-  const [date, setDate] = useState(event?.date || "");
-  const [time, setTime] = useState(event?.time || "");
-  const [location, setLocation] = useState(event?.location || "");
-  const [description, setDescription] = useState(event?.description || "");
-  const [image, setImage] = useState(event?.image || "");
-  const [status, setStatus] = useState<Event["status"]>(
-    event?.status || "upcoming",
+  const [title, setTitle] = useState(event?.title || '');
+  const [date, setDate] = useState(event?.date || '');
+  const [time, setTime] = useState(event?.time || '');
+  const [location, setLocation] = useState(event?.location || '');
+  const [description, setDescription] = useState(event?.description || '');
+  const [image, setImage] = useState(event?.image || '');
+  const [status, setStatus] = useState<Event['status']>(
+      event?.status || 'upcoming',
   );
   const [registrationLink, setRegistrationLink] = useState(
-    event?.registrationLink || "",
+      event?.registrationLink || '',
   );
-  const [tagInput, setTagInput] = useState("");
+  const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(event?.tags || []);
   const [academicYear, setAcademicYear] = useState(
-    event?.academicYear || new Date().getFullYear(),
+      event?.academicYear || new Date().getFullYear(),
   );
 
   const addTag = () => {
     const t = tagInput.trim();
     if (t && !tags.includes(t)) {
       setTags([...tags, t]);
-      setTagInput("");
+      setTagInput('');
     }
   };
 
@@ -52,24 +52,24 @@ export default function EventForm({ event }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    setError("");
+    setError('');
 
     try {
-      const { compressImageToAvif } = await import("@/utils/imageCompressor");
-      const { blob, fileName: compressedName } = await compressImageToAvif(
-        file,
-        {
-          maxWidth: 1200,
-          quality: 75,
-        },
+      const {compressImageToAvif} = await import('@/utils/imageCompressor');
+      const {blob, fileName: compressedName} = await compressImageToAvif(
+          file,
+          {
+            maxWidth: 1200,
+            quality: 75,
+          },
       );
 
       const uploadPath = `events/${Date.now()}-${compressedName}`;
-      const { error: uploadError } = await supabase.storage
-        .from("media")
-        .upload(uploadPath, blob, {
-          contentType: blob.type,
-        });
+      const {error: uploadError} = await supabase.storage
+          .from('media')
+          .upload(uploadPath, blob, {
+            contentType: blob.type,
+          });
 
       if (uploadError) {
         setError(uploadError.message);
@@ -77,12 +77,12 @@ export default function EventForm({ event }: Props) {
         return;
       }
 
-      const { data: urlData } = supabase.storage
-        .from("media")
-        .getPublicUrl(uploadPath);
+      const {data: urlData} = supabase.storage
+          .from('media')
+          .getPublicUrl(uploadPath);
       setImage(urlData.publicUrl);
     } catch (err: any) {
-      setError(err.message || "Failed to compress or upload image");
+      setError(err.message || 'Failed to compress or upload image');
     } finally {
       setUploading(false);
     }
@@ -90,7 +90,7 @@ export default function EventForm({ event }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setSaving(true);
 
     const id = event?.id || `e${Date.now()}`;
@@ -110,23 +110,23 @@ export default function EventForm({ event }: Props) {
     };
 
     try {
-      const url = event ? `/api/events/${event.id}` : "/api/events";
-      const method = event ? "PUT" : "POST";
+      const url = event ? `/api/events/${event.id}` : '/api/events';
+      const method = event ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to save");
+        throw new Error(data.error || 'Failed to save');
       }
       router.push(
-        event ? "/admin/events?flash=saved" : "/admin/events?flash=created",
+        event ? '/admin/events?flash=saved' : '/admin/events?flash=created',
       );
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
     }
@@ -135,12 +135,12 @@ export default function EventForm({ event }: Props) {
   return (
     <div>
       <AdminPageHeader
-        title={event ? "Edit event" : "Create event"}
+        title={event ? 'Edit event' : 'Create event'}
         description="Published events appear on the public Events page. Set status to Upcoming or Running for active listings."
         breadcrumbs={[
-          { label: "Dashboard", href: "/admin" },
-          { label: "Events", href: "/admin/events" },
-          { label: event ? "Edit" : "New" },
+          {label: 'Dashboard', href: '/admin'},
+          {label: 'Events', href: '/admin/events'},
+          {label: event ? 'Edit' : 'New'},
         ]}
       />
 
@@ -210,7 +210,7 @@ export default function EventForm({ event }: Props) {
               </label>
               <select
                 value={status}
-                onChange={(e) => setStatus(e.target.value as Event["status"])}
+                onChange={(e) => setStatus(e.target.value as Event['status'])}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="upcoming">Upcoming</option>
@@ -267,7 +267,7 @@ export default function EventForm({ event }: Props) {
             <div className="flex-1">
               <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
                 <Upload className="w-4 h-4" />
-                {uploading ? "Uploading..." : "Upload Image"}
+                {uploading ? 'Uploading...' : 'Upload Image'}
                 <input
                   type="file"
                   accept="image/*"
@@ -315,7 +315,7 @@ export default function EventForm({ event }: Props) {
                 </p>
                 <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap line-clamp-6">
                   {description.slice(0, 500)}
-                  {description.length > 500 && "..."}
+                  {description.length > 500 && '...'}
                 </div>
               </div>
             )}
@@ -333,7 +333,7 @@ export default function EventForm({ event }: Props) {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) =>
-                e.key === "Enter" && (e.preventDefault(), addTag())
+                e.key === 'Enter' && (e.preventDefault(), addTag())
               }
               placeholder="Type a tag and press Enter"
               className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -374,7 +374,7 @@ export default function EventForm({ event }: Props) {
             disabled={saving}
             className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {saving ? "Saving..." : event ? "Update Event" : "Create Event"}
+            {saving ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
           </button>
           <Link
             href="/admin/events"
