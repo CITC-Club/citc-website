@@ -18,6 +18,9 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "letsencrypt:/letsencrypt"
+    networks:
+      - default
+      - webproxy
 
   web:
     image: ghcr.io/citc-club/citc-website:latest
@@ -40,6 +43,13 @@ services:
       - "traefik.http.routers.citc-web-http.entrypoints=web"
       - "traefik.http.routers.citc-web-http.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    networks:
+      - default
+      - webproxy
 
 volumes:
   letsencrypt:
+
+networks:
+  webproxy:
+    external: true
