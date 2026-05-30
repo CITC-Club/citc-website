@@ -31,7 +31,7 @@ cp .env.example .env.local
 ```
 src/
   app/              # Routes (App Router)
-    admin/          # Dashboard — auth required (layout + middleware)
+    admin/          # Dashboard — auth required (layout + proxy)
     api/            # JSON CRUD for admin forms
     events/         # Public events
     team/           # Public team roster
@@ -68,7 +68,7 @@ src/
 
 - Browser (login, uploads): `createBrowserSupabaseClient()` from `@/utils/supabase/client`.
 - Server (admin layout, logout): `createServerSupabaseClient()` from `@/utils/supabase/server`.
-- Session refresh: `src/middleware.ts` on `/admin/*` and `/login`.
+- Session refresh: `src/proxy.ts` on `/admin/*` and `/login`.
 - **API routes** (`/api/*`) require a logged-in Supabase user (401 if not). Admin forms must send the session cookie.
 
 ## Media

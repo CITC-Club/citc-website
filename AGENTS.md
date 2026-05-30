@@ -19,7 +19,7 @@ CITC club website — Next.js 16, Drizzle (Postgres), Supabase (admin auth + sto
 | Years | `sortYearsDesc`, `resolveAcademicYear` from `@/lib/years`. |
 | Images (public URLs) | `resolveMediaUrl` / `getMemberPhotoUrl` in `@/lib/media`. |
 | Images (fallbacks) | Client `MediaImage` only — never `onError` on `<img>` in Server Components. |
-| Supabase | `createBrowserSupabaseClient` (client), `createServerSupabaseClient` (server), `createMiddlewareSupabaseClient` (middleware). |
+| Supabase | `createBrowserSupabaseClient` (client), `createServerSupabaseClient` (server), `createProxySupabaseClient` (proxy). |
 | Components | Shared public UI → `src/components/`. Admin-only UI → co-located under `src/app/admin/`. |
 | Pages | Prefer Server Components; add `*Client.tsx` beside `page.tsx` for interactivity. Mark client files with `"use client"`. |
 | Data | Public pages fetch in RSC; admin CRUD via `src/app/api/*`. Seed with `npm run db:seed` (`src/db/seed.ts`). |

@@ -147,7 +147,7 @@ Admin UI uses a separate **botanical** theme (sage/clay) from the public CITC bl
 
 Recent commits on `main` include:
 
-- Standardization: `CONTRIBUTING.md`, `.env.example`, Drizzle-inferred types, `lib/env`, Supabase middleware, shared year helpers.
+- Standardization: `CONTRIBUTING.md`, `.env.example`, Drizzle-inferred types, `lib/env`, Supabase proxy, shared year helpers.
 - Earlier — CITC branding, team year picker, `MediaImage`, admin dashboard, Drizzle + Supabase.
 
 ---
