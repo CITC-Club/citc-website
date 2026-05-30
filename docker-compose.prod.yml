@@ -1,12 +1,45 @@
 services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${LETSENCRYPT_EMAIL:-citc@ncit.edu.np}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+
   web:
     image: ghcr.io/citc-club/citc-website:latest
     restart: always
-    ports:
-      - "3000:3000"
     env_file:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+    labels:
+      - "traefik.enable=true"
+      # HTTPS Configuration
+      - "traefik.http.routers.citc-web.rule=Host(`citc.ncit.edu.np`)"
+      - "traefik.http.routers.citc-web.entrypoints=websecure"
+      - "traefik.http.routers.citc-web.tls.certresolver=myresolver"
+      - "traefik.http.services.citc-web.loadbalancer.server.port=3000"
+      # HTTP Redirect to HTTPS
+      - "traefik.http.routers.citc-web-http.rule=Host(`citc.ncit.edu.np`)"
+      - "traefik.http.routers.citc-web-http.entrypoints=web"
+      - "traefik.http.routers.citc-web-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+volumes:
+  letsencrypt:
