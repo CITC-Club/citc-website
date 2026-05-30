@@ -36,6 +36,14 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify({
+              NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+              NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+            })};`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col w-full min-w-0 overflow-x-clip bg-white dark:bg-citc-navy transition-colors duration-300">
         <Script src="/scripts/theme-init.js" strategy="beforeInteractive" />
