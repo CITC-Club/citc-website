@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    image: ghcr.io/${GHCR_REPO_OWNER}/${GHCR_REPO_NAME}:${IMAGE_TAG:-latest}
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
