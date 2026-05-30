@@ -17,6 +17,12 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Run next build. We set CI and NEXT_PHASE to use placeholder env values during build.
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
 ENV CI=true
 ENV NEXT_PHASE=phase-production-build
 RUN --mount=type=cache,target=/app/.next/cache npm run build
