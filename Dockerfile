@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -19,7 +19,7 @@ COPY . .
 # Run next build. We set CI and NEXT_PHASE to use placeholder env values during build.
 ENV CI=true
 ENV NEXT_PHASE=phase-production-build
-RUN npm run build
+RUN --mount=type=cache,target=/app/.next/cache npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
