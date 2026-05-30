@@ -2,7 +2,7 @@
 
 Official website for **CITC** (Computer Engineering Innovation & Tech Club) at Nepal College of Information Technology (NCIT).
 
-**Live target:** [citc.ncit.edu.np](https://citc.ncit.edu.np)  
+**Live site:** [citc.ncit.edu.np](https://citc.ncit.edu.np)  
 **Tagline:** Innovate. Connect. Transform.
 
 ---
@@ -13,59 +13,72 @@ A full-stack **Next.js 16** app with two parts:
 
 | Area | Who uses it | Purpose |
 |------|-------------|---------|
-| **Public site** | Students & visitors | Club info, events, team roster, join form |
+| **Public site** | Students & visitors | Club info, events, team roster, member profiles, join form |
 | **Admin dashboard** | CITC organizers | Manage members, teams, and events |
 
-All public content (events, members, stats) is loaded from **PostgreSQL** via Drizzle ORM. Photos and event images can live under `public/` or in **Supabase Storage** (`media` bucket) after upload through admin.
+All public content (events, members, teams) is loaded from **PostgreSQL** via Drizzle ORM. Photos and event images can live under `public/` or in **Supabase Storage** (`media` bucket) after upload through admin.
 
 ---
 
 ## Tech stack
 
-- **Framework:** Next.js 16 (App Router), React 19
+- **Framework:** Next.js 16 (App Router), React 19, React Compiler
 - **Styling:** Tailwind CSS v4, brand colors from the CITC logo (`#0052CC`, `#050A18`)
 - **Database:** PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
 - **Auth & storage:** Supabase (admin login, image uploads to `media` bucket)
 - **Forms:** Tally embed on `/join` and `/register/ai`
 - **Lint/format:** Biome
 
+Production builds use **Webpack** (`--webpack` flag) because Next.js 16’s default Turbopack build currently hangs on this project. See `next.config.ts` and `package.json`.
+
 ---
 
-## Project structure (high level)
+## Project structure
 
 ```
 src/
   app/
-    page.tsx              # Home (hero + about bento)
-    events/               # Events list & detail pages
-    team/                 # Team roster by academic year
-    join/                 # Membership form (Tally)
-    register/ai/          # AI competition registration
-    login/                # Admin login
-    admin/                # Dashboard (members, teams, events)
-    api/                  # CRUD API routes for admin
-  components/             # Shared public UI (Hero, Footer, …)
-  db/                     # Schema, migrations, seed.ts
-  lib/                    # env, site-config, media, years, seed-assets, team-order
-  types/                  # Drizzle-inferred Member, Event, Team
-  utils/                  # Supabase clients, image compression
+    page.tsx                    # Home (hero + about bento)
+    opengraph-image.tsx         # Site-wide OG image
+    sitemap.ts                  # Dynamic sitemap from DB
+    robots.ts                   # Crawler rules
+    events/                     # Events list, detail, OG images
+    team/                       # Roster by year + member profile pages
+    join/                       # Membership form (Tally)
+    register/ai/                # AI competition registration
+    login/                      # Admin login
+    admin/                      # Dashboard (members, teams, events)
+    api/                        # CRUD API routes for admin
+  components/                   # Shared public UI (Hero, Footer, MediaImage, …)
+  db/                           # Schema, migrations, seed.ts
+  lib/                          # env, site-config, seo, media, years, team-order, member-slug, revalidate
+  types/                        # Drizzle-inferred Member, Event, Team
+  utils/                        # Supabase clients, image compression
+  proxy.ts                      # Session refresh + API auth guard (Next.js 16 proxy)
 public/
-  _seed/                  # Optional bootstrap images — safe to delete later (see public/README.md)
-  CITCLOGOW.webp, …       # Site logos (required)
-  favicon/, scripts/      # Icons + theme-init.js
+  _seed/                        # Optional bootstrap images — safe to delete later (see public/_seed/README.md)
+  CITCLOGOW.webp, …             # Site logos (required)
+  favicon/, scripts/            # Icons + theme-init.js
+docker-compose.yml              # Local dev (Postgres + Next.js)
+docker-compose.prod.yml         # Production (GHCR image + Traefik)
+Dockerfile                      # Multi-stage production image
+prod-deploy.sh                  # Pull and start production stack
 ```
 
 ---
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` (not committed):
+Copy `.env.example` to `.env.local` for local development (not committed):
 
-| Variable | Used for |
-|----------|----------|
-| `DATABASE_URL` | PostgreSQL connection (Drizzle + seed) |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase anon/publishable key |
+| Variable | Required | Used for |
+|----------|----------|----------|
+| `DATABASE_URL` | Yes | PostgreSQL connection (Drizzle + seed) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase anon/publishable key |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical site URL for SEO/OG (defaults to `https://citc.ncit.edu.np`) |
+| `GHCR_USER` / `GHCR_TOKEN` | Deploy only | Pull production image from GitHub Container Registry |
+| `LETSENCRYPT_EMAIL` | Deploy only | SSL certificate contact (Traefik) |
 
 Admin auth and storage uploads depend on Supabase being configured correctly.
 
@@ -73,14 +86,38 @@ Admin auth and storage uploads depend on Supabase being configured correctly.
 
 ## Getting started
 
+### Local (recommended)
+
 ```bash
 npm install
-npm run db:push      # apply schema to Postgres
-npm run db:seed      # optional: seed teams, members, events
-npm run dev          # http://localhost:3000
+cp .env.example .env.local   # fill in DATABASE_URL and Supabase keys
+npm run db:push              # apply schema to Postgres
+npm run db:seed              # optional: seed teams, members, events
+npm run dev                  # http://localhost:3000
 ```
 
-Other scripts: `npm run build`, `npm run lint`, `npm run format`, `npm run check` (lint + build).
+### Local with Docker
+
+```bash
+cp .env.example .env.local   # Supabase keys still required for admin
+docker compose up
+```
+
+Postgres runs on port `5432` with credentials from `docker-compose.yml`. Apply schema and seed inside the web container or from the host if `DATABASE_URL` points at the container.
+
+### Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Local dev server |
+| `npm run build` | Production build (Webpack) |
+| `npm run start` | Run production build |
+| `npm run lint` | Biome check |
+| `npm run format` | Biome format (write) |
+| `npm run check` | Lint + build |
+| `npm run db:push` | Apply Drizzle schema |
+| `npm run db:seed` | Seed teams, members, events |
+| `npm run db:seed-thumbs` | Generate missing member thumbnail AVIFs for seed paths |
 
 **Contributing:** see [CONTRIBUTING.md](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md) for conventions.
 
@@ -90,12 +127,16 @@ Other scripts: `npm run build`, `npm run lint`, `npm run format`, `npm run check
 
 | Route | Description |
 |-------|-------------|
-| `/` | Hero + “What we do” bento section; events only on `/events` |
+| `/` | Hero + “What we do” bento; events live on `/events` |
 | `/events` | All events from DB, filter by academic year |
 | `/events/[id]` | Event detail + markdown description + gallery |
-| `/team` | Team by academic year; advisors → mentors → executives |
+| `/team` | Team roster; defaults to latest academic year |
+| `/team/[year]` | Roster for a specific academic year |
+| `/team/[year]/[slug]` | Individual member profile (shareable URL) |
 | `/join` | Tally membership embed |
 | `/register/ai` | AI competition page + countdown + Tally |
+
+Team display order: **Patron/Faculty advisors → Mentors → Executive Committee**. Executives are sorted by college year (senior first), then name.
 
 ---
 
@@ -105,74 +146,28 @@ Other scripts: `npm run build`, `npm run lint`, `npm run format`, `npm run check
 |-------|-------------|
 | `/login` | Admin sign-in (Supabase) |
 | `/admin` | Dashboard overview |
+| `/admin/teams` | Manage team groups per academic year |
 | `/admin/members` | Add/edit members, photo upload (AVIF + thumb) |
-| `/admin/teams` | Manage team groups per year |
 | `/admin/events` | Add/edit events, image upload to Supabase |
 
 Admin UI uses a separate **botanical** theme (sage/clay) from the public CITC blue/navy brand.
 
----
-
-## What has been done (recent work)
-
-### Public site & branding
-- Applied **CITC logo colors** across navbar, footer, buttons, and content (replacing generic cyan/rose AI-style palette).
-- Homepage hero uses a full-bleed club photo; **HomeAbout** bento section (events only on `/events`).
-- **Events are only on `/events`**; home has a short “What we do” section (`HomeAbout`) with a link to events.
-- **Minimal animations** on the homepage (removed heavy Framer Motion from hero/features/navbar).
-- **Large-screen layout:** content capped with `.site-container` (max 1280px), no horizontal overflow on ultrawide monitors.
-- **Dark mode:** `theme-init.js` via `next/script` (fixes console error from inline `<script>` in layout).
-- **Footer** redesigned for mobile and desktop.
-
-### Team page (`/team`)
-- Roster filtered by **academic year** (defaults to latest year).
-- Display order: **Patron/Faculty advisors → Mentors → Executive Committee**.
-- Executives sorted by **college year (senior first)**, then name.
-- Bottom **year picker** (circular buttons, latest first) instead of a long member directory list.
-- Member photos: fixed loading (cached images, `getMemberPhotoUrl`, `MediaImage` client component for fallbacks).
-
-### Events
-- Event images use `resolveMediaUrl()` for paths with spaces (e.g. WhatsApp image filenames).
-- `MediaImage` client component for image `onError` fallbacks (Server Components cannot use event handlers on `<img>`).
-
-### Admin (earlier commits, still in place)
-- Drizzle schema + migrations for members, teams, events (with `academic_year` / `member_year`).
-- TanStack Query for admin mutations.
-- AVIF compression on upload; Supabase `media` bucket for storage.
-- Academic year filters on admin lists.
+Admin forms call `/api/*` routes with the Supabase session cookie. Unauthenticated API requests return **401** (enforced in `src/proxy.ts`). The admin layout redirects unauthenticated users to `/login`.
 
 ---
 
-## Updated in repo (commit history summary)
+## SEO
 
-Recent commits on `main` include:
+Public pages use `createPageMetadata()` from `@/lib/seo` for titles, descriptions, canonical URLs, Open Graph, and Twitter cards.
 
-- Standardization: `CONTRIBUTING.md`, `.env.example`, Drizzle-inferred types, `lib/env`, Supabase proxy, shared year helpers.
-- Earlier — CITC branding, team year picker, `MediaImage`, admin dashboard, Drizzle + Supabase.
+| Feature | Location |
+|---------|----------|
+| Per-page metadata | Route `page.tsx` / `generateMetadata` |
+| Dynamic OG images | `opengraph-image.tsx` beside routes |
+| Sitemap | `/sitemap.xml` — static routes + all events, team years, member profiles |
+| Robots | `/robots.txt` — allows public pages; blocks `/admin/`, `/api/`, `/login` |
 
----
-
-## To be done
-
-### High priority
-- [ ] **Push** local commits to remote and verify production deploy.
-- [ ] **Verify production:** `DATABASE_URL`, Supabase storage public URLs, and admin login on the deployed environment.
-- [ ] **End-to-end browser pass:** all routes on mobile, tablet, and desktop; fix any layout or broken images.
-
-### Content & data
-- [ ] Add **new academic years** in admin when committees change (teams + members `member_year`).
-- [ ] Ensure event images are in `public/_seed/` (dev seed) or Supabase (production DB `image` / `gallery`).
-- [ ] Replace placeholder social links on any seed members if still present.
-
-### UX / polish
-- [ ] Optional: reduce Framer Motion on `/events` and `/team` cards for consistency with minimal-motion homepage.
-- [ ] SEO: per-page metadata, Open Graph images for events.
-- [ ] Accessibility audit (focus states, contrast, keyboard nav).
-
-### Nice to have
-- [ ] `.env.example` committed (names only, no secrets) for new developers.
-- [ ] Automated tests or smoke checks for API routes.
-- [ ] Document Supabase Storage bucket policies (`media` public read).
+After admin changes, API routes call `revalidatePath()` via helpers in `@/lib/revalidate` so public pages and the sitemap stay fresh.
 
 ---
 
@@ -184,8 +179,32 @@ Recent commits on `main` include:
 | Supabase Storage | Full `https://…supabase.co/storage/v1/object/public/media/…` URL in DB |
 
 Helpers in `src/lib/media.ts`:
-- `resolveMediaUrl()` — encodes local path segments safely.
-- `getMemberPhotoUrl()` — member photo + cache-busting `?v=` from `photoVersion`.
+
+- `resolveMediaUrl()` — encodes local path segments safely (spaces, special chars).
+- `getMemberPhotoUrl()` — full member photo + cache-busting `?v=` from `photoVersion`.
+- `getMemberThumbnailUrl()` — small AVIF thumb for admin lists and cards.
+
+Use the client `MediaImage` component for image fallbacks — Server Components cannot use `onError` on `<img>`.
+
+See also [public/README.md](./public/README.md) and [public/_seed/README.md](./public/_seed/README.md).
+
+---
+
+## Deployment
+
+Production runs as a Docker container from **GitHub Container Registry**:
+
+1. Push to `main` triggers [.github/workflows/docker-build.yml](./.github/workflows/docker-build.yml).
+2. Image is published to `ghcr.io/citc-club/citc-website:latest`.
+3. On the server, copy `.env` (with `DATABASE_URL`, Supabase keys, GHCR credentials) and run:
+
+```bash
+./prod-deploy.sh
+```
+
+`docker-compose.prod.yml` pulls the image and registers it with **Traefik** for HTTPS at `citc.ncit.edu.np`.
+
+Vercel is also supported (`vercel.json` sets build memory). Set the same env vars in the Vercel project dashboard.
 
 ---
 
@@ -193,19 +212,22 @@ Helpers in `src/lib/media.ts`:
 
 Defined in `src/lib/site-config.ts` and `src/app/globals.css`:
 
-- **CITC blue:** `#0052CC`
-- **CITC navy:** `#050A18`
+- **CITC blue:** `#0052CC` (`citc-blue`)
+- **CITC navy:** `#050A18` (`citc-navy`)
 - **Muted blue:** `#E8F0FC`
 
 Use Tailwind classes: `text-citc-blue`, `bg-citc-navy`, `site-container`, etc.
+
+Social links (GitHub, Facebook, Instagram, LinkedIn) live in `SITE_CONFIG.social`.
 
 ---
 
 ## Contributing
 
-1. Read `AGENTS.md` — Next.js 16 may differ from older docs; check `node_modules/next/dist/docs/` when unsure.
-2. Keep public copy aligned with **Innovate. Connect. Transform.** and avoid em-dash-heavy marketing tone unless requested.
-3. Prefer **dynamic data** from DB/API over hardcoded lists for events, members, and stats.
+1. Read [CONTRIBUTING.md](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md).
+2. Next.js 16 may differ from older docs — check `node_modules/next/dist/docs/` when unsure.
+3. Keep public copy aligned with **Innovate. Connect. Transform.**
+4. Prefer **dynamic data** from DB/API over hardcoded lists for events, members, and stats.
 
 ---
 

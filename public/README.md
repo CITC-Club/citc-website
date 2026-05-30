@@ -9,7 +9,7 @@ Everything here is served from the site root (`/filename`).
 | `CITCLOGOW.webp`, `CITC_LOGOD.webp` | Navbar & footer logos |
 | `favicon/` | Browser icons & manifest |
 | `scripts/theme-init.js` | Dark mode before first paint |
-| `robots.txt` | Crawlers |
+| *(generated)* `/robots.txt` | Crawlers — defined in `src/app/robots.ts` |
 | `googlecf8ab7e06b4c8358.html` | Google Search Console verification |
 
 ## Optional — delete when DB uses Supabase only

@@ -17,12 +17,18 @@ CITC club website — Next.js 16, Drizzle (Postgres), Supabase (admin auth + sto
 | Env | Read via `@/lib/env` (`getDatabaseUrl`, `getSupabaseUrl`, `getSupabaseAnonKey`). Copy `.env.example` → `.env.local`. |
 | Brand copy | Tagline and site metadata in `@/lib/site-config`. Colors in `globals.css` (`citc-blue`, `citc-navy`). |
 | Years | `sortYearsDesc`, `resolveAcademicYear` from `@/lib/years`. |
-| Images (public URLs) | `resolveMediaUrl` / `getMemberPhotoUrl` in `@/lib/media`. |
+| Team order | `sortTeamsForDisplay`, `sortMembersBySeniorityAndName` from `@/lib/team-order`. |
+| Member URLs | `memberSlugFromName`, `memberProfilePath` from `@/lib/member-slug`. |
+| Images (public URLs) | `resolveMediaUrl` / `getMemberPhotoUrl` / `getMemberThumbnailUrl` in `@/lib/media`. |
 | Images (fallbacks) | Client `MediaImage` only — never `onError` on `<img>` in Server Components. |
+| SEO | `createPageMetadata`, `getSiteUrl` from `@/lib/seo`; dynamic sitemap in `src/app/sitemap.ts`. |
+| Cache | After admin writes, use `@/lib/revalidate` helpers (`revalidateAfterMemberChange`, etc.). |
 | Supabase | `createBrowserSupabaseClient` (client), `createServerSupabaseClient` (server), `createProxySupabaseClient` (proxy). |
-| Components | Shared public UI → `src/components/`. Admin-only UI → co-located under `src/app/admin/`. |
+| Auth guard | `src/proxy.ts` — session refresh on `/admin/*` and `/login`; 401 on unauthenticated `/api/*`. |
+| Components | Shared public UI → `src/components/`. Admin-only UI → `src/components/admin/` or `src/app/admin/`. |
 | Pages | Prefer Server Components; add `*Client.tsx` beside `page.tsx` for interactivity. Mark client files with `"use client"`. |
 | Data | Public pages fetch in RSC; admin CRUD via `src/app/api/*`. Seed with `npm run db:seed` (`src/db/seed.ts`). |
+| Build | Production uses Webpack (`npm run build --webpack` in `package.json`); Turbopack build hangs. |
 | Lint / format | `npm run lint` / `npm run format` (Biome). |
 
 ## Brand
