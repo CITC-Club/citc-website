@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
 import { Mail, User, Globe } from "lucide-react";
-import { memberProfilePath } from "@/lib/member-slug";
 import { Github, Linkedin, Instagram } from "@/components/Icons";
 import { motion } from "framer-motion";
 import { getMemberPhotoUrl } from "@/lib/media";
@@ -12,6 +10,7 @@ import type { Member } from "@/types";
 interface MemberCardProps {
   member: Member;
   priority?: boolean;
+  onSelect: () => void;
 }
 
 const cardItemVariants = {
@@ -23,14 +22,17 @@ const cardItemVariants = {
   },
 };
 
-const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => {
+const MemberCard: React.FC<MemberCardProps> = ({
+  member,
+  priority = false,
+  onSelect,
+}) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [imageState, setImageState] = useState<"loading" | "ready" | "error">(
     "loading",
   );
 
   const photoUrl = getMemberPhotoUrl(member);
-  const profileHref = memberProfilePath(member);
 
   useEffect(() => {
     setImageState(photoUrl ? "loading" : "error");
@@ -43,15 +45,13 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
   const showPhoto = photoUrl && imageState !== "error";
 
   return (
-    <Link
-      href={profileHref}
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citc-blue focus-visible:ring-offset-2 rounded-2xl"
-      aria-label={`View profile for ${member.name}`}
-    >
-    <motion.div
+    <motion.button
+      type="button"
       id={`member-${member.id}`}
       variants={cardItemVariants}
-      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 scroll-mt-32"
+      onClick={onSelect}
+      className="group relative w-full text-left overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 scroll-mt-32 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citc-blue focus-visible:ring-offset-2 cursor-pointer"
+      aria-label={`View profile for ${member.name}`}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-slate-200 dark:bg-slate-700">
         {showPhoto ? (
@@ -155,8 +155,7 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
           </p>
         </div>
       </div>
-    </motion.div>
-    </Link>
+    </motion.button>
   );
 };
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { members, teams } from "@/db/schema";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ year: string }>;
+  searchParams: Promise<{ member?: string }>;
 };
 
 export async function generateMetadata({
@@ -29,8 +31,9 @@ export async function generateMetadata({
   });
 }
 
-export default async function TeamYearPage({ params }: PageProps) {
+export default async function TeamYearPage({ params, searchParams }: PageProps) {
   const { year } = await params;
+  const { member: memberSlug } = await searchParams;
   const yearNum = Number(year);
   if (!Number.isFinite(yearNum)) notFound();
 
@@ -41,9 +44,12 @@ export default async function TeamYearPage({ params }: PageProps) {
   if (!years.includes(yearNum)) notFound();
 
   return (
-    <TeamClient
-      teamData={{ teams: allTeams, members: allMembers }}
-      initialYear={yearNum}
-    />
+    <Suspense fallback={null}>
+      <TeamClient
+        teamData={{ teams: allTeams, members: allMembers }}
+        initialYear={yearNum}
+        initialMemberSlug={memberSlug ?? null}
+      />
+    </Suspense>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import MemberProfile from "@/components/MemberProfile";
+import { notFound, redirect } from "next/navigation";
 import { getMemberWithTeam } from "@/lib/members";
 import { memberProfilePath } from "@/lib/member-slug";
 import { createPageMetadata } from "@/lib/seo";
@@ -44,6 +43,7 @@ export async function generateMetadata({
   });
 }
 
+/** Shareable link: opens team roster with profile popup. */
 export default async function MemberProfilePage({ params }: PageProps) {
   const { year, slug } = await params;
   const yearNum = Number(year);
@@ -52,5 +52,5 @@ export default async function MemberProfilePage({ params }: PageProps) {
   const data = await getMemberWithTeam(yearNum, slug);
   if (!data) notFound();
 
-  return <MemberProfile member={data.member} team={data.team} />;
+  redirect(`/team/${yearNum}?member=${encodeURIComponent(slug)}`);
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { db } from "@/db";
 import { teams, members } from "@/db/schema";
 import { createPageMetadata } from "@/lib/seo";
@@ -14,7 +15,12 @@ export const metadata: Metadata = createPageMetadata({
   ogImagePath: "/team/opengraph-image",
 });
 
-export default async function TeamPage() {
+type PageProps = {
+  searchParams: Promise<{ member?: string }>;
+};
+
+export default async function TeamPage({ searchParams }: PageProps) {
+  const { member: memberSlug } = await searchParams;
   const allTeams = await db
     .select()
     .from(teams)
@@ -25,5 +31,12 @@ export default async function TeamPage() {
     .orderBy(members.name);
 
   const teamData = { teams: allTeams, members: allMembers };
-  return <TeamClient teamData={teamData} />;
+  return (
+    <Suspense fallback={null}>
+      <TeamClient
+        teamData={teamData}
+        initialMemberSlug={memberSlug ?? null}
+      />
+    </Suspense>
+  );
 }
