@@ -2,8 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  // Next.js 16 defaults to Turbopack for `next build`; it can hang on this project.
-  // Production builds use webpack via `npm run build` and vercel.json buildCommand.
+  // Note: Next.js 16 defaults to Turbopack for `next build`, which currently hangs.
+  // Webpack is used via the `--webpack` flag in the `build` script in `package.json`.
+  serverExternalPackages: ["postgres", "sharp", "@jsquash/avif"],
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion", "react-markdown"],
+  },
 };
 
 export default nextConfig;

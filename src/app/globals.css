@@ -31,6 +31,10 @@
 :root {
   --background: #ffffff;
   --foreground: #050A18;
+  --font-geist-sans: "Outfit", sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-playfair: "Playfair Display", Georgia, serif;
+  --font-source-sans: "Source Sans 3", "Outfit", sans-serif;
 }
 
 .dark {
