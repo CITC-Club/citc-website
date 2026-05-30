@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    revalidateAfterMemberChange();
+    revalidateAfterMemberChange(member);
     return Response.json(member, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

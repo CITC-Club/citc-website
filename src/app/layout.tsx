@@ -7,6 +7,7 @@ import {
   Source_Sans_3,
 } from "next/font/google";
 import ConditionalLayout from "@/components/ConditionalLayout";
+import { defaultSiteMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,14 +34,20 @@ const sourceSans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "CITC | Tech Community at NCIT",
-  description:
-    "Join CITC (Computer Engineering Innovation & Tech Club), the tech community at Nepal College of Information Technology. Discover workshops, events, hackathons, and networking opportunities for aspiring tech enthusiasts.",
-  openGraph: {
-    title: "CITC | Tech Community at NCIT",
-    description:
-      "Join CITC (Computer Engineering Innovation & Tech Club) at Nepal College of Information Technology.",
-    siteName: "CITC",
+  ...defaultSiteMetadata,
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/favicon/apple-touch-icon.png",
+    shortcut: "/favicon/favicon.ico",
+  },
+  manifest: "/favicon/site.webmanifest",
+  appleWebApp: {
+    title: "CITC",
+    statusBarStyle: "default",
   },
 };
 

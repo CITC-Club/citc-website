@@ -30,7 +30,7 @@ export async function PUT(
       .where(eq(members.id, Number(id)))
       .returning();
 
-    revalidateAfterMemberChange();
+    revalidateAfterMemberChange(member);
     return Response.json(member);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

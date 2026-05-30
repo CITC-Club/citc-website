@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import MemberCard from "@/components/MemberCard";
 import TeamYearPicker from "@/components/TeamYearPicker";
@@ -20,16 +21,25 @@ const gridContainerVariants = {
 
 interface TeamClientProps {
   teamData: TeamData;
+  initialYear?: number;
 }
 
-export default function TeamClient({ teamData }: TeamClientProps) {
+export default function TeamClient({ teamData, initialYear }: TeamClientProps) {
+  const router = useRouter();
   const years = useMemo(
     () => sortYearsDesc(teamData.members.map((m) => m.memberYear)),
     [teamData.members],
   );
 
   const latestYear = years[0] ?? new Date().getFullYear();
-  const [activeYear, setActiveYear] = useState<number>(latestYear);
+  const [activeYear, setActiveYear] = useState<number>(
+    initialYear && years.includes(initialYear) ? initialYear : latestYear,
+  );
+
+  const handleYearChange = (year: number) => {
+    setActiveYear(year);
+    router.push(`/team/${year}`, { scroll: false });
+  };
 
   const filteredMembers = teamData.members.filter((m) => m.memberYear === activeYear);
 
@@ -107,7 +117,7 @@ export default function TeamClient({ teamData }: TeamClientProps) {
         <TeamYearPicker
           members={teamData.members}
           activeYear={activeYear}
-          onSelectYear={setActiveYear}
+          onSelectYear={handleYearChange}
         />
       </div>
     </div>

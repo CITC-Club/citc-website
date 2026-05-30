@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
 import { Mail, User, Globe } from "lucide-react";
+import { memberProfilePath } from "@/lib/member-slug";
 import { Github, Linkedin, Instagram } from "@/components/Icons";
 import { motion } from "framer-motion";
 import { getMemberPhotoUrl } from "@/lib/media";
@@ -28,6 +30,7 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
   );
 
   const photoUrl = getMemberPhotoUrl(member);
+  const profileHref = memberProfilePath(member);
 
   useEffect(() => {
     setImageState(photoUrl ? "loading" : "error");
@@ -40,6 +43,11 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
   const showPhoto = photoUrl && imageState !== "error";
 
   return (
+    <Link
+      href={profileHref}
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citc-blue focus-visible:ring-offset-2 rounded-2xl"
+      aria-label={`View profile for ${member.name}`}
+    >
     <motion.div
       id={`member-${member.id}`}
       variants={cardItemVariants}
@@ -148,6 +156,7 @@ const MemberCard: React.FC<MemberCardProps> = ({ member, priority = false }) => 
         </div>
       </div>
     </motion.div>
+    </Link>
   );
 };
 
