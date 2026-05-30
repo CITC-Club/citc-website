@@ -7,7 +7,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (request.nextUrl.pathname.startsWith("/api/") && request.nextUrl.pathname !== "/api/env-check" && !user) {
+  if (request.nextUrl.pathname.startsWith("/api/") && !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
