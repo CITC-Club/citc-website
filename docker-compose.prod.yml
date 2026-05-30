@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: ghcr.io/${GHCR_REPO_OWNER}/${GHCR_REPO_NAME}:${IMAGE_TAG:-latest}
+    image: ghcr.io/citc-club/citc-website:latest
     restart: always
     ports:
       - "3000:3000"
