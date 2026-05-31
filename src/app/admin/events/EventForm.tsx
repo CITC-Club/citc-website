@@ -6,7 +6,11 @@ import {useRouter} from 'next/navigation';
 import {useRef, useState} from 'react';
 import AdminAlert from '@/components/admin/AdminAlert';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminUploadProgress, {
+  type UploadProgressStepId,
+} from '@/components/admin/AdminUploadProgress';
 import MediaImage from '@/components/MediaImage';
+import {useLocalImagePreview} from '@/lib/use-local-image-preview';
 import {uploadAdminMedia} from '@/lib/admin-media-upload';
 import {
   adminInputClass,
@@ -28,6 +32,11 @@ export default function EventForm({event}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [uploading, setUploading] = useState(false);
+  const [uploadStep, setUploadStep] = useState<UploadProgressStepId | null>(
+      null,
+  );
+  const [uploadFileName, setUploadFileName] = useState('');
+  const {localPreview, setFromFile, revoke: revokePreview} = useLocalImagePreview();
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [uploadError, setUploadError] = useState('');
@@ -78,9 +87,15 @@ export default function EventForm({event}: Props) {
       return;
     }
 
+    setFromFile(file);
+    setUploadFileName(file.name);
+    setUploadStep('selected');
     setUploading(true);
 
+    await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+
     try {
+      setUploadStep('compress');
       const {compressImageToAvif} = await import('@/utils/imageCompressor');
       const {blob, fileName: compressedName} = await compressImageToAvif(
           file,
@@ -90,12 +105,15 @@ export default function EventForm({event}: Props) {
           },
       );
 
+      setUploadStep('upload');
       const {url, format} = await uploadAdminMedia(
           blob,
           compressedName,
           'events',
       );
       setImage(url);
+      revokePreview();
+      setUploadStep('done');
       const formatLabel = format === 'avif' ? 'AVIF' : format.toUpperCase();
       setUploadSuccess(
           format === 'avif' ?
@@ -106,6 +124,7 @@ export default function EventForm({event}: Props) {
       const message =
         err instanceof Error ? err.message : 'Failed to compress or upload image';
       setUploadError(message);
+      setUploadStep(null);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -118,10 +137,15 @@ export default function EventForm({event}: Props) {
     setImage('');
     setUploadSuccess('');
     setUploadError('');
+    setUploadStep(null);
+    setUploadFileName('');
+    revokePreview();
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
+
+  const previewSrc = localPreview || image;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,29 +245,39 @@ export default function EventForm({event}: Props) {
           <div className="flex flex-col sm:flex-row gap-5">
             <div
               className={`relative w-full sm:w-52 aspect-[16/10] rounded-xl overflow-hidden shrink-0 border ${
-                image ? 'border-stone/60' : 'border-dashed border-stone bg-clay-light/50'
+                previewSrc ? 'border-stone/60' : 'border-dashed border-stone bg-clay-light/50'
               }`}
             >
-              {image ? (
-                <MediaImage
-                  src={image}
-                  alt="Event cover preview"
-                  className="w-full h-full object-cover"
-                />
+              {previewSrc ? (
+                localPreview ? (
+                  <img
+                    src={localPreview}
+                    alt="Selected cover preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <MediaImage
+                    src={image}
+                    alt="Event cover preview"
+                    className="w-full h-full object-cover"
+                  />
+                )
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-forest/40">
                   <ImageIcon className="w-10 h-10" strokeWidth={1.25} />
                   <span className="text-xs font-medium">No image yet</span>
                 </div>
               )}
-              {uploading ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-alabaster/80">
-                  <Loader2 className="w-8 h-8 text-sage animate-spin" />
-                </div>
+              {uploading && localPreview ? (
+                <div className="absolute inset-0 bg-forest/20 backdrop-blur-[1px]" />
               ) : null}
             </div>
 
             <div className="flex flex-col gap-3 min-w-0 flex-1">
+              <AdminUploadProgress
+                activeStep={uploadStep}
+                fileName={uploadFileName}
+              />
               <div className="flex flex-wrap gap-2">
                 <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
                   <Upload className="w-4 h-4 text-sage" />
@@ -257,7 +291,7 @@ export default function EventForm({event}: Props) {
                     className="hidden"
                   />
                 </label>
-                {image ? (
+                {previewSrc ? (
                   <button
                     type="button"
                     onClick={clearImage}

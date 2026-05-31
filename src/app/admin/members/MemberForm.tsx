@@ -3,11 +3,18 @@
 import {Upload} from 'lucide-react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import AdminAlert from '@/components/admin/AdminAlert';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminUploadProgress, {
+  MEMBER_UPLOAD_STEPS,
+  type UploadProgressStepId,
+} from '@/components/admin/AdminUploadProgress';
 import {uploadAdminMedia} from '@/lib/admin-media-upload';
+import {useLocalImagePreview} from '@/lib/use-local-image-preview';
 import type {Member, Team} from '@/types';
+
+const MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
 
 interface Props {
   teams: Team[];
@@ -16,7 +23,13 @@ interface Props {
 
 export default function MemberForm({teams, member}: Props) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadStep, setUploadStep] = useState<UploadProgressStepId | null>(
+      null,
+  );
+  const [uploadFileName, setUploadFileName] = useState('');
+  const {localPreview, setFromFile, revoke: revokePreview} = useLocalImagePreview();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -53,10 +66,27 @@ export default function MemberForm({teams, member}: Props) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please choose a JPG, PNG, or WebP image.');
+      return;
+    }
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setError('Image must be 12 MB or smaller.');
+      return;
+    }
+
     setError('');
+    setFromFile(file);
+    setUploadFileName(file.name);
+    setUploadStep('selected');
+    setUploading(true);
+
+    await new Promise((r) => requestAnimationFrame(() => r(undefined)));
 
     try {
+      setUploadStep('compress');
       const {compressImageToAvif, generateThumbnail} = await import(
           '@/utils/imageCompressor'
       );
@@ -69,6 +99,7 @@ export default function MemberForm({teams, member}: Props) {
         generateThumbnail(file, {size: 64, quality: 60}),
       ]);
 
+      setUploadStep('upload');
       const [{url: mainUrl}, {url: thumbUrl}] = await Promise.all([
         uploadAdminMedia(mainBlob, mainName, 'members'),
         uploadAdminMedia(thumbBlob, thumbName, 'members'),
@@ -77,12 +108,33 @@ export default function MemberForm({teams, member}: Props) {
       setPhoto(mainUrl);
       setPhotoThumb(thumbUrl);
       setPhotoVersion((v) => v + 1);
-    } catch (err: any) {
-      setError(err.message || 'Failed to compress or upload photo');
+      revokePreview();
+      setUploadStep('done');
+    } catch (err) {
+      setError(
+          err instanceof Error ? err.message : 'Failed to compress or upload photo',
+      );
+      setUploadStep(null);
     } finally {
       setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
+
+  const clearPhoto = () => {
+    setPhoto('');
+    setPhotoThumb('');
+    setUploadStep(null);
+    setUploadFileName('');
+    revokePreview();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const photoPreview = localPreview || photo;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -309,12 +361,12 @@ export default function MemberForm({teams, member}: Props) {
             Photo
           </h2>
 
-          <div className="flex items-start gap-6">
-            <div className="w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
-              {photo ? (
+          <div className="flex flex-col sm:flex-row gap-5">
+            <div className="relative w-28 h-36 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
+              {photoPreview ? (
                 <img
-                  src={photo}
-                  alt="Preview"
+                  src={photoPreview}
+                  alt="Profile preview"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -322,21 +374,42 @@ export default function MemberForm({teams, member}: Props) {
                   <Upload className="w-6 h-6" />
                 </div>
               )}
+              {uploading && localPreview ? (
+                <div className="absolute inset-0 bg-slate-900/15" />
+              ) : null}
             </div>
-            <div className="flex-1">
-              <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
-                <Upload className="w-4 h-4" />
-                {uploading ? 'Uploading...' : 'Upload Photo'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-              </label>
-              <p className="text-xs text-slate-400 mt-1.5">
-                Recommended: 400x500px, .avif or .webp
+            <div className="flex-1 flex flex-col gap-3 min-w-0">
+              <AdminUploadProgress
+                activeStep={uploadStep}
+                fileName={uploadFileName}
+                steps={MEMBER_UPLOAD_STEPS}
+              />
+              <div className="flex flex-wrap gap-2">
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  {uploading ? 'Processing…' : photo ? 'Replace photo' : 'Upload photo'}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading || saving}
+                    className="hidden"
+                  />
+                </label>
+                {photoPreview ? (
+                  <button
+                    type="button"
+                    onClick={clearPhoto}
+                    disabled={uploading || saving}
+                    className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Recommended portrait 400×500 px. Converts to AVIF automatically.
               </p>
             </div>
           </div>

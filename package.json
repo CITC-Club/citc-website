@@ -15,7 +15,8 @@
     "prepare": "husky",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
-    "db:seed-thumbs": "tsx -e \"import('./src/db/seed-thumbs.ts').then(m => m.ensureSeedMemberThumbs())\""
+    "db:seed-thumbs": "tsx -e \"import('./src/db/seed-thumbs.ts').then(m => m.ensureSeedMemberThumbs())\"",
+    "db:sync-media": "tsx src/db/sync-media-to-supabase.ts"
   },
   "dependencies": {
     "@jsquash/avif": "^2.1.1",

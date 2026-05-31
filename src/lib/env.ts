@@ -54,7 +54,12 @@ export function getSupabaseMediaBucket(): string {
   );
 }
 
-/** Service role key — server only; used to create the media bucket and upload files. */
+/**
+ * Legacy `service_role` key (server only).
+ * Supabase Dashboard → Project Settings → API Keys → tab
+ * "Legacy anon, service_role API keys" → service_role.
+ * Used to auto-create the `media` bucket and upload admin images.
+ */
 export function getSupabaseServiceRoleKey(): string {
   const value = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!value) {
