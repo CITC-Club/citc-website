@@ -6,8 +6,8 @@ import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import AdminAlert from '@/components/admin/AdminAlert';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import {uploadAdminMedia} from '@/lib/admin-media-upload';
 import type {Member, Team} from '@/types';
-import {createBrowserSupabaseClient} from '@/utils/supabase/client';
 
 interface Props {
   teams: Team[];
@@ -16,7 +16,6 @@ interface Props {
 
 export default function MemberForm({teams, member}: Props) {
   const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -70,35 +69,13 @@ export default function MemberForm({teams, member}: Props) {
         generateThumbnail(file, {size: 64, quality: 60}),
       ]);
 
-      const timestamp = Date.now();
-
-      const mainPath = `members/${timestamp}-${mainName}`;
-      const thumbPath = `members/thumbs/${timestamp}-${thumbName}`;
-
-      const [{error: mainError}, {error: thumbError}] = await Promise.all([
-        supabase.storage.from('media').upload(mainPath, mainBlob, {
-          contentType: mainBlob.type,
-        }),
-        supabase.storage.from('media').upload(thumbPath, thumbBlob, {
-          contentType: thumbBlob.type,
-        }),
+      const [{url: mainUrl}, {url: thumbUrl}] = await Promise.all([
+        uploadAdminMedia(mainBlob, mainName, 'members'),
+        uploadAdminMedia(thumbBlob, thumbName, 'members'),
       ]);
 
-      if (mainError || thumbError) {
-        setError(mainError?.message || thumbError?.message || 'Upload failed');
-        setUploading(false);
-        return;
-      }
-
-      const {data: mainUrl} = supabase.storage
-          .from('media')
-          .getPublicUrl(mainPath);
-      const {data: thumbUrl} = supabase.storage
-          .from('media')
-          .getPublicUrl(thumbPath);
-
-      setPhoto(mainUrl.publicUrl);
-      setPhotoThumb(thumbUrl.publicUrl);
+      setPhoto(mainUrl);
+      setPhotoThumb(thumbUrl);
       setPhotoVersion((v) => v + 1);
     } catch (err: any) {
       setError(err.message || 'Failed to compress or upload photo');

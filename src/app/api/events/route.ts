@@ -8,15 +8,21 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (
-      !body.title ||
-      !body.date ||
-      !body.time ||
-      !body.location ||
-      !body.description ||
-      !body.image
-    ) {
-      return Response.json({error: 'Missing required fields'}, {status: 400});
+    const missing: string[] = [];
+    if (!body.title?.trim()) missing.push('title');
+    if (!body.date?.trim()) missing.push('date');
+    if (!body.time?.trim()) missing.push('time');
+    if (!body.location?.trim()) missing.push('location');
+    if (!body.description?.trim()) missing.push('description');
+    if (!body.image?.trim()) missing.push('cover image');
+
+    if (missing.length > 0) {
+      return Response.json(
+          {
+            error: `Missing required fields: ${missing.join(', ')}`,
+          },
+          {status: 400},
+      );
     }
 
     const status = isEventStatus(body.status) ? body.status : 'upcoming';

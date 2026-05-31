@@ -44,3 +44,26 @@ export function getSupabaseAnonKey(): string {
   }
   return value;
 }
+
+/** Supabase Storage bucket for admin uploads (default: `media`). */
+export function getSupabaseMediaBucket(): string {
+  return (
+    process.env.SUPABASE_STORAGE_BUCKET ||
+    process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ||
+    'media'
+  );
+}
+
+/** Service role key — server only; used to create the media bucket and upload files. */
+export function getSupabaseServiceRoleKey(): string {
+  const value = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!value) {
+    if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.CI) {
+      return 'placeholder-service-role-key';
+    }
+    throw new Error(
+        'Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY',
+    );
+  }
+  return value;
+}

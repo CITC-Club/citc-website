@@ -98,7 +98,7 @@ src/
 
 - **Bootstrap only:** `public/_seed/` (see `public/_seed/README.md`) — delete when DB uses Supabase URLs.
 - **Permanent:** logos, favicon, `scripts/` at `public/` root.
-- Uploaded files: Supabase `media` bucket; store full URL or path in DB.
+- Uploaded files: Supabase `media` bucket (auto-created on first admin upload); store full URL in DB. Requires `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
 - Seed paths use `seedAssetPath()` from `@/lib/seed-assets` (prefix `/_seed`).
 - Member uploads store **two** URLs: `photo` (full AVIF) and `photoThumb` (64px AVIF). Admin lists use `getMemberThumbnailUrl()` — never the full photo.
 - Always normalize URLs with `resolveMediaUrl()` before rendering.

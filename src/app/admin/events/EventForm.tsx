@@ -1,13 +1,23 @@
 'use client';
 
-import {Upload, X} from 'lucide-react';
+import {ImageIcon, Loader2, Upload, X} from 'lucide-react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import AdminAlert from '@/components/admin/AdminAlert';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import MediaImage from '@/components/MediaImage';
+import {uploadAdminMedia} from '@/lib/admin-media-upload';
+import {
+  adminInputClass,
+  adminLabelClass,
+  adminSectionClass,
+  adminSectionTitleClass,
+} from '@/lib/admin-form-styles';
+import {DEFAULT_ACADEMIC_YEAR, resolveAcademicYear} from '@/lib/years';
 import type {Event} from '@/types';
-import {createBrowserSupabaseClient} from '@/utils/supabase/client';
+
+const MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
 
 interface Props {
   event?: Event;
@@ -15,10 +25,13 @@ interface Props {
 
 export default function EventForm({event}: Props) {
   const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [saveError, setSaveError] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState('');
 
   const [title, setTitle] = useState(event?.title || '');
   const [date, setDate] = useState(event?.date || '');
@@ -35,7 +48,7 @@ export default function EventForm({event}: Props) {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(event?.tags || []);
   const [academicYear, setAcademicYear] = useState(
-      event?.academicYear || new Date().getFullYear(),
+      event?.academicYear ?? DEFAULT_ACADEMIC_YEAR,
   );
 
   const addTag = () => {
@@ -51,8 +64,21 @@ export default function EventForm({event}: Props) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setUploadError('');
+    setUploadSuccess('');
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please choose a JPG, PNG, or WebP image.');
+      return;
+    }
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setUploadError('Image must be 12 MB or smaller.');
+      return;
+    }
+
     setUploading(true);
-    setError('');
 
     try {
       const {compressImageToAvif} = await import('@/utils/imageCompressor');
@@ -64,49 +90,72 @@ export default function EventForm({event}: Props) {
           },
       );
 
-      const uploadPath = `events/${Date.now()}-${compressedName}`;
-      const {error: uploadError} = await supabase.storage
-          .from('media')
-          .upload(uploadPath, blob, {
-            contentType: blob.type,
-          });
-
-      if (uploadError) {
-        setError(uploadError.message);
-        setUploading(false);
-        return;
-      }
-
-      const {data: urlData} = supabase.storage
-          .from('media')
-          .getPublicUrl(uploadPath);
-      setImage(urlData.publicUrl);
-    } catch (err: any) {
-      setError(err.message || 'Failed to compress or upload image');
+      const {url, format} = await uploadAdminMedia(
+          blob,
+          compressedName,
+          'events',
+      );
+      setImage(url);
+      const formatLabel = format === 'avif' ? 'AVIF' : format.toUpperCase();
+      setUploadSuccess(
+          format === 'avif' ?
+            'Cover image converted to AVIF and uploaded. You can save the event when ready.' :
+            `Cover image uploaded as ${formatLabel} (AVIF encoder was unavailable in this browser). Save when ready.`,
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to compress or upload image';
+      setUploadError(message);
     } finally {
       setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const clearImage = () => {
+    setImage('');
+    setUploadSuccess('');
+    setUploadError('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setSaveError('');
+    setUploadError('');
+
+    if (!image.trim()) {
+      setUploadError(
+          'A cover image is required. Upload one above before saving.',
+      );
+      return;
+    }
+
+    if (uploading) {
+      setUploadError('Wait for the image upload to finish.');
+      return;
+    }
+
     setSaving(true);
 
     const id = event?.id || `e${Date.now()}`;
     const payload = {
       id,
-      title,
-      date,
-      time,
-      location,
-      description,
-      image,
+      title: title.trim(),
+      date: date.trim(),
+      time: time.trim(),
+      location: location.trim(),
+      description: description.trim(),
+      image: image.trim(),
       status,
-      registrationLink: registrationLink || null,
+      registrationLink: registrationLink.trim() || null,
       tags,
       gallery: event?.gallery || null,
-      academicYear,
+      academicYear: resolveAcademicYear(academicYear),
     };
 
     try {
@@ -126,7 +175,7 @@ export default function EventForm({event}: Props) {
       );
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save');
+      setSaveError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
     }
@@ -136,7 +185,11 @@ export default function EventForm({event}: Props) {
     <div>
       <AdminPageHeader
         title={event ? 'Edit event' : 'Create event'}
-        description="Published events appear on the public Events page. Set status to Upcoming or Running for active listings."
+        description={
+          event ?
+            'Update details and cover image. Upcoming or Running events show on the public Events page.' :
+            'Add a new event. Upload a cover image, then save. Use Upcoming or Running for listings visitors see today.'
+        }
         breadcrumbs={[
           {label: 'Dashboard', href: '/admin'},
           {label: 'Events', href: '/admin/events'},
@@ -144,244 +197,282 @@ export default function EventForm({event}: Props) {
         ]}
       />
 
-      {error ? (
-        <AdminAlert variant="error" title="Could not save" message={error} />
+      {saveError ? (
+        <AdminAlert variant="error" title="Could not save" message={saveError} />
       ) : null}
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">
-            Event Details
-          </h2>
+      {uploadError ? (
+        <AdminAlert variant="error" title="Image upload" message={uploadError} />
+      ) : null}
+
+      {uploadSuccess ? (
+        <AdminAlert variant="success" title="Image ready" message={uploadSuccess} />
+      ) : null}
+
+      <form onSubmit={handleSubmit} className="max-w-3xl space-y-6 pb-24">
+        <section className={adminSectionClass}>
+          <h2 className={adminSectionTitleClass}>Cover image *</h2>
+          <p className="text-sm text-forest/60 -mt-2">
+            Shown on the Events list and event page. Upload JPG or PNG — we
+            resize and convert to <strong className="font-medium">AVIF</strong>{' '}
+            before storing (smaller files, faster loads).
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-5">
+            <div
+              className={`relative w-full sm:w-52 aspect-[16/10] rounded-xl overflow-hidden shrink-0 border ${
+                image ? 'border-stone/60' : 'border-dashed border-stone bg-clay-light/50'
+              }`}
+            >
+              {image ? (
+                <MediaImage
+                  src={image}
+                  alt="Event cover preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-forest/40">
+                  <ImageIcon className="w-10 h-10" strokeWidth={1.25} />
+                  <span className="text-xs font-medium">No image yet</span>
+                </div>
+              )}
+              {uploading ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-alabaster/80">
+                  <Loader2 className="w-8 h-8 text-sage animate-spin" />
+                </div>
+              ) : null}
+            </div>
+
+            <div className="flex flex-col gap-3 min-w-0 flex-1">
+              <div className="flex flex-wrap gap-2">
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
+                  <Upload className="w-4 h-4 text-sage" />
+                  {uploading ? 'Uploading…' : image ? 'Replace image' : 'Upload image'}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading || saving}
+                    className="hidden"
+                  />
+                </label>
+                {image ? (
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    disabled={uploading || saving}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 text-sm font-medium text-forest/70 hover:text-terracotta hover:border-terracotta/40 transition-colors disabled:opacity-50"
+                  >
+                    <X className="w-4 h-4" />
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+              <p className="text-xs text-forest/50 leading-relaxed">
+                Max 12 MB. Best size about 1200×630 px for social previews.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className={adminSectionClass}>
+          <h2 className={adminSectionTitleClass}>Event details</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Title *
-              </label>
+              <label className={adminLabelClass}>Title *</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                placeholder="e.g. IoT Workshop"
+                className={adminInputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Date *
-              </label>
+              <label className={adminLabelClass}>Date *</label>
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={adminInputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Time *
-              </label>
+              <label className={adminLabelClass}>Time *</label>
               <input
                 type="text"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
-                placeholder="e.g., 11:00 AM - 1:00 PM"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                placeholder="e.g. 11:00 AM – 1:00 PM"
+                className={adminInputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Location *
-              </label>
+              <label className={adminLabelClass}>Location *</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                placeholder="e.g. NCIT Hall"
+                className={adminInputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Status *
-              </label>
+              <label className={adminLabelClass}>Status *</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as Event['status'])}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={adminInputClass}
               >
-                <option value="upcoming">Upcoming</option>
-                <option value="running">Running</option>
-                <option value="past">Past</option>
+                <option value="upcoming">Upcoming — shown as active</option>
+                <option value="running">Running — shown as active</option>
+                <option value="past">Past — archive only</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Registration Link
-              </label>
-              <input
-                type="url"
-                value={registrationLink}
-                onChange={(e) => setRegistrationLink(e.target.value)}
-                placeholder="https://..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Academic Year *
-              </label>
+              <label className={adminLabelClass}>Academic year *</label>
               <input
                 type="number"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(Number(e.target.value))}
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                min={2020}
+                max={2100}
+                className={adminInputClass}
+              />
+              <p className="text-xs text-forest/50 mt-1.5">
+                Used to group events on the public site (e.g. {DEFAULT_ACADEMIC_YEAR}).
+              </p>
+            </div>
+            <div className="md:col-span-2">
+              <label className={adminLabelClass}>Registration link</label>
+              <input
+                type="url"
+                value={registrationLink}
+                onChange={(e) => setRegistrationLink(e.target.value)}
+                placeholder="https://… (optional)"
+                className={adminInputClass}
               />
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">
-            Cover Image
-          </h2>
+        <section className={adminSectionClass}>
+          <h2 className={adminSectionTitleClass}>Description *</h2>
+          <p className="text-sm text-forest/60 -mt-2">
+            Markdown supported — headings, lists, and links render on the public
+            event page.
+          </p>
 
-          <div className="flex items-start gap-6">
-            <div className="w-40 h-28 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
-              {image ? (
-                <img
-                  src={image}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                  <Upload className="w-8 h-8" />
-                </div>
-              )}
-            </div>
-            <div className="flex-1">
-              <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:border-cyan-500 transition-colors">
-                <Upload className="w-4 h-4" />
-                {uploading ? 'Uploading...' : 'Upload Image'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-              </label>
-              <p className="text-xs text-slate-400 mt-1.5">
-                Recommended: 1200x630px, .jpg or .png
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            rows={14}
+            placeholder="## About this event&#10;&#10;Write the full description here…"
+            className={`${adminInputClass} font-mono text-sm leading-relaxed`}
+          />
+
+          {description.trim() ? (
+            <div className="p-4 rounded-xl bg-clay-light/60 border border-stone/40 max-h-40 overflow-y-auto">
+              <p className="text-xs font-semibold text-forest/50 uppercase tracking-wider mb-2">
+                Preview (plain text)
+              </p>
+              <p className="text-sm text-forest/70 whitespace-pre-wrap">
+                {description.slice(0, 400)}
+                {description.length > 400 ? '…' : ''}
               </p>
             </div>
-          </div>
-        </div>
+          ) : null}
+        </section>
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">
-            Description (Markdown)
-          </h2>
+        <section className={adminSectionClass}>
+          <h2 className={adminSectionTitleClass}>Tags</h2>
+          <p className="text-sm text-forest/60 -mt-2">
+            Optional labels such as Workshop or Competition.
+          </p>
 
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Content *
-              </label>
-              <div className="relative">
-                <div className="absolute top-3 left-3 flex gap-1">
-                  <span className="px-2 py-0.5 text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500 rounded">
-                    Markdown
-                  </span>
-                </div>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={16}
-                  className="w-full px-4 pt-10 pb-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                />
-              </div>
-            </div>
-            {description && (
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                  Preview
-                </p>
-                <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap line-clamp-6">
-                  {description.slice(0, 500)}
-                  {description.length > 500 && '...'}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">
-            Tags
-          </h2>
-
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === 'Enter' && (e.preventDefault(), addTag())
-              }
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addTag();
+                }
+              }}
               placeholder="Type a tag and press Enter"
-              className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className={`${adminInputClass} flex-1`}
             />
             <button
               type="button"
               onClick={addTag}
-              className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-stone/60 bg-clay-light/80 text-sm font-medium text-forest hover:bg-clay-light transition-colors shrink-0"
             >
-              Add
+              Add tag
             </button>
           </div>
 
-          {tags.length > 0 && (
+          {tags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-900/10 text-cyan-700 dark:text-cyan-400 text-sm font-medium"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sage-light/80 text-forest text-sm font-medium"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="hover:text-red-500 transition-colors"
+                    className="hover:text-terracotta transition-colors"
+                    aria-label={`Remove tag ${tag}`}
                   >
                     <X className="w-3 h-3" />
                   </button>
                 </span>
               ))}
             </div>
-          )}
-        </div>
+          ) : null}
+        </section>
 
-        <div className="flex items-center gap-4">
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
-          >
-            {saving ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
-          </button>
-          <Link
-            href="/admin/events"
-            className="px-6 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          >
-            Cancel
-          </Link>
+        <div className="sticky bottom-0 z-10 -mx-4 px-4 py-4 md:-mx-8 md:px-8 bg-alabaster/95 border-t border-stone/40 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center gap-3 max-w-3xl">
+            <button
+              type="submit"
+              disabled={saving || uploading}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-forest hover:bg-forest/90 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving…
+                </>
+              ) : event ? (
+                'Save changes'
+              ) : (
+                'Create event'
+              )}
+            </button>
+            <Link
+              href="/admin/events"
+              className="px-6 py-3 text-sm font-semibold text-forest/70 hover:text-forest transition-colors"
+            >
+              Cancel
+            </Link>
+            {!image && !event ? (
+              <span className="text-xs text-forest/50 w-full sm:w-auto">
+                Upload a cover image to enable saving.
+              </span>
+            ) : null}
+          </div>
         </div>
       </form>
     </div>
