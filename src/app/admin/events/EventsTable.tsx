@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {useState} from 'react';
+import MediaImage from '@/components/MediaImage';
+import {resolveMediaUrl} from '@/lib/media';
 import {resolveAcademicYear, sortYearsDesc} from '@/lib/years';
 import type {Event} from '@/types';
 
@@ -127,13 +129,13 @@ export default function EventsTable({events}: Props) {
                 <td className="px-6 py-4.5">
                   <div className="flex items-center gap-3.5">
                     <div className="w-14 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 overflow-hidden shrink-0 shadow-sm">
-                      {event.image && (
-                        <img
-                          src={event.image}
+                      {event.image ? (
+                        <MediaImage
+                          src={resolveMediaUrl(event.image)}
                           alt=""
                           className="w-full h-full object-cover"
                         />
-                      )}
+                      ) : null}
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-slate-900 dark:text-white max-w-xs truncate">

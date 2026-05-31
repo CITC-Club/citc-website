@@ -49,7 +49,17 @@ export async function ensureMediaBucketExists(): Promise<void> {
     throw new Error(listError.message);
   }
 
-  if (buckets?.some((b) => b.name === bucket)) {
+  const existing = buckets?.find((b) => b.name === bucket);
+
+  if (existing) {
+    if (!existing.public) {
+      const {error: updateError} = await admin.storage.updateBucket(bucket, {
+        public: true,
+      });
+      if (updateError) {
+        throw new Error(updateError.message);
+      }
+    }
     return;
   }
 
