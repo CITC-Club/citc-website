@@ -10,6 +10,6 @@ export async function POST(
 ) {
   const {id} = await params;
   await db.delete(events).where(eq(events.id, id));
-  revalidateAfterEventChange(id);
+  revalidateAfterEventChange();
   redirect('/admin/events?flash=deleted');
 }

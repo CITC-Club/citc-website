@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         })
         .returning();
 
-    revalidateAfterEventChange(event.id);
+    revalidateAfterEventChange(event);
     return Response.json(event, {status: 201});
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal error';

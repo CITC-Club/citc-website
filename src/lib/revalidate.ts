@@ -1,6 +1,7 @@
 import {revalidatePath} from 'next/cache';
 import {memberProfilePath} from '@/lib/member-slug';
-import type {Member} from '@/types';
+import {eventPath} from '@/lib/event-slug';
+import type {Event, Member} from '@/types';
 
 /** Paths that show DB-backed public content. */
 export function revalidatePublicContent() {
@@ -21,10 +22,12 @@ export function revalidateAfterMemberChange(
   revalidatePath('/admin/members');
 }
 
-export function revalidateAfterEventChange(eventId?: string) {
+export function revalidateAfterEventChange(
+    event?: Pick<Event, 'title'>,
+) {
   revalidatePublicContent();
   revalidatePath('/admin/events');
-  if (eventId) revalidatePath(`/events/${eventId}`);
+  if (event) revalidatePath(eventPath(event));
 }
 
 export function revalidateAfterTeamChange() {

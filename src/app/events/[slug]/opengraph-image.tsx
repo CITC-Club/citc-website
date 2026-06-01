@@ -1,9 +1,9 @@
 import {db} from '@/db';
 import {events} from '@/db/schema';
-import {eq} from 'drizzle-orm';
 import {absoluteUrl} from '@/lib/seo';
 import {resolveMediaUrl} from '@/lib/media';
 import {renderOgImage} from '@/lib/og-image';
+import {eventSlugFromTitle} from '@/lib/event-slug';
 
 export const alt = 'CITC event';
 export const size = {width: 1200, height: 630};
@@ -12,10 +12,13 @@ export const contentType = 'image/png';
 export default async function Image({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const {id} = await params;
-  const [event] = await db.select().from(events).where(eq(events.id, id));
+  const {slug} = await params;
+  const allEvents = await db.select().from(events);
+  const event = allEvents.find(
+      (e) => eventSlugFromTitle(e.title) === slug.toLowerCase(),
+  );
 
   if (!event) {
     return renderOgImage({

@@ -2,6 +2,7 @@ import type {MetadataRoute} from 'next';
 import {db} from '@/db';
 import {events, members} from '@/db/schema';
 import {memberProfilePath} from '@/lib/member-slug';
+import {eventPath} from '@/lib/event-slug';
 import {getSiteUrl} from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -17,9 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {url: `${base}/join`, lastModified: now, changeFrequency: 'monthly', priority: 0.8},
   ];
 
-  const allEvents = await db.select({id: events.id, updatedAt: events.updatedAt}).from(events);
+  const allEvents = await db.select({id: events.id, title: events.title, updatedAt: events.updatedAt}).from(events);
   const eventRoutes: MetadataRoute.Sitemap = allEvents.map((e) => ({
-    url: `${base}/events/${e.id}`,
+    url: `${base}${eventPath(e)}`,
     lastModified: e.updatedAt ?? now,
     changeFrequency: 'monthly',
     priority: 0.7,

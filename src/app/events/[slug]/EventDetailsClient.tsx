@@ -82,7 +82,7 @@ export default function EventDetailsClient({event}: EventDetailsClientProps) {
                 </div>
               </div>
 
-              {isRunning && event.registrationLink && (
+              {(event.status === 'running' || event.status === 'upcoming') && event.registrationLink && (
                 <div className="mt-8">
                   <a
                     href={event.registrationLink}

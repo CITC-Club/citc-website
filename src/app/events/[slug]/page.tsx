@@ -1,22 +1,29 @@
 import type {Metadata} from 'next';
 import {db} from '@/db';
 import {events} from '@/db/schema';
-import {eq} from 'drizzle-orm';
 import {notFound} from 'next/navigation';
 import {createPageMetadata} from '@/lib/seo';
+import {eventSlugFromTitle, eventPath} from '@/lib/event-slug';
 import EventDetailsClient from './EventDetailsClient';
 
 export const dynamic = 'force-dynamic';
 
 type PageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 };
+
+async function findEventBySlug(slug: string) {
+  const allEvents = await db.select().from(events);
+  return allEvents.find(
+      (e) => eventSlugFromTitle(e.title) === slug.toLowerCase(),
+  );
+}
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const {id} = await params;
-  const [event] = await db.select().from(events).where(eq(events.id, id));
+  const {slug} = await params;
+  const event = await findEventBySlug(slug);
   if (!event) {
     return {title: 'Event not found | CITC'};
   }
@@ -30,14 +37,14 @@ export async function generateMetadata({
   return createPageMetadata({
     title: event.title,
     description: plain || `${event.title} — ${event.date} at ${event.location}`,
-    path: `/events/${event.id}`,
-    ogImagePath: `/events/${event.id}/opengraph-image`,
+    path: eventPath(event),
+    ogImagePath: `${eventPath(event)}/opengraph-image`,
   });
 }
 
 export default async function EventDetailsPage({params}: PageProps) {
-  const {id} = await params;
-  const [event] = await db.select().from(events).where(eq(events.id, id));
+  const {slug} = await params;
+  const event = await findEventBySlug(slug);
   if (!event) notFound();
   return <EventDetailsClient event={event} />;
 }

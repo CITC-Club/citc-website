@@ -1,6 +1,6 @@
 'use client';
 
-import {ImageIcon, Loader2, Upload, X} from 'lucide-react';
+import {ImageIcon, Images, Loader2, Upload, X} from 'lucide-react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useRef, useState} from 'react';
@@ -30,6 +30,7 @@ interface Props {
 export default function EventForm({event}: Props) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [uploading, setUploading] = useState(false);
   const [uploadStep, setUploadStep] = useState<UploadProgressStepId | null>(
@@ -56,6 +57,9 @@ export default function EventForm({event}: Props) {
   );
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(event?.tags || []);
+  const [gallery, setGallery] = useState<string[]>(event?.gallery || []);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryError, setGalleryError] = useState('');
   const [academicYear, setAcademicYear] = useState(
       event?.academicYear ?? DEFAULT_ACADEMIC_YEAR,
   );
@@ -147,6 +151,46 @@ export default function EventForm({event}: Props) {
 
   const previewSrc = localPreview || image;
 
+  const handleGalleryUpload = async (
+      e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setGalleryError('');
+    setGalleryUploading(true);
+
+    try {
+      const {compressImageToAvif} = await import('@/utils/imageCompressor');
+
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) continue;
+        if (file.size > MAX_UPLOAD_BYTES) {
+          setGalleryError(`${file.name} exceeds 12 MB limit, skipped.`);
+          continue;
+        }
+
+        const {blob, fileName: compressedName} = await compressImageToAvif(
+            file,
+            {maxWidth: 1200, quality: 75},
+        );
+        const {url} = await uploadAdminMedia(blob, compressedName, 'events');
+        setGallery((prev) => [...prev, url]);
+      }
+    } catch (err) {
+      setGalleryError(
+          err instanceof Error ? err.message : 'Failed to upload gallery image',
+      );
+    } finally {
+      setGalleryUploading(false);
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setGallery((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaveError('');
@@ -159,8 +203,8 @@ export default function EventForm({event}: Props) {
       return;
     }
 
-    if (uploading) {
-      setUploadError('Wait for the image upload to finish.');
+    if (uploading || galleryUploading) {
+      setUploadError('Wait for image uploads to finish.');
       return;
     }
 
@@ -178,7 +222,7 @@ export default function EventForm({event}: Props) {
       status,
       registrationLink: registrationLink.trim() || null,
       tags,
-      gallery: event?.gallery || null,
+      gallery: gallery.length > 0 ? gallery : null,
       academicYear: resolveAcademicYear(academicYear),
     };
 
@@ -477,11 +521,70 @@ export default function EventForm({event}: Props) {
           ) : null}
         </section>
 
+        <section className={adminSectionClass}>
+          <h2 className={adminSectionTitleClass}>Gallery images</h2>
+          <p className="text-sm text-forest/60 -mt-2">
+            Optional photos shown on the event detail page. You can upload
+            multiple at once.
+          </p>
+
+          {galleryError ? (
+            <AdminAlert variant="error" title="Gallery upload" message={galleryError} />
+          ) : null}
+
+          {gallery.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {gallery.map((img, index) => (
+                <div
+                  key={`${img}-${index}`}
+                  className="relative group aspect-video rounded-xl overflow-hidden border border-stone/60"
+                >
+                  <MediaImage
+                    src={img}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(index)}
+                    disabled={saving}
+                    className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    aria-label={`Remove gallery image ${index + 1}`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="flex flex-wrap gap-2">
+            <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
+              <Images className="w-4 h-4 text-sage" />
+              {galleryUploading ? 'Uploading…' : 'Add gallery images'}
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif,image/*"
+                multiple
+                onChange={handleGalleryUpload}
+                disabled={galleryUploading || saving}
+                className="hidden"
+              />
+            </label>
+            {gallery.length > 0 ? (
+              <span className="self-center text-xs text-forest/50">
+                {gallery.length} image{gallery.length !== 1 ? 's' : ''}
+              </span>
+            ) : null}
+          </div>
+        </section>
+
         <div className="sticky bottom-0 z-10 -mx-4 px-4 py-4 md:-mx-8 md:px-8 bg-alabaster/95 border-t border-stone/40 backdrop-blur-sm">
           <div className="flex flex-wrap items-center gap-3 max-w-3xl">
             <button
               type="submit"
-              disabled={saving || uploading}
+              disabled={saving || uploading || galleryUploading}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-forest hover:bg-forest/90 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
             >
               {saving ? (

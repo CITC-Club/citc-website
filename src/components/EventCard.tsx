@@ -4,6 +4,7 @@ import {memo} from 'react';
 import {Calendar, MapPin, Clock, ArrowRight} from 'lucide-react';
 import Link from 'next/link';
 import MediaImage from '@/components/MediaImage';
+import {eventPath} from '@/lib/event-slug';
 import type {Event} from '@/types';
 
 interface EventCardProps {
@@ -11,11 +12,11 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({event}) => {
-  const isRunning = event.status === 'running';
+  const showRegister = (event.status === 'running' || event.status === 'upcoming');
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-citc-navy border border-slate-200 dark:border-white/10 shadow-sm transition-colors hover:border-citc-blue/30">
-      <Link href={`/events/${event.id}`} className="block h-full">
+      <Link href={eventPath(event)} className="block h-full">
         <div className="relative h-48 w-full overflow-hidden">
           <MediaImage
             src={event.image}
@@ -26,7 +27,7 @@ const EventCard: React.FC<EventCardProps> = ({event}) => {
 
           <div
             className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-              isRunning ?
+              event.status === 'running' ?
                 'bg-citc-blue text-white' :
                 'bg-slate-800/80 text-white backdrop-blur-sm'
             }`}
@@ -72,7 +73,7 @@ const EventCard: React.FC<EventCardProps> = ({event}) => {
         </div>
       </Link>
 
-      {isRunning && event.registrationLink && (
+      {showRegister && event.registrationLink && (
         <div className="px-6 pb-6 mt-auto">
           <a
             href={event.registrationLink}
