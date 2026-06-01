@@ -18,7 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {url: `${base}/join`, lastModified: now, changeFrequency: 'monthly', priority: 0.8},
   ];
 
-  const allEvents = await db.select({id: events.id, title: events.title, updatedAt: events.updatedAt}).from(events);
+  const allEvents = await db
+      .select({id: events.id, title: events.title, updatedAt: events.updatedAt})
+      .from(events);
   const eventRoutes: MetadataRoute.Sitemap = allEvents.map((e) => ({
     url: `${base}${eventPath(e)}`,
     lastModified: e.updatedAt ?? now,

@@ -1,7 +1,8 @@
 import type {Metadata} from 'next';
 import Script from 'next/script';
 import ConditionalLayout from '@/components/ConditionalLayout';
-import {defaultSiteMetadata} from '@/lib/seo';
+import {defaultSiteMetadata, getSiteUrl} from '@/lib/seo';
+import {SITE_CONFIG} from '@/lib/site-config';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -27,6 +28,95 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteUrl = getSiteUrl();
+
+  const organizationJsonLd = {
+    '@type': 'Organization',
+    '@id': `${siteUrl}/#organization`,
+    'name': SITE_CONFIG.fullName,
+    'alternateName': SITE_CONFIG.name,
+    'url': siteUrl,
+    'logo': {
+      '@type': 'ImageObject',
+      'url': `${siteUrl}/CITC_LOGOD.webp`,
+    },
+    'email': SITE_CONFIG.email,
+    'foundingDate': SITE_CONFIG.foundingDate,
+    'address': {
+      '@type': 'PostalAddress',
+      'addressLocality': SITE_CONFIG.location.city,
+      'addressRegion': SITE_CONFIG.location.region,
+      'addressCountry': SITE_CONFIG.location.country,
+    },
+    'contactPoint': {
+      '@type': 'ContactPoint',
+      'email': SITE_CONFIG.email,
+      'contactType': 'technical support',
+    },
+    'sameAs': [
+      SITE_CONFIG.social.github,
+      SITE_CONFIG.social.facebook,
+      SITE_CONFIG.social.instagram,
+      SITE_CONFIG.social.linkedin,
+    ],
+  };
+
+  const websiteJsonLd = {
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    'url': siteUrl,
+    'name': SITE_CONFIG.name,
+    'description': SITE_CONFIG.description,
+    'publisher': {
+      '@id': `${siteUrl}/#organization`,
+    },
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': {
+        '@type': 'EntryPoint',
+        'urlTemplate': `${siteUrl}/events?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  const navigationJsonLd = {
+    '@type': 'ItemList',
+    '@id': `${siteUrl}/#navigation`,
+    'name': 'Main Navigation',
+    'itemListElement': [
+      {
+        '@type': 'SiteNavigationElement',
+        'position': 1,
+        'name': 'Home',
+        'url': `${siteUrl}/`,
+      },
+      {
+        '@type': 'SiteNavigationElement',
+        'position': 2,
+        'name': 'Events',
+        'url': `${siteUrl}/events`,
+      },
+      {
+        '@type': 'SiteNavigationElement',
+        'position': 3,
+        'name': 'Team',
+        'url': `${siteUrl}/team`,
+      },
+      {
+        '@type': 'SiteNavigationElement',
+        'position': 4,
+        'name': 'Join Club',
+        'url': `${siteUrl}/join`,
+      },
+    ],
+  };
+
+  const jsonLdGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [organizationJsonLd, websiteJsonLd, navigationJsonLd],
+  };
+
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
@@ -35,6 +125,12 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLdGraph),
+          }}
         />
         <script
           dangerouslySetInnerHTML={{
