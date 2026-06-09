@@ -1,9 +1,10 @@
 'use client';
 
-import {Calendar, MapPin, Clock, ArrowLeft, ArrowRight} from 'lucide-react';
+import {Calendar, MapPin, Clock, ArrowLeft} from 'lucide-react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import EventRegistrationButton from '@/components/EventRegistrationButton';
 import MediaImage from '@/components/MediaImage';
 import type {Event} from '@/types';
 
@@ -84,14 +85,11 @@ export default function EventDetailsClient({event}: EventDetailsClientProps) {
 
               {(event.status === 'running' || event.status === 'upcoming') && event.registrationLink && (
                 <div className="mt-8">
-                  <a
+                  <EventRegistrationButton
                     href={event.registrationLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-citc-blue px-6 py-4 text-white font-bold transition-colors hover:bg-citc-blue/90"
-                  >
-                    Register Now <ArrowRight className="w-5 h-5" />
-                  </a>
+                    iconClassName="w-5 h-5"
+                  />
                 </div>
               )}
             </div>

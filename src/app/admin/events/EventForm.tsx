@@ -434,9 +434,12 @@ export default function EventForm({event}: Props) {
                 type="url"
                 value={registrationLink}
                 onChange={(e) => setRegistrationLink(e.target.value)}
-                placeholder="https://… (optional)"
+                placeholder="https://luma.com/event/evt-… or https://…"
                 className={adminInputClass}
               />
+              <p className="text-xs text-forest/50 mt-1.5">
+                Luma event URLs open the embedded checkout. Other links open in a new tab.
+              </p>
             </div>
           </div>
         </section>

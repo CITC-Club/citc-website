@@ -1,8 +1,9 @@
 'use client';
 
 import {memo} from 'react';
-import {Calendar, MapPin, Clock, ArrowRight} from 'lucide-react';
+import {Calendar, MapPin, Clock} from 'lucide-react';
 import Link from 'next/link';
+import EventRegistrationButton from '@/components/EventRegistrationButton';
 import MediaImage from '@/components/MediaImage';
 import {eventPath} from '@/lib/event-slug';
 import type {Event} from '@/types';
@@ -75,14 +76,10 @@ const EventCard: React.FC<EventCardProps> = ({event}) => {
 
       {showRegister && event.registrationLink && (
         <div className="px-6 pb-6 mt-auto">
-          <a
+          <EventRegistrationButton
             href={event.registrationLink}
-            target="_blank"
-            rel="noopener noreferrer"
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-citc-blue px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-citc-blue/90 relative z-10"
-          >
-            Register Now <ArrowRight className="w-4 h-4" />
-          </a>
+          />
         </div>
       )}
     </div>
