@@ -323,7 +323,7 @@ export default function EventForm({event}: Props) {
                 fileName={uploadFileName}
               />
               <div className="flex flex-wrap gap-2">
-                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white dark:bg-clay-light text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
                   <Upload className="w-4 h-4 text-sage" />
                   {uploading ? 'Uploading…' : image ? 'Replace image' : 'Upload image'}
                   <input
@@ -434,11 +434,11 @@ export default function EventForm({event}: Props) {
                 type="url"
                 value={registrationLink}
                 onChange={(e) => setRegistrationLink(e.target.value)}
-                placeholder="https://luma.com/event/evt-… or https://…"
+                placeholder="https://luma.com/zl9t5emj or https://…"
                 className={adminInputClass}
               />
               <p className="text-xs text-forest/50 mt-1.5">
-                Luma event URLs open the embedded checkout. Other links open in a new tab.
+                Registration links open in a new browser tab.
               </p>
             </div>
           </div>
@@ -562,7 +562,7 @@ export default function EventForm({event}: Props) {
           ) : null}
 
           <div className="flex flex-wrap gap-2">
-            <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
+            <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone/60 bg-white dark:bg-clay-light text-sm font-medium text-forest cursor-pointer hover:border-sage transition-colors">
               <Images className="w-4 h-4 text-sage" />
               {galleryUploading ? 'Uploading…' : 'Add gallery images'}
               <input
@@ -588,7 +588,7 @@ export default function EventForm({event}: Props) {
             <button
               type="submit"
               disabled={saving || uploading || galleryUploading}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-forest hover:bg-forest/90 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-forest hover:bg-forest/90 dark:bg-citc-blue dark:hover:bg-citc-blue/90 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
             >
               {saving ? (
                 <>

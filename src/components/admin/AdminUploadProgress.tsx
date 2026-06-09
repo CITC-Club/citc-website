@@ -65,7 +65,7 @@ export default function AdminUploadProgress({
                   done ?
                     'bg-sage text-white' :
                     current ?
-                    'bg-forest text-white' :
+                    'bg-forest text-white dark:bg-citc-blue' :
                     'bg-stone/40 text-forest/40'
                 }`}
               >
