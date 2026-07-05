@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import EventRegistrationButton from '@/components/EventRegistrationButton';
 import MediaImage from '@/components/MediaImage';
+import {eventSlugFromTitle} from '@/lib/event-slug';
 import type {Event} from '@/types';
 
 interface EventDetailsClientProps {
@@ -87,6 +88,7 @@ export default function EventDetailsClient({event}: EventDetailsClientProps) {
                 <div className="mt-8">
                   <EventRegistrationButton
                     href={event.registrationLink}
+                    eventSlug={eventSlugFromTitle(event.title)}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-citc-blue px-6 py-4 text-white font-bold transition-colors hover:bg-citc-blue/90"
                     iconClassName="w-5 h-5"
                   />

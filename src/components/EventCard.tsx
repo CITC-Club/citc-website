@@ -5,7 +5,7 @@ import {Calendar, MapPin, Clock} from 'lucide-react';
 import Link from 'next/link';
 import EventRegistrationButton from '@/components/EventRegistrationButton';
 import MediaImage from '@/components/MediaImage';
-import {eventPath} from '@/lib/event-slug';
+import {eventPath, eventSlugFromTitle} from '@/lib/event-slug';
 import type {Event} from '@/types';
 
 interface EventCardProps {
@@ -78,6 +78,7 @@ const EventCard: React.FC<EventCardProps> = ({event}) => {
         <div className="px-6 pb-6 mt-auto">
           <EventRegistrationButton
             href={event.registrationLink}
+            eventSlug={eventSlugFromTitle(event.title)}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-citc-blue px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-citc-blue/90 relative z-10"
           />
         </div>

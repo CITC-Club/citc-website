@@ -48,3 +48,13 @@ jobs:
             ghcr.io/${{ steps.repo-names.outputs.repo }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Trigger Dokploy Deployment
+        run: |
+          URL="${{ secrets.DOKPLOY_WEBHOOK_URL }}"
+          if [ -n "$URL" ]; then
+            curl -s -X POST "$URL"
+          else
+            echo "Dokploy Webhook URL is not configured."
+          fi
+

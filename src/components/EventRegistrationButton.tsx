@@ -1,12 +1,14 @@
 'use client';
 
 import {ArrowRight} from 'lucide-react';
+import Link from 'next/link';
 
 interface EventRegistrationButtonProps {
   href: string;
   className: string;
   iconClassName?: string;
   label?: string;
+  eventSlug?: string;
 }
 
 export default function EventRegistrationButton({
@@ -14,7 +16,21 @@ export default function EventRegistrationButton({
   className,
   iconClassName = 'w-4 h-4',
   label = 'Register Now',
+  eventSlug,
 }: EventRegistrationButtonProps) {
+  const isTallyLink = href?.includes('tally.so');
+
+  if (isTallyLink && eventSlug) {
+    return (
+      <Link
+        href={`/events/${eventSlug}/register`}
+        className={className}
+      >
+        {label} <ArrowRight className={iconClassName} />
+      </Link>
+    );
+  }
+
   return (
     <a
       href={href}
@@ -26,3 +42,4 @@ export default function EventRegistrationButton({
     </a>
   );
 }
+
